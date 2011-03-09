@@ -8,8 +8,6 @@ module E9Crm
     autoload :ActiveRecord,     'e9_crm/backend/active_record'
   end
 
-  mattr_accessor :current_user
-
   class Engine < ::Rails::Engine
     config.e9_crm = E9Crm
   end
