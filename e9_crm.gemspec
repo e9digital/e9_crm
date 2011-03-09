@@ -5,7 +5,7 @@ Gem::Specification.new do |s|
   s.name        = "e9_crm"
   s.version     = E9Crm::VERSION.dup
   s.platform    = Gem::Platform::RUBY
-  s.summary     = ""
+  s.summary     = "CRM engine plugin for the e9 CMS"
   s.email       = "travis@e9digital.com"
   s.homepage    = "http://www.e9digital.com"
   s.description = ""
@@ -14,6 +14,5 @@ Gem::Specification.new do |s|
   s.files         = `git ls-files`.split("\n")
   s.require_paths = ["lib"]
 
-  s.add_dependency("responders", "~> 0.6.0")
-  s.add_dependency("has_scope",  "~> 0.5.0")
+  s.add_dependency("rails", "~> 3.0.0")
 end
