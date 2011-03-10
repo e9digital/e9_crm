@@ -1,9 +1,13 @@
 PATH
   remote: .
   specs:
-    e9_crm (0.0.1)
-      has_scope (~> 0.5.0)
-      responders (~> 0.6.0)
+    e9_crm (0.1.0)
+      e9_rails (~> 0.0.4)
+      inherited_resources (~> 1.1.2)
+      inherited_resources_views
+      money
+      rails (~> 3.0.0)
+      will_paginate
 
 GEM
   remote: http://rubygems.org/
@@ -37,16 +41,26 @@ GEM
     activesupport (3.0.5)
     arel (2.0.9)
     builder (2.1.2)
+    e9_rails (0.0.4)
+      inherited_resources
+      rails (~> 3.0.0)
     erubis (2.6.6)
       abstract (>= 1.0.0)
     has_scope (0.5.0)
     i18n (0.5.0)
+    inherited_resources (1.1.2)
+      has_scope (~> 0.5.0)
+      responders (~> 0.6.0)
+    inherited_resources_views (0.4.1)
+      inherited_resources (>= 1.0)
     mail (2.2.15)
       activesupport (>= 2.3.6)
       i18n (>= 0.4.0)
       mime-types (~> 1.16)
       treetop (~> 1.4.8)
     mime-types (1.16)
+    money (3.6.1)
+      i18n (~> 0.4)
     polyglot (0.3.1)
     rack (1.2.1)
     rack-mount (0.6.13)
@@ -72,12 +86,16 @@ GEM
     treetop (1.4.9)
       polyglot (>= 0.3.1)
     tzinfo (0.3.24)
+    will_paginate (3.0.pre2)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
   e9_crm!
-  has_scope (~> 0.5.0)
-  rails
-  responders (~> 0.6.0)
+  e9_rails (~> 0.0.4)
+  inherited_resources (~> 1.1.2)
+  inherited_resources_views
+  money
+  rails (~> 3.0.0)
+  will_paginate

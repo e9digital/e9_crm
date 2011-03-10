@@ -1,0 +1,6 @@
+en:
+  e9:
+    no_records_text: "No records have been created yet."
+    index_title: "%{collection}"
+    edit_title: "Edit %{model}"
+    new_title: "New %{model}"

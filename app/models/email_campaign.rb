@@ -1,0 +1,2 @@
+class EmailCampaign < Campaign
+end

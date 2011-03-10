@@ -1,0 +1,2 @@
+class SalesPerson < Contact
+end

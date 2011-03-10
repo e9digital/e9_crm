@@ -1,0 +1,22 @@
+- _fields = ['HEADER 1', 'HEADER 2']
+
+%table.records
+  %thead
+    %tr
+      - _fields.each do |field|
+        %th= field
+        %th= field
+  %tbody
+  - if collection.empty?
+    %tr
+      %td{:colspan => _fields.length}= e9_t(:no_records_text)
+  - else
+    - collection.each do |r|
+      %tr{:id => "ids_#{r.id}", :class => cycle('odd', 'even')}
+        %td= 'val 1'
+        %td= 'val 2'
+        %td.links
+          = link_to "Edit", edit_resource_path(r)
+          = link_to "Destroy", resource_path(r), :confirm => 'Are you sure?', :method => :delete
+
+= will_paginate collection

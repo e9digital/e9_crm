@@ -1,4 +1,11 @@
 require 'rails'
+require 'e9_rails'
+require 'money'
+require 'inherited_resources'
+require 'inherited_resources_views'
+require 'will_paginate'
+
+require 'e9_crm/rails_extensions'
 
 module E9Crm
   autoload :VERSION,            'e9_crm/version'
