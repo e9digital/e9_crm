@@ -1,4 +1,6 @@
 class Campaign < ActiveRecord::Base
+  include E9Rails::ActiveRecord::STI
+
   belongs_to :campaign_group
   has_many   :page_views,       :foreign_key => :code, :primary_key => :code
   has_many   :tracking_cookies, :foreign_key => :code, :primary_key => :code, :class_name => 'TrackingCookie'

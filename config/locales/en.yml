@@ -15,6 +15,10 @@ en:
 
     # Translate model names. Used in Model.human_name().
     models:
+      sales_campaign: Sales Campaign
+      email_campaign: Email Campaign
+      affiliate_campaign: Affiliate Campaign
+      advertising_campaign: Advertising Campaign
       campaign: Campaign
       campaign_type: Campaign Type
       company: Company
@@ -26,4 +30,4 @@ en:
     # Translate model attribute names. Used in Model.human_attribute_name(attribute).
     attributes:
       campaign:
-        name: Whatever
+        name: Name

@@ -1,4 +1,4 @@
-- _fields = { :type => nil, :name => nil, :code => nil, :affiliate_fee => nil,  :sales_fee => nil }
+- _fields = { :type => nil, :name => nil, :code => nil, :affiliate_fee => proc {|r| v = r.affiliate_fee; Money === v ? v : 'n/a' },  :sales_fee => nil, :status => proc {|r| resource_class.human_attribute_name(Campaign::Status::VALUES[r.status]) } }
 
 %table.records
   %thead
@@ -15,7 +15,7 @@
         - _fields.each do |key, val|
           %td= val.respond_to?(:call) ? val.call(r) : r.send(key)
         %td.links
-          = link_to "Edit", edit_resource_path(r)
-          = link_to "Destroy", resource_path(r), :confirm => 'Are you sure?', :method => :delete
+          = link_to "Edit", edit_polymorphic_path(r)
+          = link_to "Destroy", polymorphic_path(r), :confirm => 'Are you sure?', :method => :delete
 
 = will_paginate collection

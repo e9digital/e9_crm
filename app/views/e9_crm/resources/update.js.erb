@@ -1,0 +1,5 @@
+<% if resource.errors.any? %>
+  $('form .errors').html("<%= escape_javascript(resource_error_messages!) %>");
+<% else %>
+  window.location.reload(true);
+<% end %>

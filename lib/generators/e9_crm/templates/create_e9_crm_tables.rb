@@ -27,14 +27,14 @@ class CreateE9CrmTables < ActiveRecord::Migration
     end
     add_index 'contacts', 'user_id'
 
-    create_table :campaign_groups do |t|
-      t.string :name
-      t.timestamps
-    end
-
     create_table :advertising_costs do |t|
       t.integer :cost, :default => 0
       t.date :date
+    end
+
+    create_table :campaign_groups do |t|
+      t.string :name
+      t.timestamps
     end
 
     create_table :campaigns do |t|
@@ -43,7 +43,7 @@ class CreateE9CrmTables < ActiveRecord::Migration
       t.references :campaign_group, :affiliate, :sales_person, :advertising_cost
       t.string :code, :limit => 32
       t.integer :affiliate_fee, :sales_fee, :default => 0
-      t.integer :status, :limit => 1
+      t.integer :status, :limit => 1, :default => 1
       t.timestamps
     end
     add_index 'campaigns', 'campaign_group_id'
@@ -60,8 +60,8 @@ class CreateE9CrmTables < ActiveRecord::Migration
   def self.down
     drop_table :deals
     drop_table :companies
-    drop_table :campaign_groups
     drop_table :campaigns
+    drop_table :campaign_groups
     drop_table :advertising_costs
     drop_table :contacts
     drop_table :tracking_cookies
