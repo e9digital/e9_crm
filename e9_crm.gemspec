@@ -18,7 +18,6 @@ Gem::Specification.new do |s|
   s.add_dependency("rails", "~> 3.0.0")
   s.add_dependency("inherited_resources", "~> 1.1.2")
   s.add_dependency("has_scope")
-  s.add_dependency("inherited_resources_views")
   s.add_dependency("money")
   s.add_dependency("e9_rails", "~> 0.0.4")
   s.add_dependency("will_paginate")
