@@ -3,9 +3,9 @@ PATH
   specs:
     e9_crm (0.1.0)
       e9_rails (~> 0.0.4)
+      e9_tags (~> 0.0.1)
       has_scope
       inherited_resources (~> 1.1.2)
-      inherited_resources_views
       money
       rails (~> 3.0.0)
       will_paginate
@@ -40,10 +40,14 @@ GEM
       activemodel (= 3.0.5)
       activesupport (= 3.0.5)
     activesupport (3.0.5)
+    acts-as-taggable-on (2.0.6)
     arel (2.0.9)
     builder (2.1.2)
     e9_rails (0.0.4)
       inherited_resources
+      rails (~> 3.0.0)
+    e9_tags (0.0.1)
+      acts-as-taggable-on (~> 2.0.6)
       rails (~> 3.0.0)
     erubis (2.6.6)
       abstract (>= 1.0.0)
@@ -52,8 +56,6 @@ GEM
     inherited_resources (1.1.2)
       has_scope (~> 0.5.0)
       responders (~> 0.6.0)
-    inherited_resources_views (0.4.1)
-      inherited_resources (>= 1.0)
     mail (2.2.15)
       activesupport (>= 2.3.6)
       i18n (>= 0.4.0)
@@ -95,9 +97,9 @@ PLATFORMS
 DEPENDENCIES
   e9_crm!
   e9_rails (~> 0.0.4)
+  e9_tags (~> 0.0.1)
   has_scope
   inherited_resources (~> 1.1.2)
-  inherited_resources_views
   money
   rails (~> 3.0.0)
   will_paginate

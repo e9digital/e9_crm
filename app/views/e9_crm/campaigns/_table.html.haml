@@ -5,6 +5,7 @@
     %tr
       - _fields.keys.each do |field|
         %th= resource_class.human_attribute_name(field)
+      %th= e9_t(:actions)
   %tbody
   - if collection.empty?
     %tr

@@ -1,11 +1,11 @@
-- _fields = ['HEADER 1', 'HEADER 2']
+- _fields = {:id => nil}
 
 %table.records
   %thead
     %tr
-      - _fields.each do |field|
-        %th= field
-        %th= field
+      - _fields.keys.each do |field|
+        %th= resource_class.human_attribute_name(field)
+      %th= e9_t(:actions)
   %tbody
   - if collection.empty?
     %tr
@@ -13,8 +13,8 @@
   - else
     - collection.each do |r|
       %tr{:id => "ids_#{r.id}", :class => cycle('odd', 'even')}
-        %td= 'val 1'
-        %td= 'val 2'
+      - _fields.each do |key, val|
+        %td= val.respond_to?(:call) ? val.call(r) : r.send(key)
         %td.links
           = link_to "Edit", edit_resource_path(r)
           = link_to "Destroy", resource_path(r), :confirm => 'Are you sure?', :method => :delete

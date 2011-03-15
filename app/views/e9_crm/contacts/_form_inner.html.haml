@@ -1,0 +1,7 @@
+= render 'e9_tags/form', :f => f, :context => 'Users (hidden)'
+
+- resource.attributes.each_pair do |field, value|
+  - next if ['id', 'created_at', 'updated_at'].include?(field)
+  .field
+    = f.label field
+    = f.text_field field
