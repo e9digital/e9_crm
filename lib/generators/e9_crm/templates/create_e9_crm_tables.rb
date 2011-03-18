@@ -21,11 +21,23 @@ class CreateE9CrmTables < ActiveRecord::Migration
     add_index 'tracking_cookies', 'user_id'
 
     create_table :contacts, :force => true do |t|
-      t.string :email
       t.string :type
+      t.string :email
+      t.string :first_name
+      t.string :last_name
+      t.string :title
+      t.string :avatar
+      t.references :company
       t.timestamps
     end
     add_index 'contacts', 'email'
+
+    create_table :record_attributes, :force => true do |t|
+      t.string :type
+      t.references :record, :polymorphic => true
+      t.string :value
+      t.text :options
+    end
 
     create_table :advertising_costs, :force => true do |t|
       t.integer :cost, :default => 0
@@ -49,20 +61,26 @@ class CreateE9CrmTables < ActiveRecord::Migration
     add_index 'campaigns', 'campaign_group_id'
 
     create_table :companies, :force => true do |t|
+      t.string :name
       t.timestamps
     end
 
     create_table :deals, :force => true do |t|
       t.timestamps
     end
+
+    add_column :users, :contact_id, :integer rescue nil
   end
 
   def self.down
+    remove_column :users, :contact_id rescue nil
+
     drop_table :deals rescue nil
     drop_table :companies rescue nil
     drop_table :campaigns rescue nil
     drop_table :campaign_groups rescue nil
     drop_table :advertising_costs rescue nil
+    drop_table :record_attributes rescue nil
     drop_table :contacts rescue nil
     drop_table :tracking_cookies rescue nil
     drop_table :page_views rescue nil

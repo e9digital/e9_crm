@@ -13,8 +13,16 @@ module E9Crm
 
     protected
 
+      def generate_contact
+        Contact.new(:email => self.email, :first_name => self.first_name)
+      end
+
+      def generate_contact!
+        generate_contact.tap {|contact| contact.save(:validate => false) }
+      end
+
       def create_associated_contact
-        self.contact ||= Contact.create(:email => self.email, :first_name => self.first_name)
+        self.contact ||= generate_contact!
       end
   end
 end

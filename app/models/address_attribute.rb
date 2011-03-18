@@ -1,0 +1,2 @@
+class AddressAttribute < RecordAttribute
+end

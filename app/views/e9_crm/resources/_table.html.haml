@@ -1,22 +1,20 @@
-- _fields = {:id => nil}
+- field_map = records_table_field_map_for_class(resource_class)
 
 %table.records
   %thead
     %tr
-      - _fields.keys.each do |field|
+      - field_map.keys.each do |field|
         %th= resource_class.human_attribute_name(field)
       %th= e9_t(:actions)
   %tbody
   - if collection.empty?
     %tr
-      %td{:colspan => _fields.length + 1}= e9_t(:no_records_text)
+      %td{:colspan => field_map.length + 1}= e9_t(:no_records_text)
   - else
-    - collection.each do |r|
-      %tr{:id => "ids_#{r.id}", :class => cycle('odd', 'even')}
-      - _fields.each do |key, val|
-        %td= val.respond_to?(:call) ? val.call(r) : r.send(key)
+    - collection.each do |record|
+      %tr{:id => "ids_#{record.id}", :class => cycle('odd', 'even')}
+        - field_map.each do |key, value|
+          %td
+            = value.respond_to?(:call) ? value.call(record) : record.send(key)
         %td.links
-          = link_to "Edit", edit_resource_path(r)
-          = link_to "Destroy", resource_path(r), :confirm => 'Are you sure?', :method => :delete
-
-= will_paginate collection
+          = records_table_links_for_record(record)

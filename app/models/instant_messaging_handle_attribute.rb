@@ -1,0 +1,2 @@
+class InstantMessagingHandleAttribute < RecordAttribute
+end

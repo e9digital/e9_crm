@@ -1,0 +1,22 @@
+.contact-who
+  %span.contact-name= record.name
+  - if record.company_id? || record.title?
+    = " - "
+    = link_to_contact_search(:by_title, record.title) if record.title?
+    = " at " if record.company_id? && record.title?
+    = link_to_contact_search(:by_company, record.company_id, record.company_name) if record.company_id?
+
+- if record.phone_numbers.any?
+  .contact-phone-numbers
+    = record.phone_numbers.each do |phone_number|
+      .contact-phone-number= phone_number
+
+- if record.instant_messaging_handles.any?
+  .contact-im-handles
+    = record.instant_messaging_handles.each do |instant_messaging_handle|
+      .contact-im-handle= instant_messaging_handle
+
+- if record.websites.any?
+  .contact-websites
+    = record.websites.each do |website|
+      .contact-website= website

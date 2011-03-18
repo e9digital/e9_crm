@@ -2,6 +2,8 @@ class E9Crm::ContactsController < E9Crm::ResourcesController
   defaults :resource_class => Contact
 
   has_scope :tagged
+  has_scope :by_company
+  has_scope :by_title
 
   include E9Tags::Controller
 

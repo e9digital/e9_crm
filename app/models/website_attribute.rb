@@ -1,0 +1,2 @@
+class WebsiteAttribute < RecordAttribute
+end
