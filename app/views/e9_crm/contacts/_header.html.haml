@@ -1,0 +1,4 @@
+= form_tag(resource_class, :method => :get) do
+  = label_tag 'contact_tagged_field', 'Search by Tag'
+  = text_field_tag 'tagged', nil, :id => 'contact_tagged_field'
+  = submit_tag 'Search', :name => nil

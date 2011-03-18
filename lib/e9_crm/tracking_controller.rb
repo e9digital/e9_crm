@@ -33,29 +33,34 @@ module E9Crm
         tcn  = E9Crm.cookie_name
 
         if hid = cookies[tcn]
-          E9Crm.log("Installed cookie found: hid[#{hid}]")
+          E9Crm.log("Installed cookie found: hid(#{hid})")
           @_tracking_cookie = TrackingCookie.find_by_hid(hid)
         end
 
         E9Crm.log(@_tracking_cookie ? "Cookie loaded: (#{tcn} : #{@_tracking_cookie.hid})" : "Cookie not found")
 
-        if @_tracking_cookie.present?
-          attrs = {}
+        if @_tracking_cookie
+          if current_user && @_tracking_cookie.user_id? && @_tracking_cookie.user_id != current_user.id
+            E9Crm.log "Tracking user_id not matched: found(#{@_tracking_cookie.user_id}), current(#{current_user.id}"
+            @_tracking_cookie = nil
+          else
+            attrs = {}
 
-          if current_user && !@_tracking_cookie.user_id?
-            E9Crm.log("Cookie user (#{@_tracking_cookie.user_id}) not current_user (#{current_user.id}), changing...")
-            attrs[:user] = current_user
+            if current_user && !@_tracking_cookie.user_id?
+              E9Crm.log("Cookie user (#{@_tracking_cookie.user_id}) not current_user (#{current_user.id}), changing...")
+              attrs[:user] = current_user
+            end
+
+            if code.present? && code != @_tracking_cookie.code
+              E9Crm.log "Code present and cookie code(#{@_tracking_cookie.code}) does not match (#{code}), changing..."
+              attrs[:code] = code
+              E9Crm.log "Cookie marked as new"
+              @_tracking_cookie.new_visit = true
+            end
+
+            E9Crm.log(attrs.blank? ? "Cookie unchanged, no update" : "Cookie changed, new attrs: #{attrs.inspect}")
+            @_tracking_cookie.update_attributes(attrs) unless attrs.blank?
           end
-
-          if code.present? && code != @_tracking_cookie.code
-            E9Crm.log "Code present and cookie code(#{@_tracking_cookie.code}) does not match (#{code}), changing..."
-            attrs[:code] = code
-            E9Crm.log "Cookie marked as new"
-            @_tracking_cookie.new_visit = true
-          end
-
-          E9Crm.log(attrs.blank? ? "Cookie unchanged, no update" : "Cookie changed, new attrs: #{attrs.inspect}")
-          @_tracking_cookie.update_attributes(attrs) unless attrs.blank?
         end
 
         @_tracking_cookie ||= begin

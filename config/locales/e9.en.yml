@@ -1,6 +1,11 @@
 en:
   e9:
-    no_records_text: "No records have been created yet."
-    index_title: "%{collection}"
-    edit_title: "Edit %{model}"
-    new_title: "New %{model}"
+    e9_crm:
+      no_records_text: "No records were found."
+      index_title: "%{models}"
+      edit_title: "Edit %{model}"
+      new_title: "New %{model}"
+      actions: Actions
+
+      contacts:
+        index_title_with_search: "%{collection} tagged with: %{tags}"

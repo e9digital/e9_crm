@@ -3,7 +3,7 @@ PATH
   specs:
     e9_crm (0.1.0)
       e9_rails (~> 0.0.4)
-      e9_tags (~> 0.0.1)
+      e9_tags (~> 0.0.2)
       has_scope
       inherited_resources (~> 1.1.2)
       money
@@ -46,7 +46,7 @@ GEM
     e9_rails (0.0.4)
       inherited_resources
       rails (~> 3.0.0)
-    e9_tags (0.0.1)
+    e9_tags (0.0.2)
       acts-as-taggable-on (~> 2.0.6)
       rails (~> 3.0.0)
     erubis (2.6.6)
@@ -97,7 +97,7 @@ PLATFORMS
 DEPENDENCIES
   e9_crm!
   e9_rails (~> 0.0.4)
-  e9_tags (~> 0.0.1)
+  e9_tags (~> 0.0.2)
   has_scope
   inherited_resources (~> 1.1.2)
   money

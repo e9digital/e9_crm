@@ -9,7 +9,7 @@
   %tbody
   - if collection.empty?
     %tr
-      %td{:colspan => _fields.length}= e9_t(:no_records_text)
+      %td{:colspan => _fields.length + 1}= e9_t(:no_records_text)
   - else
     - collection.each do |r|
       %tr{:id => "ids_#{r.id}", :class => cycle('odd', 'even')}

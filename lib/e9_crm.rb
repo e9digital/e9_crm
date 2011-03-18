@@ -11,10 +11,7 @@ require 'e9_crm/rails_extensions'
 module E9Crm
   autoload :VERSION,            'e9_crm/version'
   autoload :TrackingController, 'e9_crm/tracking_controller'
-
-  module Backend
-    autoload :ActiveRecord,     'e9_crm/backend/active_record'
-  end
+  autoload :Model,              'e9_crm/model'
 
   mattr_accessor :cookie_name
   @@cookie_name = '_e9_tc'
@@ -26,10 +23,10 @@ module E9Crm
   @@log_level = :debug
 
   mattr_accessor :logging
-  @@logging = true
+  @@logging = false
 
   mattr_accessor :user_model
-  @@user_model = :user
+  @@user_model = nil
 
   mattr_accessor :tracking_controllers
   @@tracking_controllers = []
@@ -39,25 +36,22 @@ module E9Crm
   end
 
   def E9Crm.init!
-    E9Crm.determine_user_model.send(:include, E9Crm::Backend::ActiveRecord)
+    user_model = case @@user_model
+    when Class; @@user_model
+    when String, Symbol; @@user_model.classify.constantize
+    end
+
+    if user_model
+      user_model.send(:include, E9Crm::Model)
+    end
 
     E9Crm.tracking_controllers.each do |controller|
       controller.send(:include, E9Crm::TrackingController)
     end
   end
 
-  def E9Crm.determine_user_model
-    case @@user_model ||= :user
-    when Class; @@user_model
-    when String, Symbol; @@user_model.classify.constantize
-    end
-  rescue
-    raise ArgumentError, "E9Crm.user_model must be defined as class in your application"
-  end
-
   class Engine < ::Rails::Engine
     config.e9_crm = E9Crm
-
     config.to_prepare { E9Crm.init! }
   end
 end
