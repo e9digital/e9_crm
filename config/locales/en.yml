@@ -1,4 +1,11 @@
 en:
+  search: Search
+  go: Go
+
+  e9_crm:
+    add_record_attribute: Add
+    destroy_record_attribute: Remove
+
   activerecord:
     # You can define own errors for models or model attributes.
     # The values :model, :attribute and :value are always available for interpolation.

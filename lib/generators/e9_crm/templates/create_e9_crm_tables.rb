@@ -28,6 +28,7 @@ class CreateE9CrmTables < ActiveRecord::Migration
       t.string :title
       t.string :avatar
       t.references :company
+      t.references :primary_user
       t.timestamps
     end
     add_index 'contacts', 'email'

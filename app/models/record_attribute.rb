@@ -1,14 +1,26 @@
 require 'ostruct'
 
 class RecordAttribute < ActiveRecord::Base
+  include E9Rails::ActiveRecord::AttributeSearchable
   include E9Rails::ActiveRecord::STI
+  
+  class << self
+    def subclasses
+      [
+        AddressAttribute,
+        InstantMessagingHandleAttribute,
+        PhoneNumberAttribute,
+        WebsiteAttribute
+      ]
+    end
+  end
 
   belongs_to :record, :polymorphic => true
 
   serialize :options
 
   class_inheritable_accessor :options_parameters
-  self.options_parameters = []
+  self.options_parameters = [:type]
 
   class_inheritable_accessor :options_class
   self.options_class = Class.new(Hash) {
@@ -38,6 +50,7 @@ class RecordAttribute < ActiveRecord::Base
     end
   }
   self.options_class.lookup_ancestors = lookup_ancestors
+
 
   def options=(hash={})
     write_attribute(:options, hash)

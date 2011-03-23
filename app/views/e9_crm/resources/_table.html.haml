@@ -14,7 +14,7 @@
     - collection.each do |record|
       %tr{:id => "ids_#{record.id}", :class => cycle('odd', 'even')}
         - field_map.each do |key, value|
-          %td
+          %td{:class => "contact-#{key}"}
             = value.respond_to?(:call) ? value.call(record) : record.send(key)
         %td.links
           = records_table_links_for_record(record)

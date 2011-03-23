@@ -1,7 +1,56 @@
+%fieldset.contact-standard-fields
+  %legend= e9_t(:form_legend_standard)
+  .field
+    = f.label :first_name
+    = f.text_field :first_name
+  .field
+    = f.label :last_name
+    = f.text_field :last_name
+  .field
+    = f.label :company_name
+    = f.text_field :company_name
+  .field
+    = f.label :title
+    = f.text_field :title
+
+%fieldset.contact-user-fields
+  %legend= e9_t(:form_legend_user)
+  = f.label :users
+  - f.object.users.each do |user|
+    .field
+      .contact-user-email
+        = user.email
+      .contact-primary-user.radio
+        = f.label :primary_user_id
+        = f.radio_button :primary_user_id, user.id
+
 = render 'e9_tags/form', :f => f, :context => [:users, true]
 
-- resource.attributes.each_pair do |field, value|
-  - next if ['id', 'created_at', 'updated_at'].include?(field)
-  .field
-    = f.label field
-    = f.text_field field
+%fieldset.contact-contact-fields
+  %legend= e9_t(:form_legend_contact)
+
+  %fieldset.nested-associations
+    %legend
+      %span= f.label(:phone_number_attributes)
+      = link_to_add_record_attribute(:phone_number_attributes)
+    = render_record_attribute_association(:phone_number_attributes, f)
+
+  %fieldset.nested-associations
+    %legend
+      %span= f.label(:instant_messaging_handle_attributes)
+      = link_to_add_record_attribute(:instant_messaging_handle_attributes)
+    = render_record_attribute_association(:instant_messaging_handle_attributes, f)
+
+  %fieldset.nested-associations
+    %legend
+      %span= f.label(:website_attributes)
+      = link_to_add_record_attribute(:website_attributes)
+    = render_record_attribute_association(:website_attributes, f)
+
+  %fieldset.nested-associations
+    %legend
+      %span= f.label(:address_attributes)
+      = link_to_add_record_attribute(:address_attributes)
+    = render_record_attribute_association(:address_attributes, f)
+
+= javascript_include_tag templates_contacts_path

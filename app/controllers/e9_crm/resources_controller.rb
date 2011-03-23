@@ -10,14 +10,14 @@ class E9Crm::ResourcesController < E9Crm::BaseController
     # and would prefix all routes by default.  But our routes are not namepaced, so we
     # override the route_prefix back to null.
     #
-    def defaults(hash = {})
-      super hash.reverse_merge(:route_prefix => nil)
-    end
+    #def defaults(hash = {})
+      #super hash.reverse_merge(:route_prefix => nil)
+    #end
   end
 
   protected
 
   def collection
-    get_collection_ivar || set_collection_ivar(end_of_association_chain.all.paginate(pagination_parameters))
+    get_collection_ivar || set_collection_ivar(end_of_association_chain.paginate(pagination_parameters))
   end
 end

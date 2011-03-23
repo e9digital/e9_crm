@@ -1,32 +1,30 @@
 Rails.application.routes.draw do
-  scope :path => :admin, :module => :e9_crm do
+  crm_path = 'admin/crm'
+
+  scope :path => crm_path, :module => :e9_crm do
     resources :campaign_groups, :except => :show, :controller => 'campaign_groups'
     resources :deals,           :except => :show, :controller => 'deals'
-    resources :contacts,        :except => :show, :controller => 'contacts'
+    resources :contacts,        :except => :show, :controller => 'contacts' do
+      collection { get :templates }
+    end
     resources :companies,       :except => :show, :controller => 'companies'
 
     resources :campaigns, :only  => :index, :controller => 'campaigns' 
     scope :path => :campaigns do
-      resources :sales_campaigns, :path => 'sales', :except => [:show, :index], :controller => 'campaigns', :defaults => { :campaign_type => 'sales' }
-      resources :advertising_campaigns, :path => 'advertising', :except => [:show, :index],  :controller => 'campaigns', :defaults => { :campaign_type => 'advertising' }
-      resources :affiliate_campaigns, :path => 'affiliate', :except => [:show, :index],  :controller => 'campaigns', :defaults => { :campaign_type => 'affiliate' }
-      resources :email_campaigns, :path => 'email', :except => [:show, :index], :controller => 'campaigns', :defaults => { :campaign_type => 'email' }
+      resources :sales_campaigns, :path => 'sales', :except => [:show], :controller => 'campaigns', :defaults => { :campaign_type => 'sales' }
+      resources :advertising_campaigns, :path => 'advertising', :except => [:show],  :controller => 'campaigns', :defaults => { :campaign_type => 'advertising' }
+      resources :affiliate_campaigns, :path => 'affiliate', :except => [:show],  :controller => 'campaigns', :defaults => { :campaign_type => 'affiliate' }
+      resources :email_campaigns, :path => 'email', :except => [:show], :controller => 'campaigns', :defaults => { :campaign_type => 'email' }
     end
   end
 
   # redirect shows to edits
-  get '/admin/campaign_groups/:id', :to => redirect('/admin/campaign_groups/%{id}/edit')
-  get '/admin/campaigns/advertising/:id', :to => redirect('/admin/campaigns/advertising/%{id}/edit')
-  get '/admin/campaigns/affiliate/:id', :to => redirect('/admin/campaigns/affiliate/%{id}/edit')
-  get '/admin/campaigns/email/:id', :to => redirect('/admin/campaigns/email/%{id}/edit')
-  get '/admin/campaigns/sales/:id', :to => redirect('/admin/campaigns/sales/%{id}/edit')
-  get '/admin/deals/:id', :to => redirect('/admin/deals/%{id}/edit')
-  get '/admin/contacts/:id', :to => redirect('/admin/contacts/%{id}/edit')
-  get '/admin/companies/:id', :to => redirect('/admin/companies/%{id}/edit')
-
-  # redirect specific campaign type indexes to campaigns with type
-  get '/admin/campaigns/advertising', :to => redirect('/admin/campaigns?type=advertising')
-  get '/admin/campaigns/affiliate', :to => redirect('/admin/campaigns?type=affiliate')
-  get '/admin/campaigns/email', :to => redirect('/admin/campaigns?type=email')
-  get '/admin/campaigns/sales', :to => redirect('/admin/campaigns?type=sales')
+  get "/#{crm_path}/campaign_groups/:id", :to => redirect("/#{crm_path}/campaign_groups/%{id}/edit"), :constraints => { :id => /\d+/ }
+  get "/#{crm_path}/campaigns/advertising/:id", :to => redirect("/#{crm_path}/campaigns/advertising/%{id}/edit"), :constraints => { :id => /\d+/ }
+  get "/#{crm_path}/campaigns/affiliate/:id", :to => redirect("/#{crm_path}/campaigns/affiliate/%{id}/edit"), :constraints => { :id => /\d+/ }
+  get "/#{crm_path}/campaigns/email/:id", :to => redirect("/#{crm_path}/campaigns/email/%{id}/edit"), :constraints => { :id => /\d+/ }
+  get "/#{crm_path}/campaigns/sales/:id", :to => redirect("/#{crm_path}/campaigns/sales/%{id}/edit"), :constraints => { :id => /\d+/ }
+  get "/#{crm_path}/deals/:id", :to => redirect("/#{crm_path}/deals/%{id}/edit"), :constraints => { :id => /\d+/ }
+  get "/#{crm_path}/contacts/:id", :to => redirect("/#{crm_path}/contacts/%{id}/edit"), :constraints => { :id => /\d+/ }
+  get "/#{crm_path}/companies/:id", :to => redirect("/#{crm_path}/companies/%{id}/edit"), :constraints => { :id => /\d+/ }
 end

@@ -11,15 +11,19 @@ module E9Crm::BaseHelper
   end
 
   def crm_edit_resource_link(record, opts = {})
-    link_to("Edit", edit_resource_path(record))
+    link_to("Edit", edit_polymorphic_path(record))
   end
 
   def crm_delete_resource_link(record, opts = {})
-    link_to("Destroy", resource_path(record), :confirm => 'Are you sure?', :method => :delete)
+    link_to("Destroy", polymorphic_path(record), :confirm => 'Are you sure?', :method => :delete)
   end
 
   def crm_show_resource_link(record, opts = {})
-    link_to("View", resource_path(record))
+    link_to("View", polymorphic_path(record))
+  end
+
+  def crm_new_resource_link(klass)
+    link_to("New #{klass.model_name.human}", new_polymorphic_path(klass))
   end
 
   def link_to_contact_search(attribute, query, text = nil)
@@ -30,7 +34,8 @@ module E9Crm::BaseHelper
   # Field maps
   #
   
-  def records_table_field_map_for_class(klass)
+  def records_table_field_map_for_class(klass, base_class = true)
+    klass = klass.base_class if base_class
     if respond_to?(method_name = "records_table_field_map_for_#{klass.name.underscore}")
       send(method_name)
     else
@@ -56,6 +61,22 @@ module E9Crm::BaseHelper
     }
   end
 
+  def phone_number_attribute_type_options
+    [ 'Home', 'Work', 'Mobile', 'Home Fax', 'Work Fax', 'Pager', 'Other' ]
+  end
+
+  def instant_messaging_handle_attribute_type_options
+    %w(AIM GoogleTalk ICQ IRC MSN Skype XMPP Yahoo)
+  end
+
+  def website_attribute_type_options
+    [ 'Home', 'Work', 'Home Page', 'FTP', 'Blog', 'Profile', 'Other' ]
+  end
+
+  def address_attribute_type_options
+    %w(Home Work Other)
+  end
+
   ##
   # Links
   #
@@ -70,5 +91,44 @@ module E9Crm::BaseHelper
 
   def records_table_links_for_contact(record)
     html_concat(crm_show_resource_link(record), crm_edit_resource_link(record), crm_delete_resource_link(record))
+  end
+
+
+  def link_to_add_record_attribute(association_name)
+    link_to(
+      t(:add_record_attribute, :scope => :e9_crm), 
+      'javascript:;', 
+      :class => 'add-nested-association', 
+      'data-association' => association_name
+    )
+  end
+
+  def link_to_destroy_record_attribute
+    link_to(
+      t(:destroy_record_attribute, :scope => :e9_crm), 
+      'javascript:;', 
+      :class => 'destroy-nested-association'
+    )
+  end
+
+  def render_record_attribute_association(association_name, form, options = {})
+    options.symbolize_keys!
+
+    association = resource.send(association_name)
+
+    unless association.empty?
+      form.fields_for(association_name) do |f|
+        concat record_attribute_template(association_name, f, options)
+      end
+    end
+  end
+
+  def record_attribute_template(association_name, builder, options = {})
+    options.symbolize_keys!
+
+    render({
+      :partial => options[:partial] || "e9_crm/record_attributes/#{association_name.to_s.singularize}",
+      :locals => { :f => builder }
+    })
   end
 end

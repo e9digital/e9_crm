@@ -1,0 +1,3 @@
+= render :layout => 'e9_crm/record_attributes/record_attribute', :locals => { :f => f } do
+  = f.fields_for f.object.options do |ff|
+    = ff.select :type, address_attribute_type_options

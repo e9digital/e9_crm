@@ -1,19 +1,31 @@
 class E9Crm::ContactsController < E9Crm::ResourcesController
   defaults :resource_class => Contact
 
-  has_scope :tagged
-  has_scope :by_company
-  has_scope :by_title
-
   include E9Tags::Controller
 
   before_filter :determine_title, :only => :index
 
+  has_scope :search
+  has_scope :tagged
+  has_scope :order, :only => :index, :default => 'first_name' do |c,s,v|
+    # NOTE first_name ordering is currently forced
+    s.order(:first_name)
+  end
+
+  # record attributes templates js
+  skip_before_filter :authenticate_user!, :only => :templates
+  before_filter :build_resource, :only => :templates
+  caches_action :templates
+
   protected
 
   def determine_title
-    if params[:tagged]
-      @index_title = e9_t(:index_title_with_search, :tags => params[:tagged])
+    @index_title ||= if params[:tagged] && params[:search]
+      e9_t(:index_title_with_search_and_tags, :tagged => params[:tagged], :search => params[:search])
+    elsif params[:tagged]
+      e9_t(:index_title_with_tags, :tagged => params[:tagged])
+    elsif params[:search]
+      e9_t(:index_title_with_search, :search => params[:search])
     end
   end
 end
