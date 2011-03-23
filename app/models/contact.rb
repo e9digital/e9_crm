@@ -60,8 +60,6 @@ class Contact < ActiveRecord::Base
   scope :by_company, lambda {|val| where(:company_id => val) }
 
   scope :tagged, lambda {|tags| 
-    tags = tags.split(',').map(&:strip).reject {|tag| tag.blank? }
-
     unless tags.blank?
       tagged_with(tags, :show_hidden => true, :any => true) 
     else
@@ -70,6 +68,7 @@ class Contact < ActiveRecord::Base
   }
 
   scope :search, lambda {|query|
+    select('distinct contacts.*').
     joins(:record_attributes).where(
       any_attrs_like_scope_conditions( :first_name, :last_name, :title, query).or(
         RecordAttribute.attr_like_scope_condition(:value, query)

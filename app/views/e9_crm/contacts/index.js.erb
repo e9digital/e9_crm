@@ -1,0 +1,4 @@
+<% new_title = @index_title || e9_t(:index_title) %>
+$('#records_table').html("<%= escape_javascript(render('table', :resources => collection)) %>");
+document.title = "<%= escape_javascript(meta_title(new_title)) %>";
+$("h1.title, ul.breadcrumbs li.last").html("<%= escape_javascript(new_title) %>");

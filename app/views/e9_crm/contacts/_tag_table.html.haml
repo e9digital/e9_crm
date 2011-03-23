@@ -1,0 +1,15 @@
+- tagged_params = Array.wrap(params[:tagged])
+%table.tag-table
+  %thead
+    %th{:colspan => 2}
+      = t(:tags_name, :scope => :e9_tags)
+  %tbody
+    - Tag.all.group_by {|t| t.name[0].upcase }.sort.each do |letter, tags|
+      %tr
+        %td.tag-starts-with= letter
+        %td.tags
+          %ul.tags
+            - tags.sort_by(&:name).each do |tag|; tag_id = "tagged-#{tag.name.dasherize}"
+              %li.tag
+                = label_tag(tag_id, tag.name)
+                = check_box_tag('tagged[]', tag.name, tagged_params.member?(tag.name), :id => tag_id)

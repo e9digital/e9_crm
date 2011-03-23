@@ -1,12 +1,14 @@
 class E9Crm::ContactsController < E9Crm::ResourcesController
   defaults :resource_class => Contact
 
+  respond_to :js, :html
+
   include E9Tags::Controller
 
   before_filter :determine_title, :only => :index
 
-  has_scope :search
-  has_scope :tagged
+  has_scope :search, :only => :index
+  has_scope :tagged, :only => :index, :type => :array
   has_scope :order, :only => :index, :default => 'first_name' do |c,s,v|
     # NOTE first_name ordering is currently forced
     s.order(:first_name)
@@ -20,10 +22,12 @@ class E9Crm::ContactsController < E9Crm::ResourcesController
   protected
 
   def determine_title
+    params.delete(:search) if params[:search].blank?
+
     @index_title ||= if params[:tagged] && params[:search]
-      e9_t(:index_title_with_search_and_tags, :tagged => params[:tagged], :search => params[:search])
+      e9_t(:index_title_with_search_and_tags, :tagged => params[:tagged].join(' or '), :search => params[:search])
     elsif params[:tagged]
-      e9_t(:index_title_with_tags, :tagged => params[:tagged])
+      e9_t(:index_title_with_tags, :tagged => params[:tagged].join(' or '))
     elsif params[:search]
       e9_t(:index_title_with_search, :search => params[:search])
     end
