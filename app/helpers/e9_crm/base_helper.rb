@@ -61,22 +61,6 @@ module E9Crm::BaseHelper
     }
   end
 
-  def phone_number_attribute_type_options
-    [ 'Home', 'Work', 'Mobile', 'Home Fax', 'Work Fax', 'Pager', 'Other' ]
-  end
-
-  def instant_messaging_handle_attribute_type_options
-    %w(AIM GoogleTalk ICQ IRC MSN Skype XMPP Yahoo)
-  end
-
-  def website_attribute_type_options
-    [ 'Home', 'Work', 'Home Page', 'FTP', 'Blog', 'Profile', 'Other' ]
-  end
-
-  def address_attribute_type_options
-    %w(Home Work Other)
-  end
-
   ##
   # Links
   #
@@ -92,7 +76,6 @@ module E9Crm::BaseHelper
   def records_table_links_for_contact(record)
     html_concat(crm_show_resource_link(record), crm_edit_resource_link(record), crm_delete_resource_link(record))
   end
-
 
   def link_to_add_record_attribute(association_name)
     link_to(
@@ -131,4 +114,11 @@ module E9Crm::BaseHelper
       :locals => { :f => builder }
     })
   end
+
+  def build_associated_resource(association_name)
+    params_method = "#{association_name}_build_parameters"
+    build_params = resource_class.send(params_method) if resource_class.respond_to?(params_method)
+    resource.send(association_name).build(build_params || {})
+  end
+
 end

@@ -1,3 +1,4 @@
 = render :layout => 'e9_crm/record_attributes/record_attribute', :locals => { :f => f } do
   = f.fields_for f.object.options do |ff|
-    = ff.select :type, website_attribute_type_options
+    .field
+      = ff.select :type, WebsiteAttribute.types

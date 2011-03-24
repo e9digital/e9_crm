@@ -13,21 +13,16 @@
     = f.label :title
     = f.text_field :title
 
-%fieldset.contact-user-fields
-  %legend= e9_t(:form_legend_user)
-  = f.label :users
-  - f.object.users.each do |user|
-    .field
-      .contact-user-email
-        = user.email
-      .contact-primary-user.radio
-        = f.label :primary_user_id
-        = f.radio_button :primary_user_id, user.id
-
 = render 'e9_tags/form', :f => f, :context => [:users, true]
 
 %fieldset.contact-contact-fields
   %legend= e9_t(:form_legend_contact)
+
+  %fieldset.nested-associations
+    %legend
+      %span= f.label(:users)
+      = link_to_add_record_attribute(:users)
+    = render_record_attribute_association(:users, f)
 
   %fieldset.nested-associations
     %legend

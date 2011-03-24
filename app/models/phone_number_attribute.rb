@@ -1,7 +1,3 @@
 class PhoneNumberAttribute < RecordAttribute
-  def to_s
-    retv = super
-    retv = "%s (%s)" % [retv, options.type] if options.type
-    retv
-  end
+  self.types = [ 'Home', 'Work', 'Mobile', 'Home Fax', 'Work Fax', 'Pager', 'Other' ]
 end

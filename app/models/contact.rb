@@ -3,54 +3,39 @@ class Contact < ActiveRecord::Base
   include E9Rails::ActiveRecord::AttributeSearchable
 
   ##
-  # Callbacks
-  #
-
-  #
-  # A contact should always have at least one "User", which at
-  # a minimum would be an unregistered User prospect.
-  #
-  # A contact should always designate one User as "primary"
-  # if it has Users.
-  #
-  after_save :find_or_create_associated_user_and_update_primary_user
-
-  ##
   # Associations
   #
-
-  #
-  # Destroying should nullify User's Contact relation, but leave
-  # the user intact.
-  #
-  # Oppositely, destroying a User should nullify the Contact's
-  # primary_user relation but leave the Contact intact.
-  #
-  has_many :users, :dependent => :nullify
-
-  belongs_to :primary_user, :class_name => 'User'
   belongs_to :company
+  has_many :users, :dependent => :nullify do
+    def primary
+      all.detect(&:primary?)
+    end
 
-  # record attribute assocations
+    def reset_primary!
+      each_with_index do |user, i|
+        user.options.primary = i == 0
+        user.save(:validate => false) if user.options_changed?
+      end
+    end
+  end
+
+  accepts_nested_attributes_for :users, :allow_destroy => true
+
   has_many :record_attributes, :as => :record
 
-  RECORD_ATTRIBUTES = %w[phone_number_attributes instant_messaging_handle_attributes website_attributes address_attributes]
-  RECORD_ATTRIBUTES.each do |association_name|
-    has_many association_name, :class_name => association_name.classify, :as => :record
-    accepts_nested_attributes_for association_name, :allow_destroy => true, :reject_if => :reject_record_attribute?
+  RECORD_ATTRIBUTES = %w[users phone_number_attributes instant_messaging_handle_attributes website_attributes address_attributes]
+  RECORD_ATTRIBUTES.select {|r| r =~ /attributes$/ }.each do |association_name|
+    has_many association_name.to_sym, :class_name => association_name.classify, :as => :record
+    accepts_nested_attributes_for association_name.to_sym, :allow_destroy => true, :reject_if => :reject_record_attribute?
   end
 
   ##
   # Validations
   #
 
-  validates :email, 
-            :presence     => true,
-            :uniqueness   => { :case_sensitive => false },
-            :email        => { :allow_blank => true },
-            :length       => { :maximum => 500 }
-  validates :first_name,
-            :length       => { :maximum => 25 }
+  validates :first_name,  :length   => { :maximum => 25 }
+
+  #validates_associated :users
 
   ##
   # Scopes
@@ -70,15 +55,11 @@ class Contact < ActiveRecord::Base
   scope :search, lambda {|query|
     select('distinct contacts.*').
     joins(:record_attributes).where(
-      any_attrs_like_scope_conditions( :first_name, :last_name, :title, query).or(
+      any_attrs_like_scope_conditions(:first_name, :last_name, :title, query).or(
         RecordAttribute.attr_like_scope_condition(:value, query)
       )
     )
   }
-
-  delegate :primary_email, :to => :primary_user, :allow_nil => true
-
-  delegate :name, :to => :company, :prefix => true, :allow_nil => true
 
   def company_name=(value)
     unless value.blank?
@@ -89,24 +70,14 @@ class Contact < ActiveRecord::Base
       end
     end
   end
+  delegate :name, :to => :company, :prefix => true, :allow_nil => true
 
   def name
     [first_name, last_name].join(' ')
   end
 
-  # Reset the primary user to the first user, ignoring
-  # the User passed as :reject option
-  #
-  def reset_primary_user!(options = {})
-    ids = user_ids.dup
-
-    if options[:reject].is_a?(User)
-      ids.reject! {|i| i == options[:reject].id }
-    end
-
-    if primary_user_id != ids.first
-      update_attribute(:primary_user_id, ids.first) 
-    end
+  def self.users_build_parameters
+    { :status => User::Status::PROSPECT }
   end
 
   protected
@@ -117,29 +88,7 @@ class Contact < ActiveRecord::Base
     end
 
     def reject_record_attribute?(attributes)
-      attributes[:value].blank?
-    end
-
-    def associated_user_parameters
-      {
-        :email => self.email,
-        :first_name => self.first_name,
-        :status => User::Status::PROSPECT
-      }
-    end
-
-    def find_or_create_associated_user_and_update_primary_user
-      if users.empty?
-        if existing_user = User.find_by_email(self.email)
-          users << existing_user 
-        else
-          users.create(associated_user_parameters)
-        end
-      end
-
-      if primary_user.blank? || !user_ids.member?(primary_user_id)
-        self.reset_primary_user!
-      end
+      attributes.keys.member?(:value) && attributes[:value].blank?
     end
 
 end

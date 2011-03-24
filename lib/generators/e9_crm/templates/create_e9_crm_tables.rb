@@ -22,22 +22,18 @@ class CreateE9CrmTables < ActiveRecord::Migration
 
     create_table :contacts, :force => true do |t|
       t.string :type
-      t.string :email
       t.string :first_name
       t.string :last_name
       t.string :title
       t.string :avatar
       t.references :company
-      t.references :primary_user
       t.timestamps
     end
-    add_index 'contacts', 'email'
 
     create_table :record_attributes, :force => true do |t|
       t.string :type
       t.references :record, :polymorphic => true
-      t.string :value
-      t.text :options
+      t.text :value, :options, :limit => 3.kilobytes
     end
 
     create_table :advertising_costs, :force => true do |t|
@@ -71,10 +67,12 @@ class CreateE9CrmTables < ActiveRecord::Migration
     end
 
     add_column :users, :contact_id, :integer rescue nil
+    add_column :users, :options, :text, :limit => 1.kilobyte rescue nil
   end
 
   def self.down
     remove_column :users, :contact_id rescue nil
+    remove_column :users, :options rescue nil
 
     drop_table :deals rescue nil
     drop_table :companies rescue nil
