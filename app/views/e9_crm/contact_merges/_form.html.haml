@@ -1,0 +1,10 @@
+= form_for @contact, :url => contact_merges_path do |f|
+  = hidden_field_tag :contact_a_id, @contact_a.id
+  = hidden_field_tag :contact_b_id, @contact_b.id
+
+  = render 'field', :column => :first_name, :f => f
+  = render 'field', :column => :last_name, :f => f
+  = render 'field', :column => :company_name, :f => f
+  = render 'field', :column => :title, :f => f
+  .actions
+    = f.submit

@@ -1,0 +1,10 @@
+.field
+  = f.label column
+  .contact-a-value
+    %label{:for => "contact_a_#{column}"}
+      = contact_a(column).presence || e9_t(:no_value)
+    = f.radio_button column, contact_a(column), :checked => (f.object.send(column) == contact_a(column) || f.object.send(column).blank?), :id => "contact_a_#{column}"
+  .contact-b-value
+    %label{:for => "contact_b_#{column}"}
+      = contact_b(column).presence || e9_t(:no_value)
+    = f.radio_button column, contact_b(column), :id => "contact_b_#{column}"

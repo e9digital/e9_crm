@@ -17,6 +17,40 @@ class ActiveRecord::Base
   end
 end
 
+module E9Crm
+  class LabeledString < String
+    attr_reader :label
+
+    def initialize(label, *args)
+      @label = label if label.is_a?(Symbol)
+      super(*args)
+    end
+
+    def method_missing(method_name, *args)
+      if @label && method_name.to_s[-1,1] == '?'
+        method_name.to_s[0..-2] == @label.to_s
+      else
+        super
+      end
+    end
+  end
+end
+
+module ActiveModel
+
+  class Errors
+    alias :default_add :add
+
+    # Errors#add accepts a Proc or a Symbol for message (or defaults to :invalid)
+    # so this is hack isn't always useful, but for my purposes I want to know that
+    # :taken was added to a User#email, and this is good enough.
+    def add(attribute, message = nil, options = {})
+      default_add(attribute, message, options)
+
+      self[attribute] << E9Crm::LabeledString.new(message, self[attribute].pop)
+    end
+  end
+end
 
 module E9Crm
   #

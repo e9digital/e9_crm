@@ -4,10 +4,10 @@ Rails.application.routes.draw do
   scope :path => crm_path, :module => :e9_crm do
     resources :campaign_groups, :except => :show, :controller => 'campaign_groups'
     resources :deals,           :except => :show, :controller => 'deals'
+    resources :companies,       :except => :show, :controller => 'companies'
     resources :contacts,        :except => :show, :controller => 'contacts' do
       collection { get :templates }
     end
-    resources :companies,       :except => :show, :controller => 'companies'
 
     resources :campaigns, :only  => :index, :controller => 'campaigns' 
     scope :path => :campaigns do
@@ -17,6 +17,9 @@ Rails.application.routes.draw do
       resources :email_campaigns, :path => 'email', :except => [:show], :controller => 'campaigns', :defaults => { :campaign_type => 'email' }
     end
   end
+
+  get  "/#{crm_path}/merge_contacts/:contact_a_id/and/:contact_b_id", :as => :new_contact_merge, :to => 'e9_crm/contact_merges#new'
+  post "/#{crm_path}/merge_contacts", :as => :contact_merges, :to => 'e9_crm/contact_merges#create'
 
   # redirect shows to edits
   get "/#{crm_path}/campaign_groups/:id", :to => redirect("/#{crm_path}/campaign_groups/%{id}/edit"), :constraints => { :id => /\d+/ }

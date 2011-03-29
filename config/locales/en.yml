@@ -7,20 +7,17 @@ en:
     destroy_record_attribute: Remove
 
   activerecord:
-    # You can define own errors for models or model attributes.
-    # The values :model, :attribute and :value are always available for interpolation.
-    #
-    # For example,
-    #   models:
-    #     user:
-    #       blank: "This is a custom blank message for %{model}: %{attribute}"
-    #       attributes:
-    #         login:
-    #           blank: "This is a custom blank message for User login"
-    # Will define custom blank validation message for User model and 
-    # custom blank validation message for login attribute of User model.
+    errors:
+      messages:
+        merge_required: 'Merge Required! <a href="%{merge_path}">MERGE ME</a>.'
 
-    # Translate model names. Used in Model.human_name().
+      models:
+        contact:
+          attributes:
+            users:
+              taken: "Two or more of the login accounts entered share a duplicate email."
+              invalid: "One or more of the emails you entered is invalid."
+
     models:
       sales_campaign: Sales Campaign
       email_campaign: Email Campaign
@@ -34,7 +31,6 @@ en:
       page_view: Page View
       tracking_cookie: Tracking Cookie
     
-    # Translate model attribute names. Used in Model.human_attribute_name(attribute).
     attributes:
       campaign:
         name: Name

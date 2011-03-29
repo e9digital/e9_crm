@@ -2,6 +2,9 @@ class Contact < ActiveRecord::Base
   include E9Tags::Model
   include E9Rails::ActiveRecord::AttributeSearchable
 
+  # necessary so contact knows its merge path
+  include Rails.application.routes.url_helpers
+
   ##
   # Associations
   #
@@ -18,12 +21,12 @@ class Contact < ActiveRecord::Base
       end
     end
   end
-
   accepts_nested_attributes_for :users, :allow_destroy => true
 
   has_many :record_attributes, :as => :record
-
   RECORD_ATTRIBUTES = %w[users phone_number_attributes instant_messaging_handle_attributes website_attributes address_attributes]
+  # NOTE Mind the hack here, "users" are "attributes" but not added in this loop.  This was so the RECORD_ATTRIBUTES constant
+  #      would include :users (for building the templates.js).
   RECORD_ATTRIBUTES.select {|r| r =~ /attributes$/ }.each do |association_name|
     has_many association_name.to_sym, :class_name => association_name.classify, :as => :record
     accepts_nested_attributes_for association_name.to_sym, :allow_destroy => true, :reject_if => :reject_record_attribute?
@@ -34,8 +37,6 @@ class Contact < ActiveRecord::Base
   #
 
   validates :first_name,  :length   => { :maximum => 25 }
-
-  #validates_associated :users
 
   ##
   # Scopes
@@ -80,8 +81,61 @@ class Contact < ActiveRecord::Base
     { :status => User::Status::PROSPECT }
   end
 
-  protected
+  def valid?(context = nil)
+    #
+    # NOTE #valid? manages duplicate users and is a destructive process!
+    # TODO move the logic that deletes/manages duplicate email'd users out of 
+    #      #valid?, which probably should not be destructive
+    #
+    # When checking for validity, we're also checking to see if Users are being added
+    # which have emails that already exist in the database.  If one is found, one of
+    # two things will happen, depending on whether or not that User already has a
+    # Contact record.  
+    #
+    # A.) If it does, the validation will return false immediately and add an error 
+    #     suggesting a Contact merge.
+    #
+    # B.) If it does not, no error will be added, but the offending "user" association
+    #     will be deleted and the Contact will be related to the pre-existing User with 
+    #     that email.
+    #
+    # If more than one user associations are passed with the same email, it will be treated 
+    # as a normal uniqueness error, until all emails passed are unique. At which time we
+    # go back to the A/B scenario above.
+    #
+    super || begin
+      if errors[:"users.email"].present?
+        errors.delete(:"users.email")
 
+        users.dup.each_with_index do |user, i|
+          user.errors[:email].each do |error|
+            if error.taken? && users.select {|u| u.email == user.email }.length == 1
+              existing_user = User.find_by_email(user.email)
+
+              if contact = existing_user.contact
+                errors.add(:users, :merge_required, :email => user.email, :merge_path => new_contact_merge_path(self, contact))
+                return false
+              else
+                self.users.delete(user)
+                self.users << existing_user
+              end
+            else
+              if error.label
+                errors.add(:users, error.label.to_sym, :email => user.email)
+              else
+                errors.add(:users, nil, :message => error, :email => user.email)
+              end
+            end
+          end
+        end
+
+        errors[:users].uniq!
+        errors[:users].empty?
+      end
+    end
+  end
+
+  protected
     # override has_destroy_flag? to force destroy on persisted associations as well
     def has_destroy_flag?(hash)
       reject_record_attribute?(hash) || super 

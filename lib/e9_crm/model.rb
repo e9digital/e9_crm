@@ -15,7 +15,7 @@ module E9Crm
       has_many :page_views, :through => :tracking_cookies
 
       before_save :set_as_primary_if_peerless
-      after_create :create_contact
+      after_create :create_contact_if_missing
       after_destroy :cleanup_contact
     end
 
@@ -26,6 +26,17 @@ module E9Crm
 
     protected
 
+      def set_as_primary_if_peerless
+        if contact.blank? || contact.users.primary.blank?
+          self.options.primary = true
+        elsif contact_id_changed?
+          self.options.primary = false
+        end
+
+        # return true so we don't stop the save
+        true
+      end
+
       def create_contact_parameters
         {
           :first_name => self.first_name,
@@ -33,18 +44,8 @@ module E9Crm
         }
       end
 
-      def set_as_primary_if_peerless
-        if contact.blank? || contact.users.primary.blank?
-          Rails.logger.error("***********************************")
-          Rails.logger.error("USERS #{contact.users.inspect}")
-          Rails.logger.error("OPTIONS #{contact.users.map(&:options)}")
-          Rails.logger.error("***********************************")
-          self.options.primary = true
-        end
-      end
-
-      def create_contact
-        unless contact.present?
+      def create_contact_if_missing
+        if contact.blank?
           create_contact(create_contact_parameters)
         end
       end
