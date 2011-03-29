@@ -1,6 +1,7 @@
 en:
-  search: Search
+  clear: Clear
   go: Go
+  search: Search
 
   e9_crm:
     add_record_attribute: Add

@@ -14,8 +14,7 @@ module E9Crm
       has_many :tracking_cookies, :class_name => 'TrackingCookie'
       has_many :page_views, :through => :tracking_cookies
 
-      before_save :set_as_primary_if_peerless
-      after_create :create_contact_if_missing
+      before_create :create_contact_if_missing
       after_destroy :cleanup_contact
     end
 
@@ -25,17 +24,6 @@ module E9Crm
     end
 
     protected
-
-      def set_as_primary_if_peerless
-        if contact.blank? || contact.users.primary.blank?
-          self.options.primary = true
-        elsif contact_id_changed?
-          self.options.primary = false
-        end
-
-        # return true so we don't stop the save
-        true
-      end
 
       def create_contact_parameters
         {
@@ -51,7 +39,9 @@ module E9Crm
       end
 
       def cleanup_contact
-        contact.users.reset_primary! if contact
+        # NOTE this is called after_delete, reload the contact to clear the deleted
+        #      user from the contact's #users
+        contact.reload.users.reset_primary! if self.primary? && contact.present?
       end
 
   end

@@ -24,6 +24,6 @@ Gem::Specification.new do |s|
   s.add_dependency("has_scope")
   s.add_dependency("money")
   s.add_dependency("e9_rails", "~> 0.0.5")
-  s.add_dependency("e9_tags", "~> 0.0.4")
+  s.add_dependency("e9_tags", "~> 0.0.6")
   s.add_dependency("will_paginate")
 end

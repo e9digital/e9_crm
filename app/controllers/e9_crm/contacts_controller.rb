@@ -15,9 +15,17 @@ class E9Crm::ContactsController < E9Crm::ResourcesController
   end
 
   # record attributes templates js
-  skip_before_filter :authenticate_user!, :only => :templates
+  skip_before_filter :authenticate_user!, :filter_access_filter, :only => :templates
   before_filter :build_resource, :only => :templates
   caches_action :templates
+
+  def update
+    update! { collection_path }
+  end
+
+  def create
+    create! { collection_path }
+  end
 
   protected
 

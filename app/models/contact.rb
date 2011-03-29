@@ -5,20 +5,54 @@ class Contact < ActiveRecord::Base
   # necessary so contact knows its merge path
   include Rails.application.routes.url_helpers
 
+  before_validation :ensure_user_references
+  before_save :reset_primary_user
+
   ##
   # Associations
   #
   belongs_to :company
   has_many :users, :dependent => :nullify do
     def primary
-      all.detect(&:primary?)
+      detect(&:primary?)
     end
 
-    def reset_primary!
-      each_with_index do |user, i|
-        user.options.primary = i == 0
-        user.save(:validate => false) if user.options_changed?
+    def reset_primary(options = {})
+      return if empty?
+      options.symbolize_keys!
+      options.slice!(:id, :index, :save)
+
+      should_save = options.delete(:save)
+
+      if options.empty?
+        if p = primary
+          options[:id] = p.id
+        else
+          options[:index] = 0
+        end
       end
+
+      each_with_index do |user, i|
+        if options[:id]
+          user.options.primary = options[:id] == user.id
+        else
+          user.options.primary = options[:index] == i
+        end
+
+        user.save(:validate => false) if should_save && user.options_changed?
+      end
+    end
+
+    def reset_primary!(options = {})
+      reset_primary options.merge(:save => true)
+    end
+
+    def clear_primary(options = {})
+      reset_primary options.merge(:index => -1)
+    end
+
+    def clear_primary!
+      clear_primary :save => true 
     end
   end
   accepts_nested_attributes_for :users, :allow_destroy => true
@@ -36,7 +70,8 @@ class Contact < ActiveRecord::Base
   # Validations
   #
 
-  validates :first_name,  :length   => { :maximum => 25 }
+  validates :first_name, :presence => true,
+                         :length   => { :maximum => 25 }
 
   ##
   # Scopes
@@ -54,8 +89,8 @@ class Contact < ActiveRecord::Base
   }
 
   scope :search, lambda {|query|
-    select('distinct contacts.*').
-    joins(:record_attributes).where(
+    # NOTE to_sql on this query doesn't read what it actually executes, including the join...
+    includes(:record_attributes).where(
       any_attrs_like_scope_conditions(:first_name, :last_name, :title, query).or(
         RecordAttribute.attr_like_scope_condition(:value, query)
       )
@@ -63,12 +98,14 @@ class Contact < ActiveRecord::Base
   }
 
   def company_name=(value)
-    unless value.blank?
+    if value.present?
       if existing_company = Company.find_by_name(value)
         self.company = existing_company
       else
         self.build_company(:name => value)
       end
+    else
+      self.company = nil
     end
   end
   delegate :name, :to => :company, :prefix => true, :allow_nil => true
@@ -79,6 +116,18 @@ class Contact < ActiveRecord::Base
 
   def self.users_build_parameters
     { :status => User::Status::PROSPECT }
+  end
+
+  def merge_and_destroy!(other_contact)
+    other_contact.users.clear_primary!
+
+    self.users |= other_contact.users
+    self.website_attributes |= other_contact.website_attributes
+    self.address_attributes |= other_contact.address_attributes
+    self.phone_number_attributes |= other_contact.phone_number_attributes
+    self.instant_messaging_handle_attributes |= other_contact.instant_messaging_handle_attributes
+
+    other_contact.destroy
   end
 
   def valid?(context = nil)
@@ -136,6 +185,15 @@ class Contact < ActiveRecord::Base
   end
 
   protected
+
+    def ensure_user_references
+      users.each {|u| u.contact = self }
+    end
+
+    def reset_primary_user
+      users.reset_primary
+    end
+
     # override has_destroy_flag? to force destroy on persisted associations as well
     def has_destroy_flag?(hash)
       reject_record_attribute?(hash) || super 

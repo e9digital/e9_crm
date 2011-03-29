@@ -2,8 +2,11 @@ class E9Crm::ContactMergesController < E9Crm::BaseController
   before_filter :build_resources
 
   def create
-    if @contact.update_attributes(params[:contact])
-
+    if @contact_a.update_attributes(params[:contact])
+      @contact_a.merge_and_destroy!(@contact_b)
+      redirect_to @contact_a
+    else
+      render :new
     end
   end
 

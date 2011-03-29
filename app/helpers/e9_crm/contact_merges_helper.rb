@@ -10,6 +10,8 @@ module E9Crm::ContactMergesHelper
   end
 
   def merge_contact_val(obj, field_name)
-    obj.send(field_name)
+    # return '' here rather than nil so inputs will have a value, otherwise checked
+    # with no value ends up being interpreted as "on"
+    obj.send(field_name) || ''
   end
 end
