@@ -18,10 +18,15 @@ en:
             users:
               taken: "Two or more of the login accounts entered share a duplicate email."
               invalid: "One or more of the emails you entered is invalid."
+        contact_email:
+          attributes:
+            user_ids:
+              blank: "You cannot send an email with no recipients!"
 
     models:
       sales_campaign: Sales Campaign
       email_campaign: Email Campaign
+      email_template: Email Template
       affiliate_campaign: Affiliate Campaign
       advertising_campaign: Advertising Campaign
       campaign: Campaign

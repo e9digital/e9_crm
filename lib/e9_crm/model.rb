@@ -14,13 +14,14 @@ module E9Crm
       has_many :tracking_cookies, :class_name => 'TrackingCookie'
       has_many :page_views, :through => :tracking_cookies
 
+      scope :primary, lambda { where(arel_table[:options].matches("%primary: true%")) }
+
       before_create :create_contact_if_missing
       after_destroy :cleanup_contact
     end
 
     def primary?
-      # NOTE this is probably always "true" in the current impl
-      ["true", 1, '1', true].member?(options.primary)
+      !!options.primary
     end
 
     protected

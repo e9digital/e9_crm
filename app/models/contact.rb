@@ -13,10 +13,6 @@ class Contact < ActiveRecord::Base
   #
   belongs_to :company
   has_many :users, :dependent => :nullify do
-    def primary
-      detect(&:primary?)
-    end
-
     def reset_primary(options = {})
       return if empty?
       options.symbolize_keys!
@@ -25,7 +21,7 @@ class Contact < ActiveRecord::Base
       should_save = options.delete(:save)
 
       if options.empty?
-        if p = primary
+        if p = primary.first
           options[:id] = p.id
         else
           options[:index] = 0
@@ -88,9 +84,25 @@ class Contact < ActiveRecord::Base
     end
   }
 
+  # NOTE contact#search feels terribly fragile and needs work.  
+  #
+  # The issue lies in the need to outer join record_attributes because the 
+  # join is optional.
+  #
+  # We end up with multiple rows per Contact.  This could be solved
+  # by a distinct select, but that breaks when we need to do things
+  # like User.joins(:contact) & Contact.search("whatever")
+  #
+  # While it's like this, note that #search groups (hardcoded on "contacts")
+  #
   scope :search, lambda {|query|
-    # NOTE to_sql on this query doesn't read what it actually executes, including the join...
-    includes(:record_attributes).where(
+    join_sql = %{
+      LEFT OUTER JOIN record_attributes 
+        ON record_attributes.record_id = contacts.id
+        AND record_attributes.record_type = 'Contact'
+    }
+
+    joins(join_sql).group('contacts.id').where(
       any_attrs_like_scope_conditions(:first_name, :last_name, :title, query).or(
         RecordAttribute.attr_like_scope_condition(:value, query)
       )

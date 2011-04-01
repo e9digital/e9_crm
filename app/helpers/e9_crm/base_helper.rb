@@ -30,6 +30,10 @@ module E9Crm::BaseHelper
     link_to(text || query, contacts_path(attribute => query), :class => "contact-search contact-#{attribute.to_s.dasherize}-search")
   end
 
+  def email_template_select_options
+    options_for_select( EmailTemplate.order('name').map {|e| [e.name, e.id] })
+  end
+
   ##
   # Field maps
   #

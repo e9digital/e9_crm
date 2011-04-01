@@ -3,11 +3,13 @@ Rails.application.routes.draw do
 
   scope :path => crm_path, :module => :e9_crm do
     resources :campaign_groups, :except => :show, :controller => 'campaign_groups'
-    resources :deals,           :except => :show, :controller => 'deals'
     resources :companies,       :except => :show, :controller => 'companies'
     resources :contacts,        :except => :show, :controller => 'contacts' do
       collection { get :templates }
     end
+    resources :email_templates, :except => :show, :controller => 'email_templates'
+    resources :contact_emails, :except => :show, :controller => 'contact_emails'
+    resources :deals, :except => :show, :controller => 'deals'
 
     resources :campaigns, :only  => :index, :controller => 'campaigns' 
     scope :path => :campaigns do

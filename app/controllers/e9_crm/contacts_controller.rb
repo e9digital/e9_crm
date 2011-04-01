@@ -6,6 +6,7 @@ class E9Crm::ContactsController < E9Crm::ResourcesController
   include E9Tags::Controller
 
   before_filter :determine_title, :only => :index
+  before_filter :load_user_ids, :only => :index
 
   has_scope :search, :only => :index
   has_scope :tagged, :only => :index, :type => :array
@@ -19,15 +20,13 @@ class E9Crm::ContactsController < E9Crm::ResourcesController
   before_filter :build_resource, :only => :templates
   caches_action :templates
 
-  def update
-    update! { collection_path }
-  end
-
-  def create
-    create! { collection_path }
-  end
-
   protected
+
+  def load_user_ids
+    @user_ids ||= begin
+      (User.primary.joins(:contact) & end_of_association_chain.scoped).all.map(&:id).join(',')
+    end
+  end
 
   def determine_title
     params.delete(:search) if params[:search].blank?

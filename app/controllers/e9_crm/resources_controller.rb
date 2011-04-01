@@ -2,20 +2,22 @@ class E9Crm::ResourcesController < E9Crm::BaseController
   include E9Rails::Helpers::ResourceErrorMessages
   include E9Rails::Helpers::Pagination
 
+  include Orderable
+
   inherit_resources
 
   add_resource_breadcrumbs
 
-  class << self
-    #
-    # InheritedResources wants to namespace its helper routes based on the controller, 
-    # and would prefix all routes by default.  But our routes are not namepaced, so we
-    # override the route_prefix back to null.  (Otherwise IR will attempt to resolve
-    # paths like e9_crm_contacts_path, etc, whereas the path is simply contacts_path)
-    #
-    def defaults(hash = {})
-      super hash.reverse_merge(:route_prefix => nil)
-    end
+  def self.defaults(hash = {})
+    super(hash.reverse_merge(:route_prefix => nil))
+  end
+
+  def create
+    create! { collection_path }
+  end
+
+  def update
+    update! { collection_path }
   end
 
   protected
@@ -27,5 +29,13 @@ class E9Crm::ResourcesController < E9Crm::BaseController
 
   def collection
     get_collection_ivar || set_collection_ivar(end_of_association_chain.paginate(pagination_parameters))
+  end
+
+  def default_ordered_on
+    'created_at'
+  end
+
+  def default_ordered_dir
+    'DESC'
   end
 end

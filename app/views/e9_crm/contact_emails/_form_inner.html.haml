@@ -1,0 +1,11 @@
+= f.hidden_field :name
+= f.hidden_field :user_ids
+.field
+  = f.label :from_email, nil, :class => :req
+  = f.text_field :from_email
+.field
+  = f.label :subject, nil, :class => :req
+  = f.text_field :subject
+.field
+  = f.label :text_body, nil, :class => :req
+  = f.text_area :text_body
