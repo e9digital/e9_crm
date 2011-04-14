@@ -2,6 +2,7 @@ Rails.application.routes.draw do
   crm_path = 'admin/crm'
 
   scope :path => crm_path, :module => :e9_crm do
+    resources :campaign_codes,  :except => :show, :controller => 'campaign_codes'
     resources :campaign_groups, :except => :show, :controller => 'campaign_groups'
     resources :companies,       :except => :show, :controller => 'companies'
     resources :contacts,        :except => :show, :controller => 'contacts' do

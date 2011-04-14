@@ -16,6 +16,8 @@ en:
         form_legend_user: Login Accounts
         send_email_template: Send Email
         send_email_newsletter: Send Newsletter
+        contact_newsletter_confirmation: "The system will send the newsletter to all of the selected contacts (%{count}) if they are subscribed to receieve email.  Are you sure you want to proceed?"
+        no_contacts_notification: "Either no contacts are selected, or none of those selected have configured primary emails."
       contact_merges:
         new_title: Merge Contacts
         no_value: (No Value)

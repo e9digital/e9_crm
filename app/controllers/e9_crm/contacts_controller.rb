@@ -24,7 +24,7 @@ class E9Crm::ContactsController < E9Crm::ResourcesController
 
   def load_user_ids
     @user_ids ||= begin
-      (User.primary.joins(:contact) & end_of_association_chain.scoped).all.map(&:id).join(',')
+      (User.primary.joins(:contact) & end_of_association_chain.scoped).all.map(&:id)
     end
   end
 

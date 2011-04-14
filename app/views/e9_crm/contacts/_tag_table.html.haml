@@ -4,7 +4,7 @@
     %th{:colspan => 2}
       = t(:tags_name, :scope => :e9_tags)
   %tbody
-    - Tag.all.group_by {|t| t.name[0].upcase }.sort.each do |letter, tags|
+    - Tagging.where(:context => E9Tags.escape_context('users*')).joins(:tag).all.group_by {|t| t.name[0].upcase }.sort.each do |letter, tags|
       %tr
         %td.tag-starts-with= letter
         %td.tags

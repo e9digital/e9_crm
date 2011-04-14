@@ -34,6 +34,10 @@ module E9Crm::BaseHelper
     options_for_select( EmailTemplate.order('name').map {|e| [e.name, e.id] })
   end
 
+  def newsletter_select_options
+    options_for_select( UserEmail.pending.order('name').map {|e| [e.name, e.id] })
+  end
+
   ##
   # Field maps
   #
