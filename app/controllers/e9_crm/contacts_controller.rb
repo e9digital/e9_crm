@@ -1,19 +1,15 @@
 class E9Crm::ContactsController < E9Crm::ResourcesController
   defaults :resource_class => Contact
 
-  respond_to :js, :html
-
   include E9Tags::Controller
+
+  respond_to :js, :html
 
   before_filter :determine_title, :only => :index
   before_filter :load_user_ids, :only => :index
 
-  has_scope :search, :only => :index
+  has_scope :search, :by_title, :by_company, :only => :index
   has_scope :tagged, :only => :index, :type => :array
-  has_scope :order, :only => :index, :default => 'first_name' do |c,s,v|
-    # NOTE first_name ordering is currently forced
-    s.order(:first_name)
-  end
 
   # record attributes templates js
   skip_before_filter :authenticate_user!, :filter_access_filter, :only => :templates
@@ -38,5 +34,13 @@ class E9Crm::ContactsController < E9Crm::ResourcesController
     elsif params[:search]
       e9_t(:index_title_with_search, :search => params[:search])
     end
+  end
+
+  def default_ordered_on
+    'first_name'
+  end
+
+  def default_ordered_at
+    'ASC'
   end
 end
