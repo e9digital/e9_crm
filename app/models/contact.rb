@@ -100,12 +100,14 @@ class Contact < ActiveRecord::Base
       LEFT OUTER JOIN record_attributes 
         ON record_attributes.record_id = contacts.id
         AND record_attributes.record_type = 'Contact'
+      LEFT OUTER JOIN users
+        ON users.contact_id = contacts.id
     }
 
     joins(join_sql).group('contacts.id').where(
-      any_attrs_like_scope_conditions(:first_name, :last_name, :title, query).or(
-        RecordAttribute.attr_like_scope_condition(:value, query)
-      )
+      any_attrs_like_scope_conditions(:first_name, :last_name, :title, query)
+        .or(RecordAttribute.attr_like_scope_condition(:value, query))
+        .or(User.attr_like_scope_condition(:email, query))
     )
   }
 
