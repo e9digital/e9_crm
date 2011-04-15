@@ -6,7 +6,7 @@ module E9Crm::BaseHelper
 
   def html_concat(*chunks)
     ''.html_safe.tap do |html|
-      chunks.each {|chunk| html.safe_concat(chunk) }
+      chunks.each {|chunk| html.safe_concat("#{chunk}\n") }
     end
   end
 
