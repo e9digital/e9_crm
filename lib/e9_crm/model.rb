@@ -9,7 +9,7 @@ module E9Crm
       self.options_parameters = [:type, :primary]
 
       class_inheritable_accessor :email_types
-      self.email_types = %w(Home Work Other)
+      self.email_types = %w(Personal Work Other)
 
       has_many :tracking_cookies, :class_name => 'TrackingCookie'
       has_many :page_views, :through => :tracking_cookies
@@ -35,6 +35,9 @@ module E9Crm
 
       def create_contact_if_missing
         if contact.blank?
+          # when creating a contact we should assume we're the primary email
+          self.options.primary = true
+
           create_contact(create_contact_parameters)
         end
       end
