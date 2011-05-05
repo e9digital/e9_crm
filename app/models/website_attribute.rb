@@ -1,3 +1,4 @@
+# Attribute for related websites, e.g. Facebook Page, Personal Website
+#
 class WebsiteAttribute < RecordAttribute
-  self.types = [ 'Home', 'Work', 'Home Page', 'FTP', 'Blog', 'Profile', 'Other' ]
 end

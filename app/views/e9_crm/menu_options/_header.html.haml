@@ -1,0 +1,8 @@
+.toolbar
+  .toolbar-left
+    %form{:action => menu_options_path, :method => :get, :id => 'menu_option_key_select_form'}
+      = label_tag 'menu_option_key_select', t(:view)
+      = select_tag 'key', options_for_select(MenuOption::KEYS.sort, params[:key]), :id => 'menu_option_key_select'
+      = submit_tag t(:go), :name => nil
+  .toolbar-right
+    = crm_new_resource_link(MenuOption, :menu_option => {:key => params[:key]})

@@ -18,6 +18,12 @@ class ActiveRecord::Base
 end
 
 module E9Crm
+  #
+  # Simple string subclass that lets you query the string against
+  # a "label" it was initialized with. e.g. 
+  #
+  #   LabeledString.new(:omfg, 'whatever').omfg? #=> true
+  #
   class LabeledString < String
     attr_reader :label
 
@@ -37,13 +43,20 @@ module E9Crm
 end
 
 module ActiveModel
-
   class Errors
     alias :default_add :add
 
+    # Monkeypatch add to replace the error message with a LabeledString, which
+    # simply changes method missing to respond to methods ending with '?' by
+    # checking to see if their label matches the method.
+    #
+    # This makes it easy to check an error's message for what error symbol it
+    # was generated for, e.g. :invalid, by calling #invalid? on it.
+    #
     # Errors#add accepts a Proc or a Symbol for message (or defaults to :invalid)
-    # so this is hack isn't always useful, but for my purposes I want to know that
-    # :taken was added to a User#email, and this is good enough.
+    # so this is hack isn't always useful, but for my purposes I want to know when
+    # a :taken error was added to a User#email, and this is good enough.
+    #
     def add(attribute, message = nil, options = {})
       default_add(attribute, message, options)
 

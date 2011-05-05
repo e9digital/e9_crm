@@ -1,3 +1,4 @@
+# An instant messaging handle type, e.g. AIM, Skype
+#
 class InstantMessagingHandleAttribute < RecordAttribute
-  self.types = %w(AIM GoogleTalk ICQ IRC MSN Skype XMPP Yahoo)
 end

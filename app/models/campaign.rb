@@ -1,15 +1,27 @@
+# The base campaign class
+#
+# A Campaign is created with a unique code, which in turn generates PageViews,
+# which maybe become Leads (Offers), which may result in Deals.
+#
 class Campaign < ActiveRecord::Base
   include E9Rails::ActiveRecord::STI
 
   belongs_to :campaign_group
+  has_many   :deals
+  #has_many   :leads
   has_many   :page_views,       :foreign_key => :code, :primary_key => :code
   has_many   :tracking_cookies, :foreign_key => :code, :primary_key => :code, :class_name => 'TrackingCookie'
 
-  validates  :code, :length     => { :maximum => 32 }, 
+  validates  :code, :presence   => true
+                    :length     => { :maximum => 32 }, 
                     :uniqueness => { :ignore_case => true }
 
+  ##
+  # The sum cost of this campaign
+  # (Must be implemented by subclasses)
+  #
   def cost
-    Money.new(100)
+    raise NotImplementedError
   end
 
   module Status

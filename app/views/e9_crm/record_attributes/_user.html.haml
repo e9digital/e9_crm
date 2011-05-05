@@ -11,8 +11,9 @@
       = f.email_field :email
 
   = f.fields_for f.object.options do |ff|
-    .field
-      = ff.select :type, User.email_types
+    - if (types = User.email_types).present?
+      .field
+        = ff.select :type, types
     .field.radio
       = ff.label :primary
       = ff.radio_button :primary, true

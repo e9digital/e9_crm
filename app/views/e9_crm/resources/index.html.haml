@@ -2,7 +2,12 @@
 
 = render 'header'
 
-%div#records_table
-  = render 'table', :resources => collection
+- if sortable_controller?
+  = form_tag polymorphic_path([:update_order, resource_class]) do
+    %div#records_table
+      = render 'table', :resources => collection
+- else
+  %div#records_table
+    = render 'table', :resources => collection
 
 = render 'footer'

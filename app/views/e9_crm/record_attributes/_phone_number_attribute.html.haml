@@ -1,4 +1,5 @@
 = render :layout => 'e9_crm/record_attributes/record_attribute', :locals => { :f => f } do
-  = f.fields_for f.object.options do |ff|
-    .field
-      = ff.select :type, PhoneNumberAttribute.types
+  - if (types = PhoneNumberAttribute.types).present?
+    = f.fields_for f.object.options do |ff|
+      .field
+        = ff.select :type, types

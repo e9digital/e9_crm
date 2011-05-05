@@ -1,3 +1,4 @@
+# Attribute for address info
+#
 class AddressAttribute < RecordAttribute
-  self.types = %w(Home Work Other)
 end

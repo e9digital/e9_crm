@@ -1,10 +1,13 @@
+# A ContactEmail is a one time mail generated from an EmailTemplate, sent not to a 
+# list, but to a set of user_ids.
+#
 class ContactEmail < Email
   include ScheduledEmail
   before_save :generate_html_body_from_text_body
 
-  # NOTE perhaps contact_email should validate contact ids?
-  #      then again, then you'd need to ensure the contacts
-  #      had primary email addresses
+  # NOTE perhaps contact_email should validate contact ids?  Then again, 
+  #      then it would be necessary to ensure the contacts had primary email 
+  #      addresses
   validates :user_ids, :presence => true
 
   after_create :send_to_user_ids
@@ -40,7 +43,7 @@ class ContactEmail < Email
   protected
 
   def send_to_user_ids
-    Rails.logger.info("SENDING : #{user_ids}")
+    Rails.logger.info("ContactEmail##{id} sending to user ids #{user_ids}")
     send!(user_ids)
   end
 end

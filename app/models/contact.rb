@@ -13,6 +13,21 @@ class Contact < ActiveRecord::Base
   #
   belongs_to :company
   has_many :users, :dependent => :nullify do
+
+    ##
+    # Resets the primary user on a contact
+    #
+    # == Parameters
+    #
+    # [options (Hash)] An options hash containing either the :id or :index
+    #                  of the User to set as primary.  If neither is set it
+    #                  will default the first User designated primary in the
+    #                  list, or the first user in the list if no such user
+    #                  exists.
+    #
+    #                  Also accepts a :save option, which will force save
+    #                  the User with no validation.
+    #
     def reset_primary(options = {})
       return if empty?
       options.symbolize_keys!
@@ -39,14 +54,25 @@ class Contact < ActiveRecord::Base
       end
     end
 
+    ##
+    # Resets the primary User, forcing :save
+    #
     def reset_primary!(options = {})
       reset_primary options.merge(:save => true)
     end
 
+    ##
+    # Clears all users of primary status, used when merging/resetting Contacts.
+    # Does not force save.
+    #
     def clear_primary(options = {})
       reset_primary options.merge(:index => -1)
     end
 
+    ##
+    # Clears all users of primary status, used when merging/resetting Contacts,
+    # Fores save.
+    #
     def clear_primary!
       clear_primary :save => true 
     end
@@ -65,19 +91,15 @@ class Contact < ActiveRecord::Base
   ##
   # Validations
   #
-
-  validates :first_name, :presence => true,
-                         :length   => { :maximum => 25 }
+  validates :first_name, :presence => true, :length => { :maximum => 25 }
 
   ##
   # Scopes
   #
-
   scope :by_title, lambda {|val| where(:title => val) }
   scope :by_company, lambda {|val| where(:company_id => val) }
-
   scope :tagged, lambda {|tags| 
-    unless tags.blank?
+    if tags.present?
       tagged_with(tags, :show_hidden => true, :any => true) 
     else
       where("1=0")
@@ -111,6 +133,9 @@ class Contact < ActiveRecord::Base
     )
   }
 
+  ##
+  # Setting company name will attempt to find a Company or create a new one
+  #
   def company_name=(value)
     if value.present?
       if existing_company = Company.find_by_name(value)
@@ -124,21 +149,25 @@ class Contact < ActiveRecord::Base
   end
   delegate :name, :to => :company, :prefix => true, :allow_nil => true
 
+  ##
+  # Helper to concatenate a Contact's full name
+  #
   def name
     [first_name, last_name].join(' ')
   end
 
-  def self.users_build_parameters
+  # The parameters for building the JS template for associated users
+  def self.users_build_parameters # :nodoc:
     { :status => User::Status::PROSPECT }
   end
 
   def merge_and_destroy!(other_contact)
     other_contact.users.clear_primary!
 
-    self.users |= other_contact.users
-    self.website_attributes |= other_contact.website_attributes
-    self.address_attributes |= other_contact.address_attributes
-    self.phone_number_attributes |= other_contact.phone_number_attributes
+    self.users                               |= other_contact.users
+    self.website_attributes                  |= other_contact.website_attributes
+    self.address_attributes                  |= other_contact.address_attributes
+    self.phone_number_attributes             |= other_contact.phone_number_attributes
     self.instant_messaging_handle_attributes |= other_contact.instant_messaging_handle_attributes
 
     other_contact.destroy

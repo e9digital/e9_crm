@@ -11,19 +11,19 @@ module E9Crm::BaseHelper
   end
 
   def crm_edit_resource_link(record, opts = {})
-    link_to("Edit", edit_polymorphic_path(record))
+    link_to "Edit", edit_polymorphic_path([parent, record], opts)
   end
 
   def crm_delete_resource_link(record, opts = {})
-    link_to("Destroy", polymorphic_path(record), :confirm => 'Are you sure?', :method => :delete)
+    link_to "Destroy", polymorphic_path([parent, record], opts), :confirm => 'Are you sure?', :method => :delete
   end
 
   def crm_show_resource_link(record, opts = {})
-    link_to("View", polymorphic_path(record))
+    link_to "View", polymorphic_path([parent, record], opts)
   end
 
-  def crm_new_resource_link(klass)
-    link_to("New #{klass.model_name.human}", new_polymorphic_path(klass))
+  def crm_new_resource_link(klass, opts = {})
+    link_to "New #{klass.model_name.human}", new_polymorphic_path([parent, klass], opts)
   end
 
   def link_to_contact_search(attribute, query, text = nil)
@@ -66,6 +66,14 @@ module E9Crm::BaseHelper
     { 
       :avatar => proc {|r| },
       :details => proc {|r| render('details', :record => r) }
+    }
+  end
+
+  def records_table_field_map_for_menu_option
+    { 
+      :position => proc { '<div class="handle">+++</div>'.html_safe },
+      :value => nil,
+      :key => nil
     }
   end
 
@@ -127,6 +135,10 @@ module E9Crm::BaseHelper
     params_method = "#{association_name}_build_parameters"
     build_params = resource_class.send(params_method) if resource_class.respond_to?(params_method)
     resource.send(association_name).build(build_params || {})
+  end
+
+  def sortable_controller?
+    @_sortable_controller ||= controller.class.ancestors.member?(E9Rails::Controllers::Sortable)
   end
 
 end

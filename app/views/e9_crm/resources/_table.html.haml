@@ -1,20 +1,20 @@
 - field_map = records_table_field_map_for_class(resource_class)
 
-%table.records
+%table.records{:class => sortable_controller? ? 'sortable' : nil }
   %thead
     %tr
       - field_map.keys.each do |field|
         %th= resource_class.human_attribute_name(field)
       %th= e9_t(:actions)
   %tbody
-  - if collection.empty?
-    %tr
-      %td{:colspan => field_map.length + 1}= e9_t(:no_records_text)
-  - else
-    - collection.each do |record|
-      %tr{:id => "ids_#{record.id}", :class => cycle('odd', 'even')}
-        - field_map.each do |key, value|
-          %td{:class => "contact-#{key}"}
-            = value.respond_to?(:call) ? value.call(record) : record.send(key)
-        %td.links
-          = records_table_links_for_record(record)
+    - if collection.empty?
+      %tr
+        %td{:colspan => field_map.length + 1}= e9_t(:no_records_text)
+    - else
+      - collection.each do |record|
+        %tr{:id => "ids_#{record.id}", :class => cycle('odd', 'even')}
+          - field_map.each do |key, value|
+            %td{:class => "contact-#{key}"}
+              = value.respond_to?(:call) ? value.call(record) : record.send(key)
+          %td.links
+            = records_table_links_for_record(record)

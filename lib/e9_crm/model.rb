@@ -1,4 +1,14 @@
 module E9Crm
+  ##
+  # The User model associated with a Contact.  The idea is that a Contact can be 
+  # associated to many different logins/users (e.g. bob@home.com, bob@work.com).
+  #
+  # In the default setup the included model is treated as simply an email, and given a
+  # "type" such as Personal, Work, etc.
+  #
+  # One and only one of these models should be considered "primary".  The designation of
+  # which is handled largely by the Contact class.
+  #
   module Model
     extend ActiveSupport::Concern
     include E9Rails::ActiveRecord::InheritableOptions
@@ -7,9 +17,6 @@ module E9Crm
       belongs_to :contact
 
       self.options_parameters = [:type, :primary]
-
-      class_inheritable_accessor :email_types
-      self.email_types = %w(Personal Work Other)
 
       has_many :tracking_cookies, :class_name => 'TrackingCookie'
       has_many :page_views, :through => :tracking_cookies
@@ -20,6 +27,9 @@ module E9Crm
       after_destroy :cleanup_contact
     end
 
+    ##
+    # Is this the Contact's primary model?
+    #
     def primary?
       !!options.primary
     end
@@ -27,17 +37,13 @@ module E9Crm
     protected
 
       def create_contact_parameters
-        {
-          :first_name => self.first_name,
-          :last_name => self.last_name
-        }
+        { :first_name => self.first_name, :last_name => self.last_name }
       end
 
       def create_contact_if_missing
         if contact.blank?
-          # when creating a contact we should assume we're the primary email
+          # when creating a contact we should assume we're primary
           self.options.primary = true
-
           create_contact(create_contact_parameters)
         end
       end
@@ -48,5 +54,10 @@ module E9Crm
         contact.reload.users.reset_primary! if self.primary? && contact.present?
       end
 
+    module ClassMethods
+      def email_types
+        MenuOption.fetch_values('Email')
+      end
+    end
   end
 end

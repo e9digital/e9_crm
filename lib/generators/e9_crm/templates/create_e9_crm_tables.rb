@@ -36,9 +36,11 @@ class CreateE9CrmTables < ActiveRecord::Migration
       t.text :value, :options, :limit => 3.kilobytes
     end
 
-    create_table :advertising_costs, :force => true do |t|
+    create_table :dated_costs, :force => true do |t|
+      t.references :costable, :polymorphic => true
       t.integer :cost, :default => 0
       t.date :date
+      t.timestamps
     end
 
     create_table :campaign_groups, :force => true do |t|
@@ -49,7 +51,7 @@ class CreateE9CrmTables < ActiveRecord::Migration
     create_table :campaigns, :force => true do |t|
       t.string :type
       t.string :name
-      t.references :campaign_group, :affiliate, :sales_person, :advertising_cost
+      t.references :campaign_group, :affiliate, :sales_person
       t.string :code, :limit => 32
       t.integer :affiliate_fee, :sales_fee, :default => 0
       t.integer :status, :limit => 1, :default => 1
@@ -78,7 +80,7 @@ class CreateE9CrmTables < ActiveRecord::Migration
     drop_table :companies rescue nil
     drop_table :campaigns rescue nil
     drop_table :campaign_groups rescue nil
-    drop_table :advertising_costs rescue nil
+    drop_table :dated_costs rescue nil
     drop_table :record_attributes rescue nil
     drop_table :contacts rescue nil
     drop_table :tracking_cookies rescue nil
