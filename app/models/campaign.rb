@@ -12,7 +12,7 @@ class Campaign < ActiveRecord::Base
   has_many   :page_views,       :foreign_key => :code, :primary_key => :code
   has_many   :tracking_cookies, :foreign_key => :code, :primary_key => :code, :class_name => 'TrackingCookie'
 
-  validates  :code, :presence   => true
+  validates  :code, :presence   => true,
                     :length     => { :maximum => 32 }, 
                     :uniqueness => { :ignore_case => true }
 
