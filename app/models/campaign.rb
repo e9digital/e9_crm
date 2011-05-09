@@ -7,8 +7,8 @@ class Campaign < ActiveRecord::Base
   include E9Rails::ActiveRecord::STI
 
   belongs_to :campaign_group
-  has_many   :deals, :inverse_of => :campaign, :foreign_key => :code, :primary_key => :code
-  has_many   :page_views, :inverse_of => :campaign, :foreign_key => :code, :primary_key => :code
+  has_many   :deals, :inverse_of => :campaign
+  has_many   :page_views, :inverse_of => :campaign
 
   # NOTE tracking cookie code changes with new visits
   has_many   :tracking_cookies, :foreign_key => :code, :primary_key => :code, :class_name => 'TrackingCookie'

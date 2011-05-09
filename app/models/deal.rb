@@ -5,23 +5,73 @@ class Deal < ActiveRecord::Base
   include E9Rails::ActiveRecord::Initialization
 
   belongs_to :campaign, :inverse_of => :deal
-
   belongs_to :tracking_cookie, :inverse_of => :deal
-  belongs_to :lead, :inverse_of => :deals
 
-  scope :pending, lambda { where(:stauts => Status::Pending) }
-  scope :won,     lambda { where(:status => Status::Won) }
-  scope :lost,    lambda { where(:status => Status::Lost) }
+  scope :column_op, lambda {|op, column, value, reverse=false|
+    conditions = arel_table[column].send(op, value)
+    conditions = conditions.not if reverse
+    where(conditions)
+  }
+
+  scope :column_eq, lambda {|column, value, reverse=false|
+    column_op(:eq, column, value, reverse)
+  }
+
+  scope :leads,   lambda {|reverse=true| column_eq(:status, Status::Lead, !reverse) }
+  scope :pending, lambda {|reverse=true| column_eq(:status, Status::Pending, !reverse) }
+  scope :won,     lambda {|reverse=true| column_eq(:status, Status::Won, !reverse) }
+  scope :lost,    lambda {|reverse=true| column_eq(:status, Status::Lost, !reverse) }
+
+  validate do |record|
+    return unless record.status_changed?
+
+    case record.status
+    when Status::Lead
+      if [Status::Won, Status::Lost].member?(record.status_was)
+        record.errors.add(:status, :illegal_reversion)
+      else
+        record.send(:_do_revert)
+      end
+    when Status::Pending
+      if record.status_was == Status::Lead
+        record.send(:_do_convert)
+      end
+    when Status::Won, Status::Lost
+      if record.status_was == Status::Lead
+        record.errors.add(:status, :illegal_conversion)
+      end
+    else
+      record.errors.add(:status, :invalid, :options => Status::OPTIONS.join(', '))
+    end
+  end
 
   protected
 
+    def method_missing(method_name, *args)
+      if method_name =~ /(.*)\?$/ && Status::OPTIONS.member?($1)
+        self.status == $1
+      else
+        super
+      end
+    end
+
+    def _do_convert
+      self.converted_at = Time.now.utc
+    end
+
+    def _do_revert
+      self.converted_at = nil
+    end
+  
     def _assign_initialization_defaults
-      self.status = Status::Pending
+      self.status = Status::Lead
     end
 
   module Status
-    Pending = 'pending'
-    Won     = 'won'
-    Lost    = 'lost'
+    OPTIONS  = %w(lead pending won lost)
+    Lead    = OPTIONS[0]
+    Pending = OPTIONS[1]
+    Won     = OPTIONS[2]
+    Lost    = OPTIONS[3]
   end
 end

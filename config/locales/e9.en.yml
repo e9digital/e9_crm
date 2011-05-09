@@ -24,3 +24,5 @@ en:
       contact_emails:
         prepare_title: Edit Your Template
         send_email: Send Email
+      leads:
+        index_title: Leads

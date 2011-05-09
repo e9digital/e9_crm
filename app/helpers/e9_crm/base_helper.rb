@@ -10,22 +10,6 @@ module E9Crm::BaseHelper
     end
   end
 
-  def crm_edit_resource_link(record, opts = {})
-    link_to "Edit", edit_polymorphic_path([parent, record], opts)
-  end
-
-  def crm_delete_resource_link(record, opts = {})
-    link_to "Destroy", polymorphic_path([parent, record], opts), :confirm => 'Are you sure?', :method => :delete
-  end
-
-  def crm_show_resource_link(record, opts = {})
-    link_to "View", polymorphic_path([parent, record], opts)
-  end
-
-  def crm_new_resource_link(klass, opts = {})
-    link_to "New #{klass.model_name.human}", new_polymorphic_path([parent, klass], opts)
-  end
-
   def link_to_contact_search(attribute, query, text = nil)
     link_to(text || query, contacts_path(attribute => query), :class => "contact-search contact-#{attribute.to_s.dasherize}-search")
   end
@@ -42,56 +26,62 @@ module E9Crm::BaseHelper
   # Field maps
   #
   
-  def records_table_field_map_for_class(klass, base_class = true)
-    klass = klass.base_class if base_class
-    if respond_to?(method_name = "records_table_field_map_for_#{klass.name.underscore}")
-      send(method_name)
-    else
-      { :id => nil }
+  def records_table_field_map(options = {})
+    options.symbolize_keys!
+    options.reverse_merge!(:class_name => resource_class.base_class.name.underscore)
+
+    base_map = {
+      :fields => { :id => nil },
+      :links => proc {|r| [link_to_edit_resource(r), link_to_destroy_resource(r)] }
+    }
+
+    if respond_to?(method_name = "records_table_field_map_for_#{options[:class_name]}")
+      base_map.merge! send(method_name)
     end
+
+    base_map
   end
 
-  def records_table_field_map_for_campaign
+  def records_table_map_for_campaign
     { 
-      :type => nil, 
-      :name => nil, 
-      :code => nil, 
-      :affiliate_fee => proc {|r| v = r.affiliate_fee; Money === v ? v : 'n/a' },  
-      :sales_fee => nil, 
-      :status => proc {|r| resource_class.human_attribute_name(Campaign::Status::VALUES[r.status]) } 
+      :fields => {
+        :type => nil, 
+        :name => nil, 
+        :code => nil, 
+        :affiliate_fee => proc {|r| v = r.affiliate_fee; Money === v ? v : 'n/a' },  
+        :sales_fee => nil, 
+        :status => proc {|r| resource_class.human_attribute_name(Campaign::Status::VALUES[r.status]) } 
+      }
     }
   end
 
   def records_table_field_map_for_contact
-    { 
-      :avatar => proc {|r| },
-      :details => proc {|r| render('details', :record => r) }
+    {
+      :fields => { 
+        :avatar => proc {|r| },
+        :details => proc {|r| render('details', :record => r) }
+      },
+
+      :links => proc {|r|
+        [link_to_show_resource(r), link_to_edit_resource(r), link_to_destroy_resource(r)]
+      }
     }
   end
 
   def records_table_field_map_for_menu_option
     { 
-      :position => proc { '<div class="handle">+++</div>'.html_safe },
-      :value => nil,
-      :key => nil
+      :fields => {
+        :position => proc { '<div class="handle">+++</div>'.html_safe },
+        :value => nil,
+        :key => nil
+      }
     }
   end
 
+
   ##
-  # Links
+  # Misc
   #
-
-  def records_table_links_for_record(record)
-    if respond_to?(method_name = "records_table_links_for_#{record.class.name.underscore}")
-      send(method_name, record)
-    else
-      html_concat(crm_edit_resource_link(record), crm_delete_resource_link(record))
-    end
-  end
-
-  def records_table_links_for_contact(record)
-    html_concat(crm_show_resource_link(record), crm_edit_resource_link(record), crm_delete_resource_link(record))
-  end
 
   def link_to_add_record_attribute(association_name)
     link_to(

@@ -27,7 +27,7 @@ class E9Crm::ResourcesController < E9Crm::BaseController
 
   def add_index_breadcrumb
     # NOTE need to override this because AdminController paths admin_ prefix
-    add_breadcrumb! e9_t(:index_title), polymorphic_path([parent, resource_class].compact)
+    add_breadcrumb! @index_title || e9_t(:index_title), polymorphic_path([parent, resource_class].compact)
   end
 
   def collection
