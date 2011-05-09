@@ -2,7 +2,7 @@ class E9Crm::MenuOptionsController < E9Crm::ResourcesController
   defaults :resource_class => MenuOption
   include E9Rails::Controllers::Sortable
 
-  has_scope :fetch, :as => :key, :only => :index
+  has_scope :options_for, :as => :key, :only => :index
 
   # NOTE The reason this is set in a filter instead of just a default scope value 
   #      is that it is used in the index view to add the key param to the new 

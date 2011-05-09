@@ -27,4 +27,8 @@ class Campaign < ActiveRecord::Base
   def cost
     raise NotImplementedError
   end
+
+  def to_s
+    name
+  end
 end

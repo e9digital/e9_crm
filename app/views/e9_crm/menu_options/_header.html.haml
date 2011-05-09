@@ -5,4 +5,4 @@
       = select_tag 'key', options_for_select(MenuOption::KEYS.sort, params[:key]), :id => 'menu_option_key_select'
       = submit_tag t(:go), :name => nil
   .toolbar-right
-    = crm_new_resource_link(MenuOption, :menu_option => {:key => params[:key]})
+    = link_to_new_resource(MenuOption, :menu_option => {:key => params[:key]})

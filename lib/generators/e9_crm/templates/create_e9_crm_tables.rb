@@ -77,6 +77,15 @@ class CreateE9CrmTables < ActiveRecord::Migration
     add_index 'deals', 'tracking_cookie_id'
     add_index 'deals', 'status'
 
+    create_table :offers, :force => true do |t|
+      t.string :type
+      t.references :offer, :campaign, :tracking_cookie
+      t.timestamp :created_at, :updated_at, :converted_at
+      t.string :status, :limit => 32
+    end
+
+
+
     add_column :users, :contact_id, :integer rescue nil
     add_column :users, :options, :text, :limit => 1.kilobyte rescue nil
   end

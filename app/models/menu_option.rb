@@ -6,8 +6,8 @@ class MenuOption < ActiveRecord::Base
     'Email',
     'Instant Messaging Handle',
     'Phone Number',
-    'Task Category',
-    'Task Status',
+    #'Task Category',
+    #'Task Status',
     'Website'
   ].freeze
 
@@ -16,7 +16,7 @@ class MenuOption < ActiveRecord::Base
 
   acts_as_list :scope => 'menu_options.key = \"#{key}\"'
 
-  scope :fetch, lambda {|key| where(:key => key) }
+  scope :options_for, lambda {|key| where(:key => key) }
 
   ##
   # A direct SQL selection of values for a given key
@@ -28,6 +28,6 @@ class MenuOption < ActiveRecord::Base
   # [key (String)] The key for the assocated menu options.
   #
   def self.fetch_values(key)
-    connection.send(:select_values, fetch(key).order(:position).project('value').to_sql, 'Menu Option Select')
+    connection.send(:select_values, options_for(key).order(:position).project('value').to_sql, 'Menu Option Select')
   end
 end
