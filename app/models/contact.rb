@@ -3,15 +3,16 @@ class Contact < ActiveRecord::Base
   include E9Rails::ActiveRecord::AttributeSearchable
 
   # necessary so contact knows its merge path
+  # NOTE in the future we'll probably want to give contacts public urls and make them 'Linkable'
   include Rails.application.routes.url_helpers
 
   before_validation :ensure_user_references
-  before_save :reset_primary_user
 
   ##
   # Associations
   #
   belongs_to :company
+
   has_many :users, :dependent => :nullify do
 
     ##
@@ -96,15 +97,6 @@ class Contact < ActiveRecord::Base
   ##
   # Scopes
   #
-  scope :by_title, lambda {|val| where(:title => val) }
-  scope :by_company, lambda {|val| where(:company_id => val) }
-  scope :tagged, lambda {|tags| 
-    if tags.present?
-      tagged_with(tags, :show_hidden => true, :any => true) 
-    else
-      where("1=0")
-    end
-  }
 
   # NOTE contact#search feels terribly fragile and needs work.  
   #
@@ -132,6 +124,20 @@ class Contact < ActiveRecord::Base
         .or(User.attr_like_scope_condition(:email, query))
     )
   }
+  scope :by_title, lambda {|val| where(:title => val) }
+  scope :by_company, lambda {|val| where(:company_id => val) }
+  scope :tagged, lambda {|tags| 
+    if tags.present?
+      tagged_with(tags, :show_hidden => true, :any => true) 
+    else
+      where("1=0")
+    end
+  }
+
+  # The parameters for building the JS template for associated users
+  def self.users_build_parameters # :nodoc:
+    { :status => User::Status::PROSPECT }
+  end
 
   ##
   # Setting company name will attempt to find a Company or create a new one
@@ -154,11 +160,6 @@ class Contact < ActiveRecord::Base
   #
   def name
     [first_name, last_name].join(' ')
-  end
-
-  # The parameters for building the JS template for associated users
-  def self.users_build_parameters # :nodoc:
-    { :status => User::Status::PROSPECT }
   end
 
   def merge_and_destroy!(other_contact)
@@ -196,16 +197,24 @@ class Contact < ActiveRecord::Base
     # go back to the A/B scenario above.
     #
     super || begin
-      if errors[:"users.email"].present?
-        errors.delete(:"users.email")
-
+      unless errors.delete(:"users.email").blank?
         users.dup.each_with_index do |user, i|
           user.errors[:email].each do |error|
             if error.taken? && users.select {|u| u.email == user.email }.length == 1
               existing_user = User.find_by_email(user.email)
 
               if contact = existing_user.contact
-                errors.add(:users, :merge_required, :email => user.email, :merge_path => new_contact_merge_path(self, contact))
+                args = if new_record?
+                  [contact, 'new', {:contact => self.attributes}]
+                else
+                  [contact, self]
+                end
+
+                errors.add(:users, :merge_required, {
+                  :email => user.email, 
+                  :merge_path => new_contact_merge_path(*args)
+                })
+
                 return false
               else
                 self.users.delete(user)
@@ -233,17 +242,13 @@ class Contact < ActiveRecord::Base
       users.each {|u| u.contact = self }
     end
 
-    def reset_primary_user
-      users.reset_primary
-    end
-
     # override has_destroy_flag? to force destroy on persisted associations as well
     def has_destroy_flag?(hash)
       reject_record_attribute?(hash) || super 
     end
 
     def reject_record_attribute?(attributes)
-      attributes.keys.member?(:value) && attributes[:value].blank?
+      attributes.keys.member?('value') && attributes['value'].blank?
     end
 
 end

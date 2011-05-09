@@ -23,6 +23,10 @@ module E9Crm
       def copy_initializer
         copy_file 'initializer.rb', 'config/initializers/e9_crm.rb'
       end
+
+      def copy_javascript
+        copy_file 'javascript.js', 'public/javascripts/e9_crm.js'
+      end
     end
   end
 end

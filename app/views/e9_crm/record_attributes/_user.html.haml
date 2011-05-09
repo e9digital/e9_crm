@@ -15,7 +15,8 @@
       .field
         = ff.select :type, types
     .field.radio
-      = ff.label :primary
+      = ff.hidden_field :primary, :value => false
+      = ff.label :primary_true, ff.object.class.human_attribute_name(:primary)
       = ff.radio_button :primary, true
 
   - if f.object.prospect?

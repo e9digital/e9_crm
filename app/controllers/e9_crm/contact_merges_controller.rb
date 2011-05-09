@@ -15,6 +15,12 @@ class E9Crm::ContactMergesController < E9Crm::BaseController
   def build_resources
     @contact   ||= Contact.new
     @contact_a ||= Contact.find(params[:contact_a_id])
-    @contact_b ||= Contact.find(params[:contact_b_id])
+
+    # NOTE lets see if this works
+    @contact_b ||= if params[:contact]
+                     Contact.new(params[:contact])
+                   else
+                     Contact.find(params[:contact_b_id])
+                   end
   end
 end

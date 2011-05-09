@@ -16,10 +16,10 @@ module E9Crm
     included do
       belongs_to :contact
 
-      self.options_parameters = [:type, :primary]
-
-      has_many :tracking_cookies, :class_name => 'TrackingCookie'
+      has_many :tracking_cookies, :inverse_of => :user
       has_many :page_views, :through => :tracking_cookies
+
+      self.options_parameters = [:type, :primary]
 
       scope :primary, lambda { where(arel_table[:options].matches("%primary: true%")) }
 

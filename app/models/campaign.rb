@@ -7,14 +7,18 @@ class Campaign < ActiveRecord::Base
   include E9Rails::ActiveRecord::STI
 
   belongs_to :campaign_group
-  has_many   :deals
-  #has_many   :leads
-  has_many   :page_views,       :foreign_key => :code, :primary_key => :code
+  has_many   :deals, :inverse_of => :campaign, :foreign_key => :code, :primary_key => :code
+  has_many   :page_views, :inverse_of => :campaign, :foreign_key => :code, :primary_key => :code
+
+  # NOTE tracking cookie code changes with new visits
   has_many   :tracking_cookies, :foreign_key => :code, :primary_key => :code, :class_name => 'TrackingCookie'
 
   validates  :code, :presence   => true,
                     :length     => { :maximum => 32 }, 
                     :uniqueness => { :ignore_case => true }
+
+  scope :active,   lambda { where(:active => true) }
+  scope :inactive, lambda { where(:active => false) }
 
   ##
   # The sum cost of this campaign
@@ -22,11 +26,5 @@ class Campaign < ActiveRecord::Base
   #
   def cost
     raise NotImplementedError
-  end
-
-  module Status
-    VALUES   = %w(inactive active)
-    INACTIVE = 0
-    ACTIVE   = 1
   end
 end

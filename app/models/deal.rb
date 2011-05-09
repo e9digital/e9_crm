@@ -2,12 +2,26 @@
 # "deals" with contacts and track revenue used for marketing reports.
 #
 class Deal < ActiveRecord::Base
-  belongs_to :campaign
+  include E9Rails::ActiveRecord::Initialization
+
+  belongs_to :campaign, :inverse_of => :deal
+
+  belongs_to :tracking_cookie, :inverse_of => :deal
+  belongs_to :lead, :inverse_of => :deals
+
+  scope :pending, lambda { where(:stauts => Status::Pending) }
+  scope :won,     lambda { where(:status => Status::Won) }
+  scope :lost,    lambda { where(:status => Status::Lost) }
+
+  protected
+
+    def _assign_initialization_defaults
+      self.status = Status::Pending
+    end
 
   module Status
-    VALUES   = %w(pending won lost)
-    PENDING  = 0
-    WON      = 1
-    LOST     = 2
+    Pending = 'pending'
+    Won     = 'won'
+    Lost    = 'lost'
   end
 end

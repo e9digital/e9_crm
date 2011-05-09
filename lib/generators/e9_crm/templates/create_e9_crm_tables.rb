@@ -1,15 +1,15 @@
 class CreateE9CrmTables < ActiveRecord::Migration
   def self.up
     create_table :page_views, :force => true do |t| 
-      t.references :tracking_cookie
+      t.references :tracking_cookie, :campaign
       t.string :request_path, :user_agent, :referer, :limit => 200
-      t.string :session, :code, :limit => 32
+      t.string :session, :limit => 32
       t.string :remote_ip, :limit => 16
       t.boolean :new_visit, :default => false
       t.timestamp :created_at
     end
     add_index 'page_views', 'tracking_cookie_id'
-    add_index 'page_views', 'code'
+    add_index 'page_views', 'campaign_id'
 
     create_table :tracking_cookies, :force => true do |t|
       t.references :user
@@ -29,6 +29,7 @@ class CreateE9CrmTables < ActiveRecord::Migration
       t.references :company
       t.timestamps
     end
+    add_index 'contacts', 'company_id'
 
     create_table :record_attributes, :force => true do |t|
       t.string :type
@@ -54,10 +55,11 @@ class CreateE9CrmTables < ActiveRecord::Migration
       t.references :campaign_group, :affiliate, :sales_person
       t.string :code, :limit => 32
       t.integer :affiliate_fee, :sales_fee, :default => 0
-      t.integer :status, :limit => 1, :default => 1
+      t.boolean :active, :default => true
       t.timestamps
     end
     add_index 'campaigns', 'campaign_group_id'
+    add_index 'campaigns', 'code'
 
     create_table :companies, :force => true do |t|
       t.string :name
@@ -65,8 +67,14 @@ class CreateE9CrmTables < ActiveRecord::Migration
     end
 
     create_table :deals, :force => true do |t|
-      t.timestamps
+      t.string :type
+      t.references :offer, :campaign, :tracking_cookie
+      t.timestamp :created_at, :updated_at, :converted_at
+      t.string :status, :limit => 32
     end
+    add_index 'deals', 'offer_id'
+    add_index 'deals', 'campaign_id'
+    add_index 'deals', 'tracking_cookie_id'
 
     add_column :users, :contact_id, :integer rescue nil
     add_column :users, :options, :text, :limit => 1.kilobyte rescue nil

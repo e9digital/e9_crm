@@ -1,7 +1,4 @@
 module E9Crm
-  #
-  # NOTE this module depends on #current_user being implemented
-  #
   module TrackingController
     extend ActiveSupport::Concern
 
@@ -10,34 +7,35 @@ module E9Crm
     protected 
 
     def track_page_view
-      _load_or_install_tracking_cookie
-
-      @_page_view ||= @_tracking_cookie.page_views.create({
+      @_page_view ||= tracking_cookie.page_views.create({
         :request_path => request.fullpath,
         :user_agent   => request.user_agent,
         :referer      => request.referer,
         :remote_ip    => request.remote_ip,
         :session      => request.session_options[:id],
-        :code         => @_tracking_cookie.code,
-        :new_visit    => !!@_tracking_cookie.new_visit
+        :campaign     => tracking_cookie.code.presence && Campaign.find_by_code(tracking_cookie.code),
+        :new_visit    => tracking_cookie.new_visit?
       })
     end
 
-    private
-
-    def _load_or_install_tracking_cookie
+    def tracking_cookie
       @_tracking_cookie ||= begin
         E9Crm.log "Begin load or install cookie: cookie_name[#{E9Crm.cookie_name}] query_param[#{E9Crm.query_param}]"
 
         code = params.delete(E9Crm.query_param)
-        tcn  = E9Crm.cookie_name
 
-        if hid = cookies[tcn]
+        if hid = cookies[E9Crm.cookie_name]
           E9Crm.log("Installed cookie found: hid(#{hid})")
           @_tracking_cookie = TrackingCookie.find_by_hid(hid)
+
+          unless @_tracking_cookie
+            # This should only happen in developemnt, as it means the cookie has been
+            # installed then removed from the database.
+            E9Crm.log("Installed cookie's hash id does not match any stored cookies!")
+          end
         end
 
-        E9Crm.log(@_tracking_cookie ? "Cookie loaded: (#{tcn} : #{@_tracking_cookie.hid})" : "Cookie not found")
+        E9Crm.log(@_tracking_cookie ? "Cookie loaded: (#{E9Crm.cookie_name} : #{@_tracking_cookie.hid})" : "Cookie not found")
 
         if @_tracking_cookie
           if current_user && @_tracking_cookie.user_id? && @_tracking_cookie.user_id != current_user.id
@@ -54,8 +52,9 @@ module E9Crm
             if code.present? && code != @_tracking_cookie.code
               E9Crm.log "Code present and cookie code(#{@_tracking_cookie.code}) does not match (#{code}), changing..."
               attrs[:code] = code
+
               E9Crm.log "Cookie marked as new"
-              @_tracking_cookie.new_visit = true
+              attrs[:new_visit] = true
             end
 
             E9Crm.log(attrs.blank? ? "Cookie unchanged, no update" : "Cookie changed, new attrs: #{attrs.inspect}")
@@ -64,11 +63,9 @@ module E9Crm
         end
 
         @_tracking_cookie ||= begin
-          TrackingCookie.create(:code => code, :user => current_user).tap do |cookie|
-            E9Crm.log "Installing new cookie (#{tcn} : #{cookie.hid})"
-            cookies.permanent[tcn] = cookie.hid
-            E9Crm.log "Cookie marked as new"
-            cookie.new_visit = true
+          TrackingCookie.create(:code => code, :user => current_user, :new_visit => true).tap do |cookie|
+            E9Crm.log "Installing new cookie (#{E9Crm.cookie_name} : #{cookie.hid})"
+            cookies.permanent[E9Crm.cookie_name] = cookie.hid
           end
         end
 
