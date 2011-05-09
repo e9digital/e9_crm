@@ -1,28 +1,6 @@
 module E9Crm::BaseHelper
 
   ##
-  # Util
-  #
-
-  def html_concat(*chunks)
-    ''.html_safe.tap do |html|
-      chunks.each {|chunk| html.safe_concat("#{chunk}\n") }
-    end
-  end
-
-  def link_to_contact_search(attribute, query, text = nil)
-    link_to(text || query, contacts_path(attribute => query), :class => "contact-search contact-#{attribute.to_s.dasherize}-search")
-  end
-
-  def email_template_select_options
-    options_for_select( EmailTemplate.order('name').map {|e| [e.name, e.id] })
-  end
-
-  def newsletter_select_options
-    options_for_select( UserEmail.pending.order('name').map {|e| [e.name, e.id] })
-  end
-
-  ##
   # Field maps
   #
   
@@ -40,42 +18,6 @@ module E9Crm::BaseHelper
     end
 
     base_map
-  end
-
-  def records_table_map_for_campaign
-    { 
-      :fields => {
-        :type => nil, 
-        :name => nil, 
-        :code => nil, 
-        :affiliate_fee => proc {|r| v = r.affiliate_fee; Money === v ? v : 'n/a' },  
-        :sales_fee => nil, 
-        :status => proc {|r| resource_class.human_attribute_name(Campaign::Status::VALUES[r.status]) } 
-      }
-    }
-  end
-
-  def records_table_field_map_for_contact
-    {
-      :fields => { 
-        :avatar => proc {|r| },
-        :details => proc {|r| render('details', :record => r) }
-      },
-
-      :links => proc {|r|
-        [link_to_show_resource(r), link_to_edit_resource(r), link_to_destroy_resource(r)]
-      }
-    }
-  end
-
-  def records_table_field_map_for_menu_option
-    { 
-      :fields => {
-        :position => proc { '<div class="handle">+++</div>'.html_safe },
-        :value => nil,
-        :key => nil
-      }
-    }
   end
 
 
@@ -130,5 +72,4 @@ module E9Crm::BaseHelper
   def sortable_controller?
     @_sortable_controller ||= controller.class.ancestors.member?(E9Rails::Controllers::Sortable)
   end
-
 end
