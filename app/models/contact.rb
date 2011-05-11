@@ -13,7 +13,7 @@ class Contact < ActiveRecord::Base
   #
   belongs_to :company
 
-  has_many :users, :dependent => :nullify do
+  has_many :users, :inverse_of => :contact, :dependent => :nullify do
 
     ##
     # Resets the primary user on a contact
@@ -79,6 +79,10 @@ class Contact < ActiveRecord::Base
     end
   end
   accepts_nested_attributes_for :users, :allow_destroy => true
+
+  def page_views
+    PageView.by_user(users)
+  end
 
   has_many :record_attributes, :as => :record
   RECORD_ATTRIBUTES = %w[users phone_number_attributes instant_messaging_handle_attributes website_attributes address_attributes]

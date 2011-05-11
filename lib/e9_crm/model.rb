@@ -14,7 +14,7 @@ module E9Crm
     include E9Rails::ActiveRecord::InheritableOptions
 
     included do
-      belongs_to :contact
+      belongs_to :contact, :inverse_of => :users
 
       has_many :tracking_cookies, :inverse_of => :user
       has_many :page_views, :through => :tracking_cookies
