@@ -5,10 +5,6 @@ class E9Crm::ResourcesController < E9Crm::BaseController
 
   inherit_resources
 
-  # NOTE parent is defined so it's always available, it will be overridden on controllers which have belongs_to routes
-  def parent; end
-  helper_method :parent
-
   add_resource_breadcrumbs
 
   def self.defaults(hash = {})
@@ -25,9 +21,12 @@ class E9Crm::ResourcesController < E9Crm::BaseController
 
   protected
 
+  # NOTE parent is defined so it's always available, it will be overridden on controllers which have belongs_to routes
+  def parent; end
+  helper_method :parent
+
   def add_index_breadcrumb
-    # NOTE need to override this because AdminController paths admin_ prefix
-    add_breadcrumb! @index_title || e9_t(:index_title), polymorphic_path([parent, resource_class].compact)
+    add_breadcrumb! @index_title || e9_t(:index_title), collection_path
   end
 
   def collection
