@@ -52,6 +52,8 @@ module E9Crm
 
   class Engine < ::Rails::Engine
     config.e9_crm = E9Crm
+    config.active_record.observers ||= []
+    config.active_record.observers << :deal_observer
     config.to_prepare { E9Crm.init! }
   end
 end
