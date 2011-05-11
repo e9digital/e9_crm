@@ -1,0 +1,7 @@
+= form_for resource, :url => polymorphic_path([parent, resource]), :remote => request.xhr?, :html => { :multipart => true } do |f|
+  .errors= resource_error_messages!
+
+  = render 'form_inner', :f => f
+
+  .actions
+    = f.submit

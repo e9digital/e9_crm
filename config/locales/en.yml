@@ -53,3 +53,11 @@ en:
     attributes:
       campaign:
         name: Name
+      offer:
+        alert_email_instructions: (Enter an email if you want to be notified of conversions)
+        submit_button_text: Submit Button Text
+        success_alert_text: Success Alert Text
+        download_link_text: Download Link Text
+        conversion_alert_email: Send Alert Email To
+        success_page_text: Success Page Text
+        custom_form_html: Custom Form Html

@@ -6,6 +6,7 @@ class Deal < ActiveRecord::Base
 
   belongs_to :campaign, :inverse_of => :deal
   belongs_to :tracking_cookie, :inverse_of => :deal
+  belongs_to :offer, :inverse_of => :deals
 
   scope :column_op, lambda {|op, column, value, reverse=false|
     conditions = arel_table[column].send(op, value)
@@ -29,12 +30,13 @@ class Deal < ActiveRecord::Base
     when Status::Lead
       if [Status::Won, Status::Lost].member?(record.status_was)
         record.errors.add(:status, :illegal_reversion)
-      else
-        record.send(:_do_revert)
+      elsif record.persisted?
+        # "revert" isn't happening on new records
+        record.send :_do_revert
       end
     when Status::Pending
       if record.status_was == Status::Lead
-        record.send(:_do_convert)
+        record.send :_do_convert
       end
     when Status::Won, Status::Lost
       if record.status_was == Status::Lead
@@ -57,14 +59,18 @@ class Deal < ActiveRecord::Base
 
     def _do_convert
       self.converted_at = Time.now.utc
+      notify_observers :before_convert
     end
 
     def _do_revert
       self.converted_at = nil
+      notify_observers :before_revert
     end
   
+    # Typically, new Deals are 'pending', with the assumption that offers
+    # explicitly create Deals as 'lead' when they convert.
     def _assign_initialization_defaults
-      self.status = Status::Lead
+      self.status = Status::Pending
     end
 
   module Status
