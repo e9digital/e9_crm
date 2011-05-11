@@ -10,10 +10,12 @@ module E9Crm::BaseHelper
 
     base_map = {
       :fields => { :id => nil },
-      :links => proc {|r| [link_to_edit_resource(r), link_to_destroy_resource(r)] }
+      :links => lambda {|r| [link_to_edit_resource(r), link_to_destroy_resource(r)] }
     }
 
-    if respond_to?(method_name = "records_table_field_map_for_#{options[:class_name]}")
+    method_name = "records_table_field_map_for_#{options[:class_name]}"
+
+    if respond_to?(method_name)
       base_map.merge! send(method_name)
     end
 
