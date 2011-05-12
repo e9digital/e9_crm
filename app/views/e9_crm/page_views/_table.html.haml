@@ -1,0 +1,25 @@
+%table.records
+  %thead
+    %tr
+      %th= orderable_column_link('campaign.name', :campaign)
+      %th= orderable_column_link(:created_at)
+      %th= orderable_column_link(:request_path)
+      %th= orderable_column_link(:referer)
+      %th= orderable_column_link(:remote_ip)
+  %tbody
+    - if collection.empty?
+      %tr
+        %td{:colspan => 5}= e9_t(:no_records_text)
+    - else
+      - collection.each do |record|
+        %tr{:id => "ids_#{record.id}", :class => cycle('odd', 'even')}
+          %td.contact-campaign-name
+            = record.campaign_name || 'n/a'
+          %td.contact-created-at
+            = I18n.l(record.created_at)
+          %td.contact-request-path
+            = record.request_path
+          %td.contact-referer
+            = record.referer
+          %td.contact-remote-ip
+            = record.remote_ip
