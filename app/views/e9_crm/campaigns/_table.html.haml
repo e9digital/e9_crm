@@ -18,14 +18,14 @@
           %td.record-type
             = record.type[/(.*)Campaign/, 1]
           %td.record-campaign-group
-            = record.campaign_group
+            = record.campaign_group || e9_t(:no_group, :scope => 'e9_crm.campaigns')
           %td.record-name
             = record.name
           %td.record-code
             = record.code
           %td.record-affiliate-fee
-            = record.affiliate_fee
+            = display_campaign_fee(record.affiliate_fee)
           %td.record-sales-fee
-            = record.sales_fee
+            = display_campaign_fee(record.sales_fee)
           %td.links
             = link_to_edit_resource(record)

@@ -2,13 +2,20 @@
   %legend= e9_t(:campaign_information_legend, :scope => 'e9_crm.campaigns')
   .field
     = f.label :campaign_group_id
-    = f.collection_select :campaign_group_id, CampaignGroup.all, :id, :name
+    = f.collection_select :campaign_group_id, CampaignGroup.all, :id, :name, :include_blank => 'No Group'
   .field
     = f.label :name
     = f.text_field :name
-  .field#campaign_code_field
-    = f.label :code
-    = f.text_field :code
+  - if f.object.new_record?
+    .field#campaign_code_field
+      = f.label :code
+      = f.text_field :code
   .field
-    %label{:for => 'campaign_code_hint'}= resource_class.human_attribute_name(:code_hint)
-    %span#campaign_code_hint= "?#{E9Crm.query_param}=#{f.object.code}"
+    %label{:for => 'campaign_code_hint'}
+      = resource_class.human_attribute_name(:code_hint)
+      %span.help{:title => e9_t(:code_help, :scope => 'e9_crm.campaigns', :code => E9Crm.query_param)}= t(:inline_help_link)
+    #campaign_code_hint= "?#{E9Crm.query_param}=#{f.object.code}"
+  .field
+    = f.label :active
+    = f.check_box :active
+

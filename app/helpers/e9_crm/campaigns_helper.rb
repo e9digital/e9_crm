@@ -3,9 +3,6 @@ module E9Crm::CampaignsHelper
     Money === val && val || 'n/a'
   end
 
-  def campaign_types
-  end
-
   def campaign_type_select_options(with_all_option = true)
     options = %w( advertising affiliate email sales ).map {|t| [t.titleize, t] }
     options.unshift(['All Types', nil]) if with_all_option
