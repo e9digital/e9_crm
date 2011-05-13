@@ -3,6 +3,8 @@ en:
   go: Go
   search: Search
   view: View
+  none: None
+  inline_help_link: '[?]'
 
   e9_crm:
     add_record_attribute: Add
@@ -10,10 +12,12 @@ en:
 
   activerecord:
     links:
-      new: "New %{model}"
-      edit: "Edit %{model}"
-      destroy: "Delete %{model}"
-      show: "View %{model}"
+      edit: "Edit"
+      destroy: "Delete"
+      show: "View"
+
+      campaign_group: 
+        confirm_destroy: Are you sure?  This cannot be undone.  Any campaigns which are associated with this group will become groupless.
 
     errors:
       messages:
@@ -55,6 +59,7 @@ en:
     attributes:
       campaign:
         name: Name
+        code_hint: Append to URL
       offer:
         alert_email_instructions: (Enter an email if you want to be notified of conversions)
         submit_button_text: Submit Button Text

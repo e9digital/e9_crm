@@ -28,6 +28,8 @@ en:
         index_title: Leads
       campaigns:
         no_campaign: No Campaign
+        no_group: No Group
         campaign_information_legend: Campaign Information
         salesperson_information_legend: Salesperson Information
         affiliate_information_legend: Affiliate Information
+        code_help: "Be careful when creating tracking codes.  They are NOT EDITABLE after you save them.&#10;&#10;To track the success of this campaign, you can append ?%{code}={Your Code} to the end of any and all URLs on your website.&#10;&#10;It might look something like this: http://www.example.com/about-us?%{code}=alpha, where \"alpha\" represents the code you created.&#10;&#10;You can provide this tracking URL to a salesperson or an affiliate or it can be placed at the end of a link in any of your advertisements."
