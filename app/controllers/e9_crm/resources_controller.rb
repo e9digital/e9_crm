@@ -4,6 +4,8 @@ class E9Crm::ResourcesController < E9Crm::BaseController
 
   inherit_resources
 
+  respond_to :js
+
   add_resource_breadcrumbs
 
   def self.defaults(hash = {})

@@ -2,8 +2,6 @@ class E9Crm::CampaignsController < E9Crm::ResourcesController
   defaults :resource_class => Campaign
   include E9Rails::Controllers::Orderable
 
-  respond_to :js
-
   has_scope :of_group, :as => :group, :only => :index
 
   has_scope :active, :only => :index do |_, scope, value|
