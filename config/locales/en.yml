@@ -60,6 +60,8 @@ en:
       campaign:
         name: Name
         code_hint: Append to URL
+      no_campaign:
+        name: No Campaign
       offer:
         alert_email_instructions: (Enter an email if you want to be notified of conversions)
         submit_button_text: Submit Button Text

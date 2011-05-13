@@ -2,9 +2,18 @@ module E9Crm
   module TrackingController
     extend ActiveSupport::Concern
 
-    included { after_filter :track_page_view }
+    included do
+      before_filter :check_for_new_session 
+      after_filter  :track_page_view
+    end
 
     protected 
+      def check_for_new_session
+        if request.session_options[:id].blank?
+          E9Crm.log("No session found, page view will increment campaign counter cache")
+          @_should_cache = true
+        end
+      end
 
       def track_page_view
         @_page_view ||= tracking_cookie.page_views.create({
@@ -12,9 +21,10 @@ module E9Crm
           :user_agent   => request.user_agent,
           :referer      => request.referer,
           :remote_ip    => request.remote_ip,
-          :session      => generate_or_load_session_id,
-          :campaign     => tracking_cookie.code.presence && Campaign.find_by_code(tracking_cookie.code),
-          :new_visit    => session[:new_visit].present?
+          :session      => request.session_options[:id],
+          :campaign     => tracking_campaign,
+          :new_visit    => session[:new_visit].present?,
+          :should_cache => !!@_should_cache
         })
       end
 
@@ -77,10 +87,8 @@ module E9Crm
         end
       end
 
-    private
-
-      def generate_or_load_session_id
-        request.session_options[:id]
+      def tracking_campaign
+        @_tracking_campaign ||= tracking_cookie.code.presence && Campaign.find_by_code(tracking_cookie.code) || Campaign.default
       end
 
   end

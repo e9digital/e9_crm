@@ -7,18 +7,21 @@ class Campaign < ActiveRecord::Base
   include E9Rails::ActiveRecord::STI
 
   belongs_to :campaign_group
-  has_many   :deals, :inverse_of => :campaign
-  has_many   :page_views, :inverse_of => :campaign
+  has_many   :deals, :inverse_of => :campaign, :dependent => :nullify
+  has_many   :page_views, :inverse_of => :campaign, :dependent => :nullify
 
   # NOTE tracking cookie code changes with new visits
   has_many :tracking_cookies, :foreign_key => :code, :primary_key => :code, :class_name => 'TrackingCookie'
 
-  validates :code,          :presence     => true,
+  def self.default
+    NoCampaign.first || NoCampaign.create
+  end
+
+  validates :code,          :presence     => { :unless => lambda {|r| r.is_a?(NoCampaign) } },
                             :length       => { :maximum => 32 }, 
                             :uniqueness   => { :ignore_case => true }
   validates :affiliate_fee, :numericality => true
   validates :sales_fee,     :numericality => true
-
 
   scope :active,   lambda {|val=true| where(:active => val) }
   scope :inactive, lambda { active(false) }

@@ -27,6 +27,7 @@ en:
       leads:
         index_title: Leads
       campaigns:
+        reports_title: Marketing Report
         no_campaign: No Campaign
         no_group: No Group
         campaign_information_legend: Campaign Information

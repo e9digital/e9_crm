@@ -1,4 +1,4 @@
-class CreateE9CrmTables < ActiveRecord::Migration
+class CreateE9CrmStructure < ActiveRecord::Migration
   def self.up
     create_table :page_views, :force => true do |t| 
       t.references :tracking_cookie, :campaign
@@ -54,7 +54,7 @@ class CreateE9CrmTables < ActiveRecord::Migration
       t.string :name
       t.references :campaign_group, :affiliate, :sales_person
       t.string :code, :limit => 32
-      t.integer :affiliate_fee, :sales_fee, :default => 0
+      t.integer :affiliate_fee, :sales_fee, :new_visits, :repeat_visits, :default => 0
       t.boolean :active, :default => true
       t.timestamps
     end

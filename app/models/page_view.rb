@@ -18,18 +18,26 @@ class PageView < ActiveRecord::Base
   belongs_to :campaign, :inverse_of => :page_views
   has_one :user, :through => :tracking_cookie
 
+  attr_accessor :should_cache 
+
+  after_create :increment_campaign_visit_cache, :if => '!!should_cache'
+
+  scope :by_user, lambda {|*users| 
+    users.flatten!
+    users.map! &:to_param
+    joins(:tracking_cookie).where(TrackingCookie.arel_table[:user_id].send *(users.length == 1 ? [:eq, users.pop] : [:in, users]))
+  }
+
+  scope :by_campaign, lambda {|*campaigns| 
+    campaigns.flatten!
+    campaigns.map! &:to_param
+    where(arel_table[:campaign_id].send *(campaigns.length == 1 ? [:eq, campaigns.pop] : [:in, campaigns]))
+  }
+
   scope :new_visits,    lambda {|v=true| where(:new_visit => v) }
   scope :repeat_visits, lambda { new_visits(false) }
-
-  scope :from_time, lambda {|*args| 
-    args.flatten!
-    for_time_range(args.shift, nil, args.extract_options!)
-  }
-
-  scope :until_time, lambda {|*args| 
-    args.flatten!
-    for_time_range(nil, args.shift, args.extract_options!)
-  }
+  scope :from_time,     lambda {|*args| args.flatten!; for_time_range(args.shift, nil, args.extract_options!) }
+  scope :until_time,    lambda {|*args| args.flatten!; for_time_range(nil, args.shift, args.extract_options!) }
 
   scope :for_time_range, lambda {|*args|
     opts = args.extract_options!
@@ -64,17 +72,11 @@ class PageView < ActiveRecord::Base
     end
   }
 
-  scope :by_user, lambda {|*users| 
-    users.flatten!
-    users.map! &:to_param
-    joins(:tracking_cookie).where(TrackingCookie.arel_table[:user_id].send *(users.length == 1 ? [:eq, users.pop] : [:in, users]))
-  }
-
-  scope :by_campaign, lambda {|*campaigns| 
-    campaigns.flatten!
-    campaigns.map! &:to_param
-    where(arel_table[:campaign_id].send *(campaigns.length == 1 ? [:eq, campaigns.pop] : [:in, campaigns]))
-  }
-
   delegate :name, :code, :to => :campaign, :prefix => true, :allow_nil => true
+
+  protected
+
+  def increment_campaign_visit_cache
+    Campaign.increment_counter(new_visit ? :new_visits : :repeat_visits, campaign_id)
+  end
 end

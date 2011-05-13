@@ -3,6 +3,10 @@ module E9Crm::CampaignsHelper
     Money === val && val || 'n/a'
   end
 
+  def display_campaign_code(val)
+    val || 'n/a'
+  end
+
   def campaign_type_select_options(with_all_option = true)
     options = %w( advertising affiliate email sales ).map {|t| [t.titleize, t] }
     options.unshift(['All Types', nil]) if with_all_option
@@ -22,5 +26,12 @@ module E9Crm::CampaignsHelper
       ['Inactive',   false]
     ]
     options_for_select(options)
+  end
+
+  ##
+  # Accommodate for "NoCampaign" campaign in link
+  #
+  def link_to_edit_campaign(record)
+    link_to_edit_campaign(record) unless record.is_a?(NoCampaign)
   end
 end

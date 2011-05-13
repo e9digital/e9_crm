@@ -17,7 +17,7 @@ module E9Crm
       end
 
       def generate_migrations
-        migration_template 'create_e9_crm_tables.rb', 'db/migrate/create_e9_crm_tables.rb'
+        migration_template 'migration.rb', 'db/migrate/create_e9_crm_structure.rb'
       end
 
       def copy_initializer
