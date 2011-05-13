@@ -11,14 +11,34 @@ class Campaign < ActiveRecord::Base
   has_many   :page_views, :inverse_of => :campaign
 
   # NOTE tracking cookie code changes with new visits
-  has_many   :tracking_cookies, :foreign_key => :code, :primary_key => :code, :class_name => 'TrackingCookie'
+  has_many :tracking_cookies, :foreign_key => :code, :primary_key => :code, :class_name => 'TrackingCookie'
 
-  validates  :code, :presence   => true,
-                    :length     => { :maximum => 32 }, 
-                    :uniqueness => { :ignore_case => true }
+  validates :code,          :presence     => true,
+                            :length       => { :maximum => 32 }, 
+                            :uniqueness   => { :ignore_case => true }
+  validates :affiliate_fee, :numericality => true
+  validates :sales_fee,     :numericality => true
 
-  scope :active,   lambda { where(:active => true) }
-  scope :inactive, lambda { where(:active => false) }
+
+  scope :active,   lambda {|val=true| where(:active => val) }
+  scope :inactive, lambda { active(false) }
+  scope :of_group, lambda {|val| where(:campaign_group_id => val.to_param) }
+
+  def new_visit_session_count
+    page_views.new_visits.group(:session).count.keys.length
+  end
+
+  def new_visit_page_view_count
+    page_views.new_visits.group(:session).count.values.sum
+  end
+
+  def repeat_visit_session_count
+    page_views.repeat_visits.group(:session).count.keys.length
+  end
+
+  def repeat_visit_session_count
+    page_views.repeat_visits.group(:session).count.values.sum
+  end
 
   ##
   # The sum cost of this campaign

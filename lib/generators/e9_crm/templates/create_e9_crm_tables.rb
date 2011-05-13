@@ -21,11 +21,11 @@ class CreateE9CrmTables < ActiveRecord::Migration
     add_index 'tracking_cookies', 'user_id'
 
     create_table :contacts, :force => true do |t|
-      t.string :type
       t.string :first_name
       t.string :last_name
       t.string :title
       t.string :avatar
+      t.string :status
       t.references :company
       t.timestamps
     end

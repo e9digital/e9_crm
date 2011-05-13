@@ -1,12 +1,13 @@
 class E9Crm::ContactsController < E9Crm::ResourcesController
   defaults :resource_class => Contact
 
+  include E9Rails::Controllers::Orderable
   include E9Tags::Controller
 
   respond_to :js, :html
 
   before_filter :determine_title, :only => :index
-  before_filter :load_user_ids, :only => :index
+  before_filter :load_contact_ids, :only => :index
 
   has_scope :search, :by_title, :by_company, :only => :index
   has_scope :tagged, :only => :index, :type => :array
@@ -18,9 +19,10 @@ class E9Crm::ContactsController < E9Crm::ResourcesController
 
   protected
 
-  def load_user_ids
-    @user_ids ||= begin
-      (User.primary.joins(:contact) & end_of_association_chain.scoped).all.map(&:id)
+  def load_contact_ids
+    @contact_ids ||= begin
+      contact_id_sql = end_of_association_chain.scoped.select('contacts.id').to_sql
+      Contact.connection.send(:select_values, contact_id_sql, 'Contact ID Load')
     end
   end
 

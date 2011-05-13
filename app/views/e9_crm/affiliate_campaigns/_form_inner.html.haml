@@ -1,0 +1,10 @@
+= render 'e9_crm/sales_campaigns/form_inner', :f => f
+
+%fieldset
+  %legend= e9_t(:affiliate_information_legend, :scope => 'e9_crm.campaigns')
+  .field
+    = f.label :affilate_id
+    = f.collection_select :affiliate_id, Contact.affiliates.all, :id, :name, :prompt => true
+  .field
+    = f.label :affiliate_fee
+    = f.text_field :affiliate_fee

@@ -27,8 +27,10 @@ en:
               invalid: "One or more of the emails you entered is invalid."
         contact_email:
           attributes:
+            contact_ids:
+              blank: "You cannot send an emailwith no recipients!"
             user_ids:
-              blank: "You cannot send an email with no recipients!"
+              blank: "None of the contacts selected are configured with primary emails.  Please correct this and try again."
         deal:
           attributes:
             status:

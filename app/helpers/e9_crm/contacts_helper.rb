@@ -15,7 +15,7 @@ module E9Crm::ContactsHelper
   def records_table_field_map_for_contact
     {
       :fields => { 
-        :avatar => proc {|r| },
+        :avatar => proc {|r| "<img src=\"#{r.avatar_url}\" alt=\"Avatar for #{r.name}\" />".html_safe  },
         :details => proc {|r| render('details', :record => r) }
       },
 

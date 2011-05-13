@@ -1,0 +1,11 @@
+= render 'e9_crm/campaigns/form_inner', :f => f
+
+%fieldset
+  %legend= e9_t(:salesperson_information_legend, :scope => 'e9_crm.campaigns')
+  .field
+    = f.label :sales_person_id
+    = f.collection_select :sales_person_id, Contact.sales_persons.all, :id, :name, :prompt => true
+  .field
+    = f.label :sales_fee
+    = f.text_field :sales_fee
+

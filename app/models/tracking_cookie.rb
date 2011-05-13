@@ -45,12 +45,6 @@ class TrackingCookie < ActiveRecord::Base
   has_many :page_views
   after_save :generate_hid, :on => :create
 
-  attr_accessor :new_visit
-
-  def new_visit?
-    @new_visit.present?
-  end
-
   protected
 
   def generate_hid

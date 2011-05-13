@@ -4,7 +4,7 @@ Rails.application.routes.draw do
   scope :path => crm_path, :module => :e9_crm do
     resources :companies, :except => :show
     resources :contacts, :except => :show do
-      resources :page_views, :path => 'activity', :only => :index
+      #resources :page_views, :path => 'activity', :only => :index
       collection { get :templates }
     end
     resources :deals, :except => :show
@@ -18,21 +18,23 @@ Rails.application.routes.draw do
       collection { post :update_order }
     end
 
-    # campaigns_controller only handles index, the individual controllers all support
-    # specific index views and manage create/edit/destroy
-    resources :campaigns, :only  => :index do
-      resources :page_views, :path => 'activity', :only => :index
+    resources :campaigns, :only  => [:index, :destroy] do
+      #resources :page_views, :path => 'activity', :only => :index
     end
     scope :path => :campaigns do
-      get '/activity', :to => redirect("/#{crm_path}/campaigns/all/activity")
-
+      #get '/activity', :to => redirect("/#{crm_path}/campaigns/all/activity")
       resources :campaign_groups, :path => 'groups', :except => [:show]
-      resources :sales_campaigns, :path => 'sales', :except => [:show]
-      resources :advertising_campaigns, :path => 'advertising', :except => [:show] do
+
+      resources :sales_campaigns, :path => 'sales', :except => [:show, :index]
+      resources :affiliate_campaigns, :path => 'affiliate', :except => [:show, :index]
+      resources :email_campaigns, :path => 'email', :except => [:show, :index]
+      resources :advertising_campaigns, :path => 'advertising', :except => [:show, :index] do
         resources :dated_costs, :path => 'costs'
       end
-      resources :affiliate_campaigns, :path => 'affiliate', :except => [:show]
-      resources :email_campaigns, :path => 'email', :except => [:show]
+
+      %w( advertising affiliate email sales ).each do |path|
+        get "/#{path}", :to => redirect("/#{crm_path}/campaigns?type=#{path}")
+      end
     end
 
     # leads are simply a scoped view of offers (only index)
@@ -57,5 +59,6 @@ Rails.application.routes.draw do
     ).each do |path|
       get "/#{path}/:id", :to => redirect("/#{crm_path}/#{path}/%{id}/edit"), :constraints => { :id => /\d+/ }
     end
+
   end
 end

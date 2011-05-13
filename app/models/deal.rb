@@ -70,7 +70,7 @@ class Deal < ActiveRecord::Base
     # Typically, new Deals are 'pending', with the assumption that offers
     # explicitly create Deals as 'lead' when they convert.
     def _assign_initialization_defaults
-      self.status = Status::Pending
+      self.status ||= Status::Pending
     end
 
   module Status

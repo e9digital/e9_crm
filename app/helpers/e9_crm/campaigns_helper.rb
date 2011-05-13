@@ -1,14 +1,29 @@
 module E9Crm::CampaignsHelper
-  def records_table_map_for_campaign
-    { 
-      :fields => {
-        :type => nil, 
-        :name => nil, 
-        :code => nil, 
-        :affiliate_fee => proc {|r| v = r.affiliate_fee; Money === v ? v : 'n/a' },  
-        :sales_fee => nil, 
-        :status => proc {|r| resource_class.human_attribute_name(Campaign::Status::VALUES[r.status]) } 
-      }
-    }
+  def display_campaign_fee(val)
+    Money === val && val || 'n/a'
+  end
+
+  def campaign_types
+  end
+
+  def campaign_type_select_options(with_all_option = true)
+    options = %w( advertising affiliate email sales ).map {|t| [t.titleize, t] }
+    options.unshift(['All Types', nil]) if with_all_option
+    options_for_select(options)
+  end
+
+  def campaign_group_select_options
+    options = CampaignGroup.select('name, id').all.map {|c| [c.name, c.id] }
+    options.unshift(['All Groups', nil])
+    options_for_select(options)
+  end
+
+  def campaign_active_select_options
+    options = [
+      ['All Statuses', nil],
+      ['Active',      true],
+      ['Inactive',   false]
+    ]
+    options_for_select(options)
   end
 end

@@ -1,14 +1,12 @@
 # A ContactEmail is a one time mail generated from an EmailTemplate, sent not to a 
-# list, but to a set of user_ids.
+# list, but to a set of contact_ids.
 #
 class ContactEmail < Email
   include ScheduledEmail
   before_save :generate_html_body_from_text_body
 
-  # NOTE perhaps contact_email should validate contact ids?  Then again, 
-  #      then it would be necessary to ensure the contacts had primary email 
-  #      addresses
-  validates :user_ids, :presence => true
+  validates :contact_ids, :presence => true
+  validates :user_ids, :presence => { :unless => lambda {|r| r.contact_ids.blank? } }
 
   after_create :send_to_user_ids
 
@@ -23,22 +21,35 @@ class ContactEmail < Email
     end
   end
 
-  attr_reader :user_ids
+  # contact_ids only gets set if it's an array or a properly formatted string
+  def contact_ids=(val)
+    @contact_ids = case val
+                   when /^\[?((\d+,?\s?)+)\]?$/
+                     $1.split(',')
+                   when Array
+                     val
+                   else
+                     []
+                   end
 
-  # user_ids only gets set if it's an array or a properly formatted string
-  def user_ids=(val)
-    @user_ids = case val
-                when /^\[?((\d+,?\s?)+)\]?$/
-                  $1.split(',')
-                when Array
-                  val
-                else
-                  []
-                end
-
-    @user_ids.map!(&:to_i)
+    # clear user_ids cache
+    @user_ids = nil
   end
 
+  def contact_ids
+    (@contact_ids ||= []).map(&:to_i)
+  end
+
+
+  def user_ids 
+    @user_ids ||= if @contact_ids.present?
+      user_scope  = (User.primary.joins(:contact) & Contact.where(:id => @contact_ids))
+      user_id_sql = user_scope.select('users.id').to_sql
+      User.connection.send(:select_values, user_id_sql, 'User ID Load')
+    else
+      []
+    end
+  end
 
   protected
 

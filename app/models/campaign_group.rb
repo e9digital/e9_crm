@@ -2,4 +2,8 @@
 #
 class CampaignGroup < ActiveRecord::Base
   has_many :campaigns
+
+  def to_s
+    name
+  end
 end

@@ -1,5 +1,6 @@
 class E9Crm::DealsController < E9Crm::ResourcesController
   defaults :resource_class => Deal
+  include E9Rails::Controllers::Orderable
 
   filter_access_to :leads, :require => :read, :context => :admin
   prepend_before_filter :set_leads_index_title, :only => :leads

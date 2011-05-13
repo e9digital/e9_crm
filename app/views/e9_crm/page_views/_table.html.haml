@@ -1,8 +1,8 @@
 %table.records
   %thead
     %tr
-      %th= orderable_column_link('campaign.name', :campaign)
       %th= orderable_column_link(:created_at)
+      %th= orderable_column_link('campaign.name', :campaign)
       %th= orderable_column_link(:request_path)
       %th= orderable_column_link(:referer)
       %th= orderable_column_link(:remote_ip)
@@ -13,13 +13,13 @@
     - else
       - collection.each do |record|
         %tr{:id => "ids_#{record.id}", :class => cycle('odd', 'even')}
-          %td.contact-campaign-name
-            = record.campaign_name || 'n/a'
-          %td.contact-created-at
+          %td.record-created-at
             = I18n.l(record.created_at)
-          %td.contact-request-path
+          %td.record-campaign-name
+            = record.campaign_name || e9_t(:no_campaign)
+          %td.record-request-path
             = record.request_path
-          %td.contact-referer
+          %td.record-referer
             = record.referer
-          %td.contact-remote-ip
+          %td.record-remote-ip
             = record.remote_ip

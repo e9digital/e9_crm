@@ -1,6 +1,7 @@
 class Contact < ActiveRecord::Base
   include E9Tags::Model
   include E9Rails::ActiveRecord::AttributeSearchable
+  include E9Rails::ActiveRecord::Initialization
 
   # necessary so contact knows its merge path
   # NOTE in the future we'll probably want to give contacts public urls and make them 'Linkable'
@@ -128,6 +129,11 @@ class Contact < ActiveRecord::Base
         .or(User.attr_like_scope_condition(:email, query))
     )
   }
+
+  scope :sales_persons, lambda { where(:status => Status::SalesPerson) }
+  scope :affiliates, lambda { where(:status => Status::Affiliate) }
+  scope :contacts, lambda { where(:status => Status::Contact) }
+
   scope :by_title, lambda {|val| where(:title => val) }
   scope :by_company, lambda {|val| where(:company_id => val) }
   scope :tagged, lambda {|tags| 
@@ -137,6 +143,12 @@ class Contact < ActiveRecord::Base
       where("1=0")
     end
   }
+
+  #
+  # Carrierwave
+  #
+  mount_uploader :avatar, AvatarUploader
+  def thumb(options = {}); self.avatar end
 
   # The parameters for building the JS template for associated users
   def self.users_build_parameters # :nodoc:
@@ -242,6 +254,10 @@ class Contact < ActiveRecord::Base
 
   protected
 
+    def _assign_initialization_defaults
+      self.status ||= Status::Contact
+    end
+
     def ensure_user_references
       users.each {|u| u.contact = self }
     end
@@ -255,4 +271,10 @@ class Contact < ActiveRecord::Base
       attributes.keys.member?('value') && attributes['value'].blank?
     end
 
+  module Status
+    VALUES      = %w(contact sales_person affiliate)
+    Contact     = VALUES[0]
+    SalesPerson = VALUES[1]
+    Affiliate   = VALUES[2]
+  end
 end

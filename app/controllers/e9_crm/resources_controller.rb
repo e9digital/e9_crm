@@ -1,5 +1,4 @@
 class E9Crm::ResourcesController < E9Crm::BaseController
-  include E9Rails::Controllers::Orderable
   include E9Rails::Helpers::ResourceErrorMessages
   include E9Rails::Helpers::Pagination
 

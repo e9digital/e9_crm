@@ -17,21 +17,17 @@ class E9Crm::ContactEmailsController < E9Crm::ResourcesController
       object = if params[resource_instance_name]
         ContactEmail.new(params[resource_instance_name] || {})
       else
-        ContactEmail.new_from_template(template, :from_email => current_user.email, :user_ids => params[:uids])
+        ContactEmail.new_from_template(template, :from_email => current_user.email, :contact_ids => params[:uids])
       end
 
-      # we set the user_ids.blank? error right away signifiying a problem, 
-      # as the record won't be valid if the user_ids weren't passed in params
-      if object.user_ids.blank?
-        object.errors.add(:user_ids, :blank)
-      end
+      object.valid?
 
       set_resource_ivar(object)
     end
   end
 
   # throw record_not_found if there's no template.  #new requires email_template_id
-  # be passed in params (and also user_ids)
+  # be passed in params (and also contact_ids)
   def template
     @_template ||= EmailTemplate.find(params[:etid])
   end
