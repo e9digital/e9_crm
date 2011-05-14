@@ -17,10 +17,10 @@
         %tr{:id => "ids_#{record.id}", :class => cycle('odd', 'even')}
           %td.record-type
             = record.type[/(.*)Campaign/, 1]
-          %td.record-campaign-group
-            = record.campaign_group || e9_t(:no_group, :scope => 'e9_crm.campaigns')
           %td.record-name
             = record.name
+          %td.record-campaign-group
+            = record.campaign_group || e9_t(:no_group, :scope => 'e9_crm.campaigns')
           %td.record-code
             = display_campaign_code(record.code)
           %td.record-affiliate-fee

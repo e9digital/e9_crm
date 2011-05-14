@@ -6,26 +6,26 @@
       %th= orderable_column_link('campaign_group.name', :campaign_group)
       %th= orderable_column_link(:new_visits)
       %th= orderable_column_link(:repeat_visits)
-      %th= orderable_column_link(:sales_fee)
-      %th= e9_t(:actions)
+      %th= orderable_column_link(:deals_count)
+      %th= orderable_column_link(:won_deals_count)
   %tbody
     - if collection.empty?
       %tr
-        %td{:colspan => 7}= e9_t(:no_records_text)
+        %td{:colspan => 5}= e9_t(:no_records_text)
     - else
       - collection.each do |record|
         %tr{:id => "ids_#{record.id}", :class => cycle('odd', 'even')}
           %td.record-type
             = record.type[/(.*)Campaign/, 1]
-          %td.record-campaign-group
-            = record.campaign_group || e9_t(:no_group, :scope => 'e9_crm.campaigns')
           %td.record-name
             = record.name
-          %td.record-code
-            = record.code
-          %td.record-affiliate-fee
-            = display_campaign_fee(record.affiliate_fee)
-          %td.record-sales-fee
-            = display_campaign_fee(record.sales_fee)
-          %td.links
-            = link_to_edit_resource(record)
+          %td.record-campaign-group
+            = record.campaign_group || e9_t(:no_group, :scope => 'e9_crm.campaigns')
+          %td.record-new-visits
+            = record.new_visits
+          %td.record-repeat-visits
+            = record.repeat_visits
+          %td.record-deals-count
+            = record.deals_count
+          %td.record-won-deals-count
+            = record.won_deals_count

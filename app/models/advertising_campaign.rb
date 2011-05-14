@@ -4,7 +4,6 @@
 # DatedCost records.
 #
 class AdvertisingCampaign < Campaign
-  has_many :dated_costs, :as => :costable
 
   ##
   # The sum cost of this campaign

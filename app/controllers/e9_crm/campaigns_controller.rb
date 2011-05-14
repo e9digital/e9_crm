@@ -23,9 +23,19 @@ class E9Crm::CampaignsController < E9Crm::ResourcesController
   def set_reports_index_title
     @index_title = I18n.t(:reports_title, :scope => 'e9.e9_crm.campaigns')
   end
+
+  def collection_scope
+    scope = end_of_association_chain
+    if params[:action] == 'reports'
+      scope = scope.select(
+        'campaigns.*, count(deals.id) won_deals_count, count(deals_campaigns.id) deals_count'
+      ).joins([:deals, :won_deals])
+    end
+    scope
+  end
   
   # no pagination
   def collection
-    get_collection_ivar || set_collection_ivar(end_of_association_chain.all)
+    get_collection_ivar || set_collection_ivar(collection_scope.all)
   end
 end

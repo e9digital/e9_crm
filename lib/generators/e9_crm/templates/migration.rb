@@ -71,6 +71,7 @@ class CreateE9CrmStructure < ActiveRecord::Migration
       t.references :offer, :campaign, :tracking_cookie
       t.timestamp :created_at, :updated_at, :converted_at
       t.string :status, :limit => 32
+      t.integer :value, :default => 0
     end
     add_index 'deals', 'offer_id'
     add_index 'deals', 'campaign_id'

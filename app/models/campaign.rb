@@ -7,8 +7,17 @@ class Campaign < ActiveRecord::Base
   include E9Rails::ActiveRecord::STI
 
   belongs_to :campaign_group
+
   has_many   :deals, :inverse_of => :campaign, :dependent => :nullify
+  has_many   :won_deals, :class_name => 'Deal', :conditions => ['deals.status = ?', Deal::Status::Won]
+  has_many   :lost_deals, :class_name => 'Deal', :conditions => ['deals.status = ?', Deal::Status::Lost]
+  has_many   :pending_deals, :class_name => 'Deal', :conditions => ['deals.status = ?', Deal::Status::Pending]
+  has_many   :leads, :class_name => 'Deal', :conditions => ['deals.status = ?', Deal::Status::Lead]
+
   has_many   :page_views, :inverse_of => :campaign, :dependent => :nullify
+
+  # only advertising campaigns use this association
+  has_many :dated_costs, :as => :costable
 
   # NOTE tracking cookie code changes with new visits
   has_many :tracking_cookies, :foreign_key => :code, :primary_key => :code, :class_name => 'TrackingCookie'
@@ -19,7 +28,7 @@ class Campaign < ActiveRecord::Base
 
   validates :code,          :presence     => { :unless => lambda {|r| r.is_a?(NoCampaign) } },
                             :length       => { :maximum => 32 }, 
-                            :uniqueness   => { :ignore_case => true }
+                            :uniqueness   => { :ignore_case => true, :allow_blank => true }
   validates :affiliate_fee, :numericality => true
   validates :sales_fee,     :numericality => true
 

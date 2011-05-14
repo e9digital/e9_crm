@@ -1,0 +1,32 @@
+%table.records
+  %thead
+    %tr
+      %th= orderable_column_link(:campaign_type)
+      %th= orderable_column_link(:campaign_name)
+      %th= orderable_column_link(:new_visits)
+      %th= orderable_column_link(:repeat_visits)
+      %th= orderable_column_link(:deal_count)
+      %th= orderable_column_link(:won_deal_count)
+      %th= orderable_column_link(:total_value)
+      %th= orderable_column_link(:average_value)
+      %th= orderable_column_link(:total_cost)
+      %th= orderable_column_link(:won_deal_count)
+  %tbody
+    - if collection.empty?
+      %tr
+        %td{:colspan => 5}= e9_t(:no_records_text)
+    - else
+      - collection.each do |record|
+        %tr{:id => "ids_#{record.id}", :class => cycle('odd', 'even')}
+          %td.record-campaign-type
+            = record.campaign_type
+          %td.record-name
+            = record.campaign_name
+          %td.record-new-visits
+            = record.new_visits
+          %td.record-repeat-visits
+            = record.repeat_visits
+          %td.record-deal-count
+            = record.deal_count
+          %td.record-won-deal-count
+            = record.won_deal_count

@@ -14,6 +14,9 @@ class E9Crm::DealsController < E9Crm::ResourcesController
 
   protected
 
+  def collection_scope
+  end
+
   def set_leads_index_title
     @index_title = I18n.t(:index_title, :scope => 'e9.e9_crm.leads')
   end
