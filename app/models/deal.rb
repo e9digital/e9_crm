@@ -3,6 +3,7 @@
 #
 class Deal < ActiveRecord::Base
   include E9Rails::ActiveRecord::Initialization
+  include E9Rails::ActiveRecord::Scopes::Times
 
   belongs_to :campaign, :inverse_of => :deals
   belongs_to :tracking_cookie, :inverse_of => :deals
@@ -11,17 +12,24 @@ class Deal < ActiveRecord::Base
   money_columns :value
   validates :value, :numericality => true
 
+  %w(total_value average_value total_cost average_cost).each do |money_column|
+    class_eval("def #{money_column}; (r = read_attribute(:#{money_column})) && Money.new(r) end")
+  end
+
   scope :reports, lambda {
     select_sql = <<-SELECT.gsub(/\s+/, ' ')
-      campaigns.id                           campaign_id,
-      campaigns.type                         campaign_type,
-      campaigns.name                         campaign_name,
-      COUNT(deals.id)                        deal_count,
-      SUM(IF(deals.status='won',1,0))        won_deal_count,
-      campaigns.new_visits                   new_visits, 
-      campaigns.repeat_visits                repeat_visits, 
-      SUM(IF(deals.status='won',value,0))    total_value, 
-      AVG(IF(deals.status='won',value,NULL)) average_value, 
+      campaigns.id                            campaign_id,
+      campaigns.type                          campaign_type,
+      campaigns.name                          campaign_name,
+      campaign_groups.name                    campaign_group,
+      SUM(IF(deals.status != 'lead',1,0))     deal_count, 
+      COUNT(deals.id)                         lead_count,
+      SUM(IF(deals.status='won',1,0))         won_deal_count,
+      campaigns.new_visits                    new_visits, 
+      campaigns.repeat_visits                 repeat_visits, 
+
+      SUM(IF(deals.status='won',value,0))     total_value, 
+      AVG(IF(deals.status='won',value,NULL))  average_value, 
 
       (CASE campaigns.type
         WHEN "SalesCampaign"       
@@ -33,24 +41,24 @@ class Deal < ActiveRecord::Base
                    campaigns.affiliate_fee)
         ELSE 
           0 
-        END)                                 total_cost,
+        END)                                   total_cost,
 
       (CASE campaigns.type
         WHEN "SalesCampaign"       
-          THEN SUM(campaigns.sales_fee)
+          THEN campaigns.sales_fee
         WHEN "AdvertisingCampaign" 
           THEN dated_costs.cost 
         WHEN "AffiliateCampaign"   
-          THEN SUM(campaigns.sales_fee + 
-                   campaigns.affiliate_fee)
+          THEN campaigns.sales_fee + 
+                 campaigns.affiliate_fee
         ELSE 
           0 
-        END / COUNT(deals.id))               average_cost,
+        END / COUNT(deals.id))                 average_cost,
 
-      AVG(
+      FLOOR(AVG(
         DATEDIFF(
-          deals.converted_at,
-          deals.created_at))                 average_elapsed
+          deals.closed_at,
+          deals.created_at)))                  average_elapsed
 
     SELECT
 
@@ -61,6 +69,9 @@ class Deal < ActiveRecord::Base
 
       LEFT OUTER JOIN campaigns 
         ON campaigns.id = deals.campaign_id 
+
+      LEFT OUTER JOIN campaign_groups
+        ON campaign_groups.id = campaigns.campaign_group_id
     JOINS
 
     select(select_sql).joins(join_sql).group(:campaign_id)
@@ -85,6 +96,9 @@ class Deal < ActiveRecord::Base
     when Status::Won, Status::Lost
       if record.status_was == Status::Lead
         record.errors.add(:status, :illegal_conversion)
+      elsif record.persisted?
+        # "close" isn't happening on new records
+        record.send :_do_close
       end
     else
       record.errors.add(:status, :invalid, :options => Status::OPTIONS.join(', '))
@@ -125,6 +139,11 @@ class Deal < ActiveRecord::Base
     def _do_revert
       self.converted_at = nil
       notify_observers :before_revert
+    end
+
+    def _do_close
+      self.closed_at = nil
+      notify_observers :before_close
     end
   
     # Typically, new Deals are 'pending', with the assumption that offers

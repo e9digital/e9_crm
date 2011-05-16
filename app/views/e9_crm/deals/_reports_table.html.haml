@@ -3,30 +3,84 @@
     %tr
       %th= orderable_column_link(:campaign_type)
       %th= orderable_column_link(:campaign_name)
+      %th= orderable_column_link(:campaign_group)
       %th= orderable_column_link(:new_visits)
       %th= orderable_column_link(:repeat_visits)
+      %th= orderable_column_link(:lead_count)
       %th= orderable_column_link(:deal_count)
       %th= orderable_column_link(:won_deal_count)
       %th= orderable_column_link(:total_value)
       %th= orderable_column_link(:average_value)
       %th= orderable_column_link(:total_cost)
-      %th= orderable_column_link(:won_deal_count)
+      %th= orderable_column_link(:average_cost)
+      %th= orderable_column_link(:average_elapsed)
   %tbody
+    -# prepare a hash to store the accumulated row data for calculations
+    - dat = Hash.new {|k,v| k[v] = [] }
+
     - if collection.empty?
       %tr
-        %td{:colspan => 5}= e9_t(:no_records_text)
+        %td{:colspan => 13}= e9_t(:no_records_text, :scope => 'e9_crm.reports')
     - else
       - collection.each do |record|
         %tr{:id => "ids_#{record.id}", :class => cycle('odd', 'even')}
           %td.record-campaign-type
-            = record.campaign_type
-          %td.record-name
+            = record.campaign_type[/(.*)Campaign/, 1]
+          %td.record-campaign-name
             = record.campaign_name
+          %td.record-campaign-group
+            = record.campaign_group
           %td.record-new-visits
+            - dat[:new_visits] << record.new_visits
             = record.new_visits
           %td.record-repeat-visits
+            - dat[:repeat_visits] << record.repeat_visits
             = record.repeat_visits
+          %td.record-lead-count
+            - dat[:lead_count] << record.lead_count
+            = record.lead_count.to_i
           %td.record-deal-count
-            = record.deal_count
+            - dat[:deal_count] << record.deal_count
+            = record.deal_count.to_i
           %td.record-won-deal-count
-            = record.won_deal_count
+            - dat[:won_deal_count] << record.won_deal_count
+            = record.won_deal_count.to_i
+          %td.record-total-value
+            - dat[:total_value] << record.total_value
+            = record.total_value
+          %td.record-averate-value
+            - dat[:average_value] << record.average_value
+            = record.average_value
+          %td.record-total-cost
+            - dat[:total_cost] << record.total_cost
+            = record.total_cost
+          %td.record-average-cost
+            - dat[:average_cost] << record.average_cost
+            = record.average_cost
+          %td.record-average-elapsed
+            - dat[:average_elapsed] << record.average_elapsed
+            = record.average_elapsed && "%s days" % record.average_elapsed || 'n/a'
+    %tfooter
+      %tr{:class => 'record-totals'}
+        %td.record-totals-label{:colspan => 3}
+          #{t(:totals)}:
+        %td.record-new-visits
+          = dat[:new_visits].sum
+        %td.record-repeat-visits
+          = dat[:repeat_visits].sum
+        %td.record-lead-count
+          = dat[:lead_count].sum
+        %td.record-deal-count
+          = dat[:deal_count].sum.to_i
+        %td.record-won-deal-count
+          = dat[:won_deal_count].sum.to_i
+        %td.record-total-value
+          = dat[:total_value].average
+        %td.record-averate-value
+          = dat[:average_value].average
+        %td.record-total-cost
+          = dat[:total_cost].compact.sum
+        %td.record-average-cost
+          = dat[:average_cost].compact.average
+        %td.record-average-elapsed
+          = "%s days" % dat[:average_elapsed].compact.average

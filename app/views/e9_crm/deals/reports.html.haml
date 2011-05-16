@@ -1,13 +1,19 @@
-= title (@index_title || e9_t(:reports_title))
+= title (@index_title || e9_t(:index_title, :scope => 'e9_crm.reports'))
 
-= render 'header'
+.toolbar
+  .toolbar-left
+    = form_tag(resource_class, :method => :get, :id => 'campaign_search_form') do
+      %select{:name => 'type'}
+        = campaign_type_select_options
+      %select{:name => 'group'}
+        = campaign_group_select_options
+      %select{:name => 'from'}
+        = deal_date_select_options
+      %select{:name => 'until'}
+        = deal_date_select_options(true)
 
-- if sortable_controller?
-  = form_tag polymorphic_path([:update_order, resource_class]) do
-    %div#records_table
-      = render 'table', :resources => collection
-- else
-  %div#records_table
-    = render 'table', :resources => collection
+  .toolbar-right
+    = link_to_collection(Campaign)
 
-= render 'footer'
+%div#records_table
+  = render 'reports_table'

@@ -69,7 +69,7 @@ class CreateE9CrmStructure < ActiveRecord::Migration
     create_table :deals, :force => true do |t|
       t.string :type
       t.references :offer, :campaign, :tracking_cookie
-      t.timestamp :created_at, :updated_at, :converted_at
+      t.timestamp :created_at, :updated_at, :converted_at, :closed_at
       t.string :status, :limit => 32
       t.integer :value, :default => 0
     end
@@ -81,11 +81,9 @@ class CreateE9CrmStructure < ActiveRecord::Migration
     create_table :offers, :force => true do |t|
       t.string :type
       t.references :offer, :campaign, :tracking_cookie
-      t.timestamp :created_at, :updated_at, :converted_at
+      t.timestamp :created_at, :updated_at, :converted_at, :closed_at
       t.string :status, :limit => 32
     end
-
-
 
     add_column :users, :contact_id, :integer rescue nil
     add_column :users, :options, :text, :limit => 1.kilobyte rescue nil

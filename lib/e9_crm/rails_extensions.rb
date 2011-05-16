@@ -1,6 +1,13 @@
 require 'active_record/base'
 require 'action_view/base'
 
+class Array
+  def average
+    return 0 unless length > 0 && all? {|n| n && n.respond_to?(:to_f) }
+    sum / length
+  end
+end
+
 class ActiveRecord::Base
   #
   # Basic conversion for "money" columns using the Money class and Rails composed_of

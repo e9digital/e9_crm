@@ -39,7 +39,7 @@ Rails.application.routes.draw do
 
     # leads are simply a scoped view of offers (only index)
     get :leads, :as => :leads, :to => 'deals#leads'
-    get :marketing_report, :to => 'campaigns#reports', :only => :index
+    get :marketing_report, :to => 'deals#reports', :only => :index
 
     get  '/merge_contacts/:contact_a_id/and/:contact_b_id', :as => :new_contact_merge, :to => 'contact_merges#new'
     post '/merge_contacts', :as => :contact_merges, :to => 'contact_merges#create'

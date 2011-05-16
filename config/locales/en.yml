@@ -4,6 +4,7 @@ en:
   search: Search
   view: View
   none: None
+  totals: Totals
   inline_help_link: '[?]'
 
   e9_crm:
@@ -15,6 +16,7 @@ en:
       edit: "Edit"
       destroy: "Delete"
       show: "View"
+      index: "Manage %{models}"
 
       campaign_group: 
         confirm_destroy: Are you sure?  This cannot be undone.  Any campaigns which are associated with this group will become groupless.

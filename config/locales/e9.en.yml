@@ -26,8 +26,10 @@ en:
         send_email: Send Email
       leads:
         index_title: Leads
+      reports:
+        index_title: Marketing Report
+        no_records_text: No data exists for those query parameters.
       campaigns:
-        reports_title: Marketing Report
         no_campaign: No Campaign
         no_group: No Group
         campaign_information_legend: Campaign Information

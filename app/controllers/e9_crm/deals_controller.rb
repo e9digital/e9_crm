@@ -2,22 +2,82 @@ class E9Crm::DealsController < E9Crm::ResourcesController
   defaults :resource_class => Deal
   include E9Rails::Controllers::Orderable
 
-  filter_access_to :leads, :require => :read, :context => :admin
+  # for campaign select options
+  helper :"e9_crm/campaigns"
+
+  filter_access_to :leads, :reports, :require => :read, :context => :admin
+
   prepend_before_filter :set_leads_index_title, :only => :leads
+  prepend_before_filter :set_reports_index_title, :only => :reports
+
+  ##
+  # Index/Reports Scopes
+  #
 
   has_scope :leads, :only => :leads, :default => true
-  has_scope :leads, :except => :leads, :default => false
+  has_scope :leads, :except => [:leads, :reports], :default => false
+
+
+  ##
+  # Reports scopes
+  #
+
+  has_scope :reports, :only => :reports, :type => :boolean, :default => true
+
+  has_scope :group, :only => :reports do |c, scope, value|
+    scope & Campaign.of_group(value)
+  end
+
+  has_scope :type, :only => :reports do |_, scope, value|
+    scope & Campaign.of_type("#{value}_campaign".classify)
+  end
+
+  has_scope :until_time, :as => :until, :unless => 'params[:from].present?'
+
+  has_scope :from_time, :as => :from do |controller, scope, value|
+    if controller.params[:until]
+      scope.for_time_range(value, controller.params[:until])
+    else
+      scope.from_time(value)
+    end
+  end
+
+
+  ##
+  # Actions
+  #
 
   def leads
     index!
   end
 
+  def reports
+    index!
+  end
+
   protected
 
-  def collection_scope
+  def collection
+    get_collection_ivar || begin
+      set_collection_ivar(
+        if params[:action] == 'reports'
+          end_of_association_chain.all
+        else
+          end_of_association_chain.paginate(pagination_parameters)
+        end
+      )
+    end
   end
 
   def set_leads_index_title
     @index_title = I18n.t(:index_title, :scope => 'e9.e9_crm.leads')
+  end
+
+  def set_reports_index_title
+    @index_title = I18n.t(:index_title, :scope => 'e9.e9_crm.reports')
+  end
+
+  def ordered_if 
+    %w(index reports).member? params[:action]
   end
 end
