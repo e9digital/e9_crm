@@ -5,6 +5,8 @@
 #
 class AdvertisingCampaign < Campaign
 
+  accepts_nested_attributes_for :dated_costs
+
   ##
   # The sum cost of this campaign
   #

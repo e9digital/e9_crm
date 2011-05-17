@@ -1,0 +1,15 @@
+= title @index_title || e9_t(:index_title)
+
+%fieldset
+  .dated-costs
+    .dated-cost-labels
+      .field
+        = resource_class.human_attribute_name(:date)
+      .field
+        = resource_class.human_attribute_name(:cost)
+
+    = render collection
+
+    .actions
+      = link_to_new_resource(resource_class, :remote => true)
+

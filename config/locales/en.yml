@@ -6,12 +6,18 @@ en:
   none: None
   totals: Totals
   inline_help_link: '[?]'
+  edit_dated_costs: Edit Costs
 
   e9_crm:
     add_record_attribute: Add
     destroy_record_attribute: Remove
 
   activerecord:
+    titles:
+      show: 'Show %{model}'
+      campaign:
+        show: '%{model}'
+
     links:
       edit: "Edit"
       destroy: "Delete"
@@ -54,6 +60,7 @@ en:
       campaign_type: Campaign Type
       company: Company
       contact: Contact
+      dated_cost: Advertising Cost
       deal: Deal
       page_view: Page View
       tracking_cookie: Tracking Cookie

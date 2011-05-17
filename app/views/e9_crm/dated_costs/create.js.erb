@@ -1,0 +1,5 @@
+<% if resource.errors.any? %>
+  $("#dated_cost_<%= resource.temp_id %>").html("<%= escape_javascript(render('form')) %>");  
+<% else %>
+  $("#dated_cost_<%= resource.temp_id %>").replaceWith("<%= escape_javascript(render(resource)) %>");  
+<% end %>

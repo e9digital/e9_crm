@@ -4,6 +4,7 @@ Rails.application.routes.draw do
   scope :path => crm_path, :module => :e9_crm do
     resources :companies, :except => :show
     resources :contacts, :except => :show do
+      # page_views currently not routed, but near working
       #resources :page_views, :path => 'activity', :only => :index
       collection { get :templates }
     end
@@ -18,7 +19,14 @@ Rails.application.routes.draw do
       collection { post :update_order }
     end
 
+    resources :dated_costs, :path => 'advertising_costs', :only => [:index] do
+      collection do
+        post :bulk_create
+      end
+    end
+
     resources :campaigns, :only  => [:index, :destroy] do
+      # page_views currently not routed, but near working
       #resources :page_views, :path => 'activity', :only => :index
     end
     scope :path => :campaigns do

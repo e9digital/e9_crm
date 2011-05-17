@@ -27,6 +27,7 @@ class E9Crm::ResourcesController < E9Crm::BaseController
   helper_method :parent
 
   def add_index_breadcrumb
+    yield if block_given?
     add_breadcrumb! @index_title || e9_t(:index_title), collection_path
   end
 

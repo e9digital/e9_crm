@@ -1,4 +1,4 @@
-class E9Crm::AdvertisingCampaignsController < E9Crm::ResourcesController
+class E9Crm::AdvertisingCampaignsController < E9Crm::CampaignSubclassController
   defaults :resource_class => AdvertisingCampaign
   include E9Rails::Controllers::Orderable
 end

@@ -1,0 +1,3 @@
+- id = resource.persisted? ? "dated_cost_#{resource.id}" : nil
+.dated-cost{:id => id }
+  = render 'form'

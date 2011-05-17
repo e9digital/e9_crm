@@ -31,29 +31,29 @@ class Deal < ActiveRecord::Base
       SUM(IF(deals.status='won',value,0))     total_value, 
       AVG(IF(deals.status='won',value,NULL))  average_value, 
 
-      (CASE campaigns.type
-        WHEN "SalesCampaign"       
-          THEN SUM(campaigns.sales_fee)
+      SUM(CASE campaigns.type
         WHEN "AdvertisingCampaign" 
           THEN dated_costs.cost 
-        WHEN "AffiliateCampaign"   
-          THEN SUM(campaigns.sales_fee + 
-                   campaigns.affiliate_fee)
-        ELSE 
-          0 
-        END)                                   total_cost,
-
-      (CASE campaigns.type
         WHEN "SalesCampaign"       
           THEN campaigns.sales_fee
-        WHEN "AdvertisingCampaign" 
-          THEN dated_costs.cost 
         WHEN "AffiliateCampaign"   
           THEN campaigns.sales_fee + 
                  campaigns.affiliate_fee
         ELSE 
           0 
-        END / COUNT(deals.id))                 average_cost,
+        END)                                   total_cost,
+
+      SUM(CASE campaigns.type
+        WHEN "AdvertisingCampaign" 
+          THEN dated_costs.cost 
+        WHEN "SalesCampaign"       
+          THEN campaigns.sales_fee
+        WHEN "AffiliateCampaign"   
+          THEN campaigns.sales_fee + 
+                 campaigns.affiliate_fee
+        ELSE 
+          0 
+        END) / SUM(IF(deals.status='won',1,0)) average_cost,
 
       FLOOR(AVG(
         DATEDIFF(

@@ -1,0 +1,8 @@
+.dated-cost{:id => "dated_cost_#{dated_cost.id}"}
+  .field
+    = l(dated_cost.date)
+  .field.cost{':data-cost' => dated_cost.cost.to_f}
+    = dated_cost.cost
+  .actions
+    = link_to_edit_resource(dated_cost, :remote => true)
+    = link_to_destroy_resource(dated_cost, :remote => true)
