@@ -1,0 +1,4 @@
+%fieldset.nested-associations
+  %legend= form.label(association_name)
+  = render_record_attribute_association(association_name, form)
+  = link_to_add_record_attribute(association_name)

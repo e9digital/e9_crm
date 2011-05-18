@@ -12,40 +12,22 @@
   .field
     = f.label :title
     = f.text_field :title
+  .field
+    = f.label :status
+    = f.select :status, Contact::Status::VALUES.map {|v| [v.titleize, v] }
+
+  = upload_mount_field(resource.avatar, :reset_path => true)
+  -#= upload_mount_field(resource.avatar, :resource_path => upload_avatar_profile_path, :reset_path => reset_avatar_profile_path)
 
 = render 'e9_tags/form', :f => f, :context => [:users, true]
 
 %fieldset.contact-contact-fields
   %legend= e9_t(:form_legend_contact)
+  = render_record_attribute_form(:users                               , f)
+  = render_record_attribute_form(:phone_number_attributes             , f)
+  = render_record_attribute_form(:instant_messaging_handle_attributes , f)
+  = render_record_attribute_form(:website_attributes                  , f)
+  = render_record_attribute_form(:address_attributes                  , f)
 
-  %fieldset.nested-associations
-    %legend
-      %span= f.label(:users)
-      = link_to_add_record_attribute(:users)
-    = render_record_attribute_association(:users, f)
-
-  %fieldset.nested-associations
-    %legend
-      %span= f.label(:phone_number_attributes)
-      = link_to_add_record_attribute(:phone_number_attributes)
-    = render_record_attribute_association(:phone_number_attributes, f)
-
-  %fieldset.nested-associations
-    %legend
-      %span= f.label(:instant_messaging_handle_attributes)
-      = link_to_add_record_attribute(:instant_messaging_handle_attributes)
-    = render_record_attribute_association(:instant_messaging_handle_attributes, f)
-
-  %fieldset.nested-associations
-    %legend
-      %span= f.label(:website_attributes)
-      = link_to_add_record_attribute(:website_attributes)
-    = render_record_attribute_association(:website_attributes, f)
-
-  %fieldset.nested-associations
-    %legend
-      %span= f.label(:address_attributes)
-      = link_to_add_record_attribute(:address_attributes)
-    = render_record_attribute_association(:address_attributes, f)
-
-= javascript_include_tag templates_contacts_path
+- content_for :bottom_javascripts do
+  = javascript_include_tag templates_contacts_path

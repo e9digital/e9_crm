@@ -44,6 +44,13 @@ module E9Crm::BaseHelper
     )
   end
 
+  def render_record_attribute_form(association_name, form)
+    render('e9_crm/record_attributes/form_partial', {
+      :form             => form,
+      :association_name => association_name
+    })
+  end
+
   def render_record_attribute_association(association_name, form, options = {})
     options.symbolize_keys!
 
@@ -59,10 +66,10 @@ module E9Crm::BaseHelper
   def record_attribute_template(association_name, builder, options = {})
     options.symbolize_keys!
 
-    render({
+    render(
       :partial => options[:partial] || "e9_crm/record_attributes/#{association_name.to_s.singularize}",
       :locals => { :f => builder }
-    })
+    )
   end
 
   def build_associated_resource(association_name)
