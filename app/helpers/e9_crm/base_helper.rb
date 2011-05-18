@@ -6,7 +6,7 @@ module E9Crm::BaseHelper
   
   def records_table_field_map(options = {})
     options.symbolize_keys!
-    options.reverse_merge!(:class_name => resource_class.base_class.name.underscore)
+    options.reverse_merge!(:class_name => resource_class.name.underscore)
 
     base_map = {
       :fields => { :id => nil },

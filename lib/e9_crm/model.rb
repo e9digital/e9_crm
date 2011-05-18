@@ -21,7 +21,7 @@ module E9Crm
 
       self.options_parameters = [:type, :primary]
 
-      scope :primary, lambda { where(arel_table[:options].matches("%primary: true%")) }
+      scope :primary, lambda { where(%Q{#{table_name}.options REGEXP "primary: [\\"']?true"}) }
 
       before_create :create_contact_if_missing
       after_destroy :cleanup_contact

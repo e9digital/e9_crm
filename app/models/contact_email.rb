@@ -13,10 +13,11 @@ class ContactEmail < Email
   class << self
     def new_from_template(template, attrs = {})
       new({
-        :name => "#{template.name} - #{DateTime.now.to_i}",
-        :subject => template.subject,
-        :html_body => template.html_body,
-        :text_body => template.text_body
+        :name       => "#{template.name} - #{DateTime.now.to_i}",
+        :subject    => template.subject,
+        :from_email => template.from_email,
+        :html_body  => template.html_body,
+        :text_body  => template.text_body
       }.merge(attrs))
     end
   end

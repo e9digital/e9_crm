@@ -2,6 +2,9 @@ class E9Crm::ResourcesController < E9Crm::BaseController
   include E9Rails::Helpers::ResourceErrorMessages
   include E9Rails::Helpers::Pagination
 
+  class_inheritable_accessor :should_paginate_index
+  self.should_paginate_index = true
+
   inherit_resources
 
   respond_to :js
@@ -32,7 +35,11 @@ class E9Crm::ResourcesController < E9Crm::BaseController
   end
 
   def collection
-    get_collection_ivar || set_collection_ivar(end_of_association_chain.paginate(pagination_parameters))
+    get_collection_ivar || begin 
+      set_collection_ivar(
+        end_of_association_chain.send *(should_paginate_index ? [:paginate, pagination_parameters] : [:all])
+      )
+    end
   end
 
   def default_ordered_on

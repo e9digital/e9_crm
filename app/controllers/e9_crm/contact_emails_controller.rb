@@ -17,8 +17,10 @@ class E9Crm::ContactEmailsController < E9Crm::ResourcesController
       object = if params[resource_instance_name]
         ContactEmail.new(params[resource_instance_name] || {})
       else
-        ContactEmail.new_from_template(template, :from_email => current_user.email, :contact_ids => params[:uids])
+        ContactEmail.new_from_template(template, :contact_ids => params[:uids])
       end
+
+      object.from_email ||= current_user.email
 
       object.valid?
 
