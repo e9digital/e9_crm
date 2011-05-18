@@ -6,7 +6,12 @@ Rails.application.routes.draw do
     resources :contacts, :except => :show do
       # page_views currently not routed, but near working
       #resources :page_views, :path => 'activity', :only => :index
+
       collection { get :templates }
+      member do
+        post   :upload_avatar
+        delete :reset_avatar
+      end
     end
     resources :deals, :except => :show
     resources :offers, :except => :show
