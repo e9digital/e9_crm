@@ -94,6 +94,10 @@ class Contact < ActiveRecord::Base
     accepts_nested_attributes_for association_name.to_sym, :allow_destroy => true, :reject_if => :reject_record_attribute?
   end
 
+  def build_all_record_attributes
+    RECORD_ATTRIBUTES.each {|attr| send(attr).build }
+  end
+
   ##
   # Validations
   #
@@ -152,7 +156,7 @@ class Contact < ActiveRecord::Base
 
   # The parameters for building the JS template for associated users
   def self.users_build_parameters # :nodoc:
-    { :status => User::Status::PROSPECT }
+    { :status => User::Status::Prospect }
   end
 
   ##
@@ -267,8 +271,12 @@ class Contact < ActiveRecord::Base
       reject_record_attribute?(hash) || super 
     end
 
+    #
+    # #TODO figure out exactly how to handle rejection of Users
+    #
     def reject_record_attribute?(attributes)
-      attributes.keys.member?('value') && attributes['value'].blank?
+      attributes.keys.member?('value') && attributes['value'].blank? ||
+        attributes.keys.member?('email') && attributes['email'].blank?
     end
 
   module Status
