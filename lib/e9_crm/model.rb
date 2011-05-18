@@ -31,7 +31,7 @@ module E9Crm
     # Is this the Contact's primary model?
     #
     def primary?
-      !!options.primary
+      ["true", true].member? options.primary
     end
 
     protected
