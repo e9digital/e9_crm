@@ -67,6 +67,7 @@ en:
     
     attributes:
       contact:
+        avatar: Photo
         users: Email Addresses
         address_attributes: Addresses
         instant_messaging_handle_attributes: Instant Messaging Handles
