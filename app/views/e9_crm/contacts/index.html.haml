@@ -1,13 +1,12 @@
 = title (@index_title || e9_t(:index_title))
 
-
-#index_header
+#index-header
   = render 'header'
-
-#records_table
-  = render 'table', :resources => collection
 
 #contact-tag-list
   = render 'tag_table'
+
+#records_table
+  = render 'table', :resources => collection
 
 = render 'footer'

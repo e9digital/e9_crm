@@ -3,7 +3,7 @@ Rails.application.routes.draw do
 
   scope :path => crm_path, :module => :e9_crm do
     resources :companies, :except => :show
-    resources :contacts, :except => :show do
+    resources :contacts do
       # page_views currently not routed, but near working
       #resources :page_views, :path => 'activity', :only => :index
 
@@ -64,7 +64,6 @@ Rails.application.routes.draw do
       campaigns/email
       campaigns/sales
       campaigns/groups
-      contacts
       deals
       email_templates
       menu_options

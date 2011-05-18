@@ -95,7 +95,11 @@ class Contact < ActiveRecord::Base
   end
 
   def build_all_record_attributes
-    RECORD_ATTRIBUTES.each {|attr| send(attr).build }
+    RECORD_ATTRIBUTES.each do |attr|
+      params_method = "#{attr}_build_parameters"
+      build_params = self.class.send(params_method) if self.class.respond_to?(params_method)
+      send(attr).send(:build, build_params || {})
+    end
   end
 
   ##
@@ -123,15 +127,18 @@ class Contact < ActiveRecord::Base
       LEFT OUTER JOIN record_attributes 
         ON record_attributes.record_id = contacts.id
         AND record_attributes.record_type = 'Contact'
-      LEFT OUTER JOIN users
-        ON users.contact_id = contacts.id
+      LEFT OUTER JOIN users AS contacts_users
+        ON contacts_users.contact_id = contacts.id
     }
 
-    joins(join_sql).group('contacts.id').where(
-      any_attrs_like_scope_conditions(:first_name, :last_name, :title, query)
-        .or(RecordAttribute.attr_like_scope_condition(:value, query))
-        .or(User.attr_like_scope_condition(:email, query))
-    )
+    where_sql = any_attrs_like_scope_conditions(:first_name, :last_name, :title, query)
+                  .or(RecordAttribute.attr_like_scope_condition(:value, query))
+                  .to_sql
+
+    ucond = sanitize_sql_array(['contacts_users.email like ?', "%#{query}%"])
+    where_sql << " OR (#{ucond})"
+
+    select("distinct contacts.*").joins(join_sql).where(where_sql)
   }
 
   scope :sales_persons, lambda { where(:status => Status::SalesPerson) }

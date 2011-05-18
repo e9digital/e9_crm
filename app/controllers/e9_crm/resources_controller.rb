@@ -34,10 +34,15 @@ class E9Crm::ResourcesController < E9Crm::BaseController
     add_breadcrumb! @index_title || e9_t(:index_title), collection_path
   end
 
+  # expose collection scope to be overridden
+  def collection_scope
+    end_of_association_chain
+  end
+
   def collection
     get_collection_ivar || begin 
       set_collection_ivar(
-        end_of_association_chain.send *(should_paginate_index ? [:paginate, pagination_parameters] : [:all])
+        collection_scope.send *(should_paginate_index ? [:paginate, pagination_parameters] : [:all])
       )
     end
   end

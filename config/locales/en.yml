@@ -66,6 +66,9 @@ en:
       tracking_cookie: Tracking Cookie
     
     attributes:
+      campaign:
+        name: Name
+        code_hint: Append to URL
       contact:
         avatar: Photo
         users: Email Addresses
@@ -73,9 +76,9 @@ en:
         instant_messaging_handle_attributes: Instant Messaging Handles
         phone_number_attrubutes: Phone Numbers
         website_attributes: Websites
-      campaign:
-        name: Name
-        code_hint: Append to URL
+        info: Background Information
+      company:
+        info: Background Information
       no_campaign:
         name: No Campaign
       offer:

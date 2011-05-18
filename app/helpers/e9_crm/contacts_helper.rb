@@ -12,6 +12,12 @@ module E9Crm::ContactsHelper
     options_for_select( UserEmail.pending.order('name').map {|e| [e.name, e.id] })
   end
 
+  def contact_user_subscribed_to_newsletter?(user)
+    @_newsletter ||= MailingList.newsletter
+
+    user.subscription_ids.include? @_newsletter.id
+  end
+
   def records_table_field_map_for_contact
     {
       :fields => { 
@@ -19,9 +25,11 @@ module E9Crm::ContactsHelper
         :details => proc {|r| render('details', :record => r) }
       },
 
-      :links => proc {|r|
-        [link_to_show_resource(r), link_to_edit_resource(r), link_to_destroy_resource(r)]
-      }
+      :links => proc {|r| [
+        link_to_show_resource(r), 
+        link_to_edit_resource(r), 
+        link_to_destroy_resource(r)
+      ]}
     }
   end
 end

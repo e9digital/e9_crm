@@ -1,10 +1,13 @@
-.contact-who
-  %span.contact-name= record.name
-  - if record.company_id? || record.title?
-    = " - "
-    = link_to_contact_search(:by_title, record.title) if record.title?
-    = " at " if record.company_id? && record.title?
-    = link_to_contact_search(:by_company, record.company_id, record.company_name) if record.company_id?
+= render 'who', :record => record
+
+- if record.users.any?
+  .contact-phone-numbers
+    - record.users.each do |user|
+      .contact-email
+        = '* ' if contact_user_subscribed_to_newsletter?(user)
+        = link_to(user.email, "mailto:#{user.email}")
+        = "(#{user.options.type})" if user.options.type
+        = "(primary)"              if user.primary?
 
 - if record.phone_number_attributes.any?
   .contact-phone-numbers
@@ -19,4 +22,5 @@
 - if record.website_attributes.any?
   .contact-websites
     - record.website_attributes.each do |website_attribute|
-      .contact-website= website_attribute
+      .contact-website
+        = auto_link(website_attribute.to_s, :rel => "external nofollow")

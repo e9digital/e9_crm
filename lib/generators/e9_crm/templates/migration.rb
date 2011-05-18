@@ -26,6 +26,7 @@ class CreateE9CrmStructure < ActiveRecord::Migration
       t.string :title
       t.string :avatar
       t.string :status
+      t.text :info
       t.references :company
       t.timestamps
     end
@@ -63,6 +64,7 @@ class CreateE9CrmStructure < ActiveRecord::Migration
 
     create_table :companies, :force => true do |t|
       t.string :name
+      t.text :info
       t.timestamps
     end
 

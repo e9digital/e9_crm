@@ -20,6 +20,14 @@ class E9Crm::ContactsController < E9Crm::ResourcesController
   before_filter :build_resource, :only => :templates
   caches_action :templates
 
+  def create
+    create! { resource_path }
+  end
+
+  def update
+    update! { resource_path }
+  end
+
   protected
 
   #
@@ -46,6 +54,12 @@ class E9Crm::ContactsController < E9Crm::ResourcesController
     elsif params[:search]
       e9_t(:index_title_with_search, :search => params[:search])
     end
+  end
+
+  def collection_scope
+    #TODO fix eager loading, which totally breaks because of the left outer joins in search
+    #super.includes(:users => :subscriptions)
+    scope = super
   end
 
   def build_nested_associations

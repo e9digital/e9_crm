@@ -17,7 +17,6 @@
     = f.select :status, Contact::Status::VALUES.map {|v| [v.titleize, v] }
 
   = upload_mount_field(resource.avatar, :reset_path => true)
-  -#= upload_mount_field(resource.avatar, :resource_path => upload_avatar_profile_path, :reset_path => reset_avatar_profile_path)
 
 = render 'e9_tags/form', :f => f, :context => [:users, true]
 
@@ -28,6 +27,11 @@
   = render_record_attribute_form(:instant_messaging_handle_attributes , f)
   = render_record_attribute_form(:website_attributes                  , f)
   = render_record_attribute_form(:address_attributes                  , f)
+
+%fieldset.contact-background-info
+  %legend= f.label(:info)
+  .field.tinymce
+    = f.text_area :info
 
 - content_for :bottom_javascripts do
   = javascript_include_tag templates_contacts_path
