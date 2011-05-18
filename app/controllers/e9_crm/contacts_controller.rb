@@ -6,8 +6,11 @@ class E9Crm::ContactsController < E9Crm::ResourcesController
 
   respond_to :js, :html
 
+  carrierwave_column_methods :avatar, :context => :admin
+
   before_filter :determine_title, :only => :index
   before_filter :load_contact_ids, :only => :index
+  before_filter :build_nested_associations, :only => [:new, :edit]
 
   has_scope :search, :by_title, :by_company, :only => :index
   has_scope :tagged, :only => :index, :type => :array
@@ -19,6 +22,10 @@ class E9Crm::ContactsController < E9Crm::ResourcesController
 
   protected
 
+  #
+  # Load all contact ids for the request (no pagination) using a direct sql query
+  # for the contact_id rather than loading all contacts.
+  #
   def load_contact_ids
     @contact_ids ||= begin
       contact_id_sql = end_of_association_chain.scoped.select('contacts.id').to_sql
@@ -26,6 +33,9 @@ class E9Crm::ContactsController < E9Crm::ResourcesController
     end
   end
 
+  #
+  # Change title depending on search params (tags & search)
+  #
   def determine_title
     params.delete(:search) if params[:search].blank?
 
@@ -36,6 +46,11 @@ class E9Crm::ContactsController < E9Crm::ResourcesController
     elsif params[:search]
       e9_t(:index_title_with_search, :search => params[:search])
     end
+  end
+
+  def build_nested_associations
+    object = params[:id] ? resource : build_resource
+    object.build_all_record_attributes
   end
 
   def default_ordered_on
