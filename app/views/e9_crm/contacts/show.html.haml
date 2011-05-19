@@ -19,6 +19,6 @@
         = google_search_link(company.name)
         = google_news_link(company.name)
       - if company.info.present?
-        = contact_simple_format(text)
+        = contact_simple_format(company.info)
 .contact-sidebar
   = render 'sidebar'
