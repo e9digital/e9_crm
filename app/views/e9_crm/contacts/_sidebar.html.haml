@@ -1,0 +1,38 @@
+- if resource.phone_number_attributes.any?
+  .contact-phone-numbers
+    %label= Contact.human_attribute_name(:phone_number_attributes)
+    - resource.phone_number_attributes.each do |phone_number_attribute|
+      .contact-phone-number= phone_number_attribute
+
+- if resource.users.any?
+  .contact-emails
+    %label= Contact.human_attribute_name(:users)
+    - resource.users.each do |user|
+      .contact-email
+        = '* ' if contact_user_subscribed_to_newsletter?(user)
+        = link_to(user.email, "mailto:#{user.email}")
+        = "(#{user.options.type})" if user.options.type
+        = "(primary)"              if user.primary?
+
+- if resource.instant_messaging_handle_attributes.any?
+  .contact-im-handles
+    %label= Contact.human_attribute_name(:instant_messaging_handle_attributes)
+    - resource.instant_messaging_handle_attributes.each do |instant_messaging_handle_attribute|
+      .contact-im-handle= instant_messaging_handle_attribute
+
+- if resource.website_attributes.any?
+  .contact-websites
+    %label= Contact.human_attribute_name(:website_attributes)
+    - resource.website_attributes.each do |website_attribute|
+      .contact-website
+        = auto_link(website_attribute.to_s, :rel => "external nofollow")
+
+- if resource.address_attributes.any?
+  .contact-addresses
+    %label= Contact.human_attribute_name(:address_attributes)
+    - resource.address_attributes.each do |address_attribute|
+      .contact-address
+        .address= address_attribute.to_html
+        .actions
+          = google_maps_link(address_attribute)
+

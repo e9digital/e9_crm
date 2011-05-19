@@ -7,14 +7,16 @@
       = submit_tag t(:go), :name => nil
     = submit_tag t(:clear), :name => nil, :id => 'contact_search_clear'
   .toolbar-middle
-    = form_tag new_contact_email_path, :method => :get, :id => 'contact_email_form', 'data-empty' => e9_t(:no_contacts_notification), 'data-count' => @contact_ids.length do
-      = select_tag 'etid', contact_email_template_select_options
-      = hidden_field_tag 'uids', @contact_ids.join(','), :id => 'contact_email_uids'
-      = submit_tag e9_t(:send_email_template), :name => nil
-    = form_tag send_email_admin_user_email_path('__ID__'), :method => :put, :id => 'contact_newsletter_form', 'data-confirm' => e9_t(:contact_newsletter_confirmation, :count => collection.length), 'data-empty' => e9_t(:no_contacts_notification), 'data-count' => @contact_ids.length  do
-      = select_tag 'eid', contact_newsletter_select_options
-      = hidden_field_tag 'uids', @contact_ids.join(','), :id => 'contact_newsletter_uids'
-      = submit_tag e9_t(:send_email_newsletter), :name => nil
+    - if (tag = contact_email_template_select_tag).present?
+      = form_tag new_contact_email_path, :method => :get, :id => 'contact_email_form', 'data-empty' => e9_t(:no_contacts_notification), 'data-count' => @contact_ids.length do
+        = tag
+        = hidden_field_tag 'uids', @contact_ids.join(','), :id => 'contact_email_uids'
+        = submit_tag e9_t(:send_email_template), :name => nil
+    - if (tag = contact_email_template_select_tag).present?
+      = form_tag send_email_admin_user_email_path('__ID__'), :method => :put, :id => 'contact_newsletter_form', 'data-confirm' => e9_t(:contact_newsletter_confirmation, :count => collection.length), 'data-empty' => e9_t(:no_contacts_notification), 'data-count' => @contact_ids.length  do
+        = tag
+        = hidden_field_tag 'uids', @contact_ids.join(','), :id => 'contact_newsletter_uids'
+        = submit_tag e9_t(:send_email_newsletter), :name => nil
   .toolbar-right
     = link_to_new_resource(Contact)
     = link_to_new_resource(Company)

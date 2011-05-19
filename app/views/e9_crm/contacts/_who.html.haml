@@ -1,14 +1,15 @@
 .contact-who
-  %span.contact-who-name= record.name
+  - unless local_assigns[:hide_name]
+    %span.contact-who-name= record.name
 
-  = " - " if record.company_id? || record.title?
+    = " - " if record.company_id? || record.title?
 
   - if record.title?
     %span.contact-who-title
-      = link_to_contact_search(:by_title, record.title)
+      = link_to_contact_search(:search, record.title)
 
   = " at " if record.company_id? && record.title?
 
   - if record.company_id?
     %span.contact-who-company
-      = link_to_contact_search(:by_company, record.company_id, record.company_name)
+      = link_to_contact_search(:search, record.company_name)

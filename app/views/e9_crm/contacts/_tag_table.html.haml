@@ -4,12 +4,12 @@
     %th{:colspan => 2}
       = t(:tags_name, :scope => :e9_tags)
   %tbody
-    - Tagging.where(:context => E9Tags.escape_context('users*')).joins(:tag).all.group_by {|t| t.name[0].upcase }.sort.each do |letter, tags|
+    - contact_tags.sort.group_by {|tag| tag[0].upcase }.each do |letter, tags|
       %tr
         %td.tag-starts-with= letter
         %td.tags
           %ul.tags
-            - tags.sort_by(&:name).each do |tag|; tag_id = "tagged-#{tag.name.dasherize}"
+            - tags.each do |tag|; tag_id = "tagged-#{tag.downcase.dasherize}"
               %li.tag
-                = label_tag(tag_id, tag.name)
-                = check_box_tag('tagged[]', tag.name, tagged_params.member?(tag.name), :id => tag_id)
+                = label_tag(tag_id, tag)
+                = check_box_tag('tagged[]', tag, tagged_params.member?(tag), :id => tag_id)

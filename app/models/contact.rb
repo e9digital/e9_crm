@@ -129,11 +129,14 @@ class Contact < ActiveRecord::Base
         AND record_attributes.record_type = 'Contact'
       LEFT OUTER JOIN users AS contacts_users
         ON contacts_users.contact_id = contacts.id
+      LEFT OUTER JOIN companies
+        ON companies.id = contacts.company_id
     }
 
     where_sql = any_attrs_like_scope_conditions(:first_name, :last_name, :title, query)
                   .or(RecordAttribute.attr_like_scope_condition(:value, query))
-                  .to_sql
+                  .or(Company.attr_like_scope_condition(:name, query))
+                  .to_sql.gsub(/\s+/, ' ')
 
     ucond = sanitize_sql_array(['contacts_users.email like ?', "%#{query}%"])
     where_sql << " OR (#{ucond})"
@@ -186,7 +189,7 @@ class Contact < ActiveRecord::Base
   # Helper to concatenate a Contact's full name
   #
   def name
-    [first_name, last_name].join(' ')
+    [first_name, last_name].join(' ').to_s.strip
   end
 
   def merge_and_destroy!(other_contact)

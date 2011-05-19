@@ -1,1 +1,18 @@
-= resource.name
+-#.contact-deals
+  -#%h2
+    -#= Deal.model_name.human.pluralize
+    -#= link_to_new_resource(Deal, :deal => {:contact_id => resource.id })
+  -#- resource.deals.each do |deal|
+    -#.contact-deal
+      -#.contact-deal-status
+        -#= deal.status
+      -#.contact-deal-type
+        -#= deal.type.titleize
+      -#.contact-deal-value
+        -#= deal.value
+-#.contact-leads
+  -#%h2
+    -#= Lead.model_name.human.pluralize
+  -#- resource.leads.each do |lead|
+      -#.contact-lead
+        -#.contact-lead-type
