@@ -25,6 +25,14 @@ class E9Crm::DealsController < E9Crm::ResourcesController
   end
 
   ##
+  # Index Scopes
+  #
+
+  has_scope :category, :only => :index
+  has_scope :status, :only => :index
+  has_scope :owner, :only => :index
+
+  ##
   # Reports scopes
   #
 

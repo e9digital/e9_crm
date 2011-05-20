@@ -122,10 +122,14 @@ class Deal < ActiveRecord::Base
     column_op(:eq, column, value, reverse)
   }
 
-  scope :leads,   lambda {|reverse=true| column_eq(:status, Status::Lead, !reverse) }
-  scope :pending, lambda {|reverse=true| column_eq(:status, Status::Pending, !reverse) }
-  scope :won,     lambda {|reverse=true| column_eq(:status, Status::Won, !reverse) }
-  scope :lost,    lambda {|reverse=true| column_eq(:status, Status::Lost, !reverse) }
+  scope :leads,    lambda {|reverse=true| column_eq(:status, Status::Lead, !reverse) }
+  scope :pending,  lambda {|reverse=true| column_eq(:status, Status::Pending, !reverse) }
+  scope :won,      lambda {|reverse=true| column_eq(:status, Status::Won, !reverse) }
+  scope :lost,     lambda {|reverse=true| column_eq(:status, Status::Lost, !reverse) }
+
+  scope :status,   lambda {|status|   where(:status => status) }
+  scope :category, lambda {|category| where(:category => category) }
+  scope :owner,    lambda {|owner|    where(:contact_id => owner.to_param) }
 
   protected
 

@@ -1,6 +1,6 @@
 .toolbar
   .toolbar-left
-    = form_tag(resource_class, :method => :get, :id => 'campaign_search_form') do
+    = form_tag(resource_class, :method => :get, :class => 'scope-selects') do
       %select{:name => 'type'}
         = campaign_type_select_options
       %select{:name => 'group'}

@@ -13,6 +13,30 @@ module E9Crm::DealsHelper
     select_tag 'contacts_ids', deal_contact_select_options
   end
 
+  def deal_status_select_options
+    @_deal_status_select_options ||= begin
+      options = Deal::Status::OPTIONS - %w(lead)
+      options.unshift ['All Statuses', nil]
+      options_for_select(options)
+    end
+  end
+
+  def deal_category_select_options
+    @_deal_category_select_options ||= begin
+      options = MenuOption.options_for('Deal Category')
+      options.unshift ['All Categories', nil]
+      options_for_select(options)
+    end
+  end
+
+  def deal_owner_select_options
+    @_deal_owner_select_options ||= begin
+      options = Contact.deal_owners.all.map {|c| [c.name, c.id] }
+      options.unshift ['Any Owner', nil]
+      options_for_select(options)
+    end
+  end
+
   def deal_date_select_options(ending_month = false)
     @_first_deal_date ||= Deal.order(:created_at).first.try(:created_at) || Date.today
 

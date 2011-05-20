@@ -1,0 +1,16 @@
+.toolbar
+  .toolbar-left
+    = form_tag(resource_class, :method => :get, :class => 'scope-selects') do
+      %select{:name => 'status'}
+        = deal_status_select_options
+      %select{:name => 'category'}
+        = deal_category_select_options 
+      %select{:name => 'owner'}
+        = deal_owner_select_options 
+
+  .toolbar-right
+    = form_tag new_advertising_campaign_path, :method => :get, :id => 'new_campaign_form' do
+      = label_tag 'new_campaign_type_select', t('activerecord.links.new', :model => Campaign.model_name.human)
+      %select{:name => 'type', :id => 'new_campaign_type_select'}
+        = campaign_type_select_options(false)
+        = submit_tag t(:go)

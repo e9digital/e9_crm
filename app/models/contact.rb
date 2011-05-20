@@ -160,6 +160,8 @@ class Contact < ActiveRecord::Base
     end
   }
 
+  scope :deal_owners, lambda { scoped }
+
   def self.available_to_deal(deal) 
     return all unless deal.persisted?
 
