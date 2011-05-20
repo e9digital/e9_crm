@@ -2,6 +2,14 @@ require 'active_record/base'
 require 'action_view/base'
 
 class Array
+  #
+  # Simple helper for array calculating averages
+  #
+  # Returns 0 if all array elements do not exist and respond to to_f
+  #
+  # NOTE nil responds to to_f but not to +, which would throw an
+  #      exception on sum if nil was allowed in the array
+  #
   def average
     return 0 unless length > 0 && all? {|n| n && n.respond_to?(:to_f) }
     sum / length
@@ -81,6 +89,7 @@ module E9Crm
   # This would be worth looking into further but inherited templates are a feature coming 
   # up in Rails anyway.
   #
+
   module ActionView
     extend ActiveSupport::Concern
 

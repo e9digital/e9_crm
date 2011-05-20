@@ -1,0 +1,2 @@
+class SubscriptionOffer < Offer
+end

@@ -1,0 +1,2 @@
+class FileDownloadOffer < Offer
+end

@@ -1,0 +1,12 @@
+.toolbar
+  .toolbar-left
+    = form_tag(resource_class, :method => :get, :class => 'scope-selects') do
+      %select{:name => 'type'}
+        = offer_select_options
+
+  .toolbar-right
+    = form_tag new_contact_offer_path, :method => :get, :id => 'new_offer_form' do
+      = label_tag 'new_offer_select', t('activerecord.links.new', :model => Offer.model_name.human)
+      %select{:name => 'type', :id => 'new_offer_select'}
+        = offer_select_options(false)
+        = submit_tag t(:go), :name => nil

@@ -9,8 +9,4 @@
         = deal_owner_select_options 
 
   .toolbar-right
-    = form_tag new_advertising_campaign_path, :method => :get, :id => 'new_campaign_form' do
-      = label_tag 'new_campaign_type_select', t('activerecord.links.new', :model => Campaign.model_name.human)
-      %select{:name => 'type', :id => 'new_campaign_type_select'}
-        = campaign_type_select_options(false)
-        = submit_tag t(:go)
+    = link_to_new_resource(Deal)

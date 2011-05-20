@@ -1,0 +1,2 @@
+class VideoOffer < Offer
+end

@@ -75,9 +75,10 @@ class CreateE9CrmStructure < ActiveRecord::Migration
     create_table :deals, :force => true do |t|
       t.string :type
       t.string :name
+      t.string :lead_name, :lead_email
       t.string :category
       t.text :info
-      t.references :offer, :campaign, :tracking_cookie, :contact
+      t.references :offer, :campaign, :tracking_cookie, :contact, :user
       t.timestamp :created_at, :updated_at, :converted_at, :closed_at
       t.string :status, :limit => 32
       t.integer :value, :default => 0
@@ -86,13 +87,6 @@ class CreateE9CrmStructure < ActiveRecord::Migration
     add_index 'deals', 'campaign_id'
     add_index 'deals', 'tracking_cookie_id'
     add_index 'deals', 'status'
-
-    create_table :offers, :force => true do |t|
-      t.string :type
-      t.references :offer, :campaign, :tracking_cookie
-      t.timestamp :created_at, :updated_at, :converted_at, :closed_at
-      t.string :status, :limit => 32
-    end
 
     add_column :users, :contact_id, :integer rescue nil
     add_column :users, :options, :text, :limit => 1.kilobyte rescue nil

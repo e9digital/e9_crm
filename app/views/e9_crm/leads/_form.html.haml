@@ -1,0 +1,13 @@
+= form_for resource, :url => offer_deals_path(@offer), :remote => request.xhr? do |f|
+  .errors= resource_error_messages!
+
+  - if !current_user
+    .field
+      = f.label :lead_name
+      = f.text_field :lead_name
+    .field
+      = f.label :lead_email
+      = f.text_field :lead_email
+
+  .actions
+    = f.submit @offer.submit_button_text

@@ -13,4 +13,4 @@
       = label_tag 'new_campaign_type_select', t('activerecord.links.new', :model => Campaign.model_name.human)
       %select{:name => 'type', :id => 'new_campaign_type_select'}
         = campaign_type_select_options(false)
-        = submit_tag t(:go)
+        = submit_tag t(:go), :name => nil

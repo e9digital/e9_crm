@@ -1,0 +1,6 @@
+= form_for resource, :url => offer_submit_path, :remote => request.xhr? do |f|
+  .errors= resource_error_messages!
+
+
+  .actions
+    = f.submit

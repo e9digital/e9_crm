@@ -2,6 +2,10 @@
 # offers are tracked as +Leads+
 #
 class Offer < Renderable
+  include E9Rails::ActiveRecord::STI
+  include E9Rails::ActiveRecord::Initialization
+  include E9Rails::ActiveRecord::InheritableOptions
+
   has_many :deals, :inverse_of => :offer
   has_many :leads, :class_name => 'Deal', :conditions => ["deals.status = ?", Deal::Status::Lead]
 
@@ -15,7 +19,6 @@ class Offer < Renderable
     end
   end
 
-  include E9Rails::ActiveRecord::InheritableOptions
   self.delegate_options_methods = true
   self.options_parameters = [
     :submit_button_text,
@@ -34,6 +37,14 @@ class Offer < Renderable
     name
   end
 
+  def template
+    asdf
+  end
+
+  def partial_path
+    'e9_crm/offers/offer'
+  end
+
   def as_json(options={})
     {}.tap do |hash|
       hash[:id]       = self.id,
@@ -42,6 +53,12 @@ class Offer < Renderable
       hash[:errors]   = self.errors
     end
   end
+
+  protected
+
+    def _assign_initialization_defaults
+      self.submit_button_text ||= 'Submit'
+    end
 
   module Identifiers
     CONVERSION_EMAIL = 'offer_conversion_email'

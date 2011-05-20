@@ -1,0 +1,11 @@
+= render 'e9_crm/offers/form_inner', :f => f
+
+.field
+  = f.label :success_page_text
+  = f.text_area :success_page_text
+
+%fieldset.upload
+  = render 'shared/form_partials/carrierwave_upload_field', :field => :file, :f => f
+  .field
+    = f.label :download_link_text
+    = f.text_field :download_link_text

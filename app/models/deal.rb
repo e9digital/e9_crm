@@ -8,6 +8,7 @@ class Deal < ActiveRecord::Base
   belongs_to :campaign, :inverse_of => :deals
   belongs_to :tracking_cookie, :inverse_of => :deals
   belongs_to :offer, :inverse_of => :deals
+  belongs_to :user
 
   belongs_to :owner, :class_name => 'Contact', :foreign_key => :contact_id
   has_and_belongs_to_many :contacts
@@ -16,6 +17,8 @@ class Deal < ActiveRecord::Base
 
   validates :name,  :presence => true
   validates :value, :numericality => true
+
+  validates :lead_email, :email => { :if => lambda {|r| r.lead? } }
 
   %w(total_value average_value total_cost average_cost).each do |money_column|
     class_eval("def #{money_column}; (r = read_attribute(:#{money_column})) && Money.new(r) end")

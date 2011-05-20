@@ -1,0 +1,2 @@
+class ContactOffer < Offer
+end

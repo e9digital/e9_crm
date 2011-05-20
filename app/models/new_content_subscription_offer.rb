@@ -1,0 +1,2 @@
+class NewContentSubscriptionOffer < SubscriptionOffer
+end
