@@ -1,16 +1,16 @@
 module E9Crm::DealsHelper
-  def records_table_field_map_for_deal
-    {
-      :fields => { 
-        :created_at => nil,
-        :offer => nil,
-        :campaign => nil
-      },
+  def deal_contact_select_options
+    @_deal_contact_select_options ||= begin
+      contacts = Contact.available_to_deal(resource)
 
-      :links => proc {|r|
-        []
-      }
-    }
+      options = contacts.map {|contact| [contact.name, contact.id] }
+      options.unshift ['Add Contact', nil]
+      options_for_select options
+    end
+  end
+
+  def deal_contact_select
+    select_tag 'contacts_ids', deal_contact_select_options
   end
 
   def deal_date_select_options(ending_month = false)

@@ -1,4 +1,3 @@
-- contact_ids = collection.map(&:id)
 .toolbar
   .toolbar-left
     = form_tag(resource_class, :method => :get, :id => 'contact_search_form') do
@@ -12,7 +11,7 @@
         = tag
         = hidden_field_tag 'uids', @contact_ids.join(','), :id => 'contact_email_uids'
         = submit_tag e9_t(:send_email_template), :name => nil
-    - if (tag = contact_email_template_select_tag).present?
+    - if (tag = contact_newsletter_select_tag).present?
       = form_tag send_email_admin_user_email_path('__ID__'), :method => :put, :id => 'contact_newsletter_form', 'data-confirm' => e9_t(:contact_newsletter_confirmation, :count => collection.length), 'data-empty' => e9_t(:no_contacts_notification), 'data-count' => @contact_ids.length  do
         = tag
         = hidden_field_tag 'uids', @contact_ids.join(','), :id => 'contact_newsletter_uids'

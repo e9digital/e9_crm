@@ -9,12 +9,19 @@ class Deal < ActiveRecord::Base
   belongs_to :tracking_cookie, :inverse_of => :deals
   belongs_to :offer, :inverse_of => :deals
 
+  belongs_to :owner, :class_name => 'Contact', :foreign_key => :contact_id
+  has_and_belongs_to_many :contacts
+
   money_columns :value
+
+  validates :name,  :presence => true
   validates :value, :numericality => true
 
   %w(total_value average_value total_cost average_cost).each do |money_column|
     class_eval("def #{money_column}; (r = read_attribute(:#{money_column})) && Money.new(r) end")
   end
+
+  delegate :name, :to => :owner, :prefix => true, :allow_nil => true
 
   scope :reports, lambda {
     select_sql = <<-SELECT.gsub(/\s+/, ' ')
@@ -119,7 +126,6 @@ class Deal < ActiveRecord::Base
   scope :pending, lambda {|reverse=true| column_eq(:status, Status::Pending, !reverse) }
   scope :won,     lambda {|reverse=true| column_eq(:status, Status::Won, !reverse) }
   scope :lost,    lambda {|reverse=true| column_eq(:status, Status::Lost, !reverse) }
-
 
   protected
 

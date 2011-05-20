@@ -14,9 +14,15 @@ class E9Crm::DealsController < E9Crm::ResourcesController
   # Index/Reports Scopes
   #
 
-  has_scope :leads, :only => :leads, :default => true
-  has_scope :leads, :except => [:leads, :reports], :default => false
+  # NOTE default => 'true' only exists to ensure this scope is called
+  has_scope :only_leads, :only => :leads, :default => 'true' do |controller, scope|
+    scope.leads(true)
+  end
 
+  # NOTE default => 'false' only exists to ensure this scope is called
+  has_scope :no_leads, :except => [:leads, :reports], :default => 'false' do |controller, scope|
+    scope.leads(false)
+  end
 
   ##
   # Reports scopes
@@ -42,7 +48,6 @@ class E9Crm::DealsController < E9Crm::ResourcesController
     end
   end
 
-
   ##
   # Actions
   #
@@ -63,7 +68,9 @@ class E9Crm::DealsController < E9Crm::ResourcesController
         if params[:action] == 'reports'
           end_of_association_chain.all
         else
-          end_of_association_chain.paginate(pagination_parameters)
+          end_of_association_chain
+            .joins("left outer join contacts on contacts.id = deals.contact_id")
+            .select("deals.*, contacts.first_name owner_name")
         end
       )
     end

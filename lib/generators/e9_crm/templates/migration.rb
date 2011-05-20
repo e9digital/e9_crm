@@ -68,9 +68,16 @@ class CreateE9CrmStructure < ActiveRecord::Migration
       t.timestamps
     end
 
+    create_table :contacts_deals, :force => true, :id => false do |t|
+      t.references :contact, :deal
+    end
+
     create_table :deals, :force => true do |t|
       t.string :type
-      t.references :offer, :campaign, :tracking_cookie
+      t.string :name
+      t.string :category
+      t.text :info
+      t.references :offer, :campaign, :tracking_cookie, :contact
       t.timestamp :created_at, :updated_at, :converted_at, :closed_at
       t.string :status, :limit => 32
       t.integer :value, :default => 0

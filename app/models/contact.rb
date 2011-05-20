@@ -13,6 +13,8 @@ class Contact < ActiveRecord::Base
   # Associations
   #
   belongs_to :company
+  has_many :owned_deals, :class_name => 'Deal'
+  has_and_belongs_to_many :associated_deals, :class_name => 'Deal'
 
   has_many :users, :inverse_of => :contact, :dependent => :nullify do
 
@@ -157,6 +159,20 @@ class Contact < ActiveRecord::Base
       where("1=0")
     end
   }
+
+  def self.available_to_deal(deal) 
+    return all unless deal.persisted?
+
+    sql = <<-SQL
+      SELECT distinct contacts.* FROM `contacts` 
+        LEFT OUTER JOIN `contacts_deals` 
+          ON `contacts_deals`.`contact_id` = `contacts`.`id` 
+        WHERE (`contacts_deals`.`deal_id` IS NULL 
+          OR `contacts_deals`.`deal_id` != #{deal.id})
+    SQL
+
+    find_by_sql(sql)
+  end
 
   #
   # Carrierwave

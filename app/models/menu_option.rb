@@ -30,4 +30,8 @@ class MenuOption < ActiveRecord::Base
   def self.fetch_values(key)
     connection.send(:select_values, options_for(key).order(:position).project('value').to_sql, 'Menu Option Select')
   end
+
+  def to_s
+    value
+  end
 end

@@ -1,5 +1,27 @@
-- resource.attributes.each_pair do |field, value|
-  - next if ['id', 'created_at', 'updated_at'].include?(field)
-  .field
-    = f.label field
-    = f.text_field field
+.actions
+  = link_to_destroy_resource(resource, :remote => false) if resource.persisted?
+.field
+  = f.label :name, nil, :class => :req
+  = f.text_field :name
+.field
+  = f.label :info
+  = f.text_area :info
+.field
+  = f.label :value, nil, :class => :req
+  = f.text_field :value
+.field.select
+  = f.label :contacts
+  %select.list{'data-iname' => resource_instance_name, 'data-field' => '[contact_ids]'}
+    = deal_contact_select_options
+  %ul.select
+    - f.object.contacts.each do |contact|
+      %li
+        %span= contact.name
+        %input{:type => :hidden, :name => "contact[contact_ids][]", :value => contact.id}
+        %a{:class => :remove, :title => "Remove", :alt => "Remove"} Remove
+.field.select
+  = f.label :owner
+  = f.collection_select :contact_id, Contact.all, :id, :name
+.field.select
+  = f.label :category
+  = f.select :category, MenuOption.options_for('Deal Category'), :include_blank => 'No Category'

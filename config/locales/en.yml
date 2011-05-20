@@ -1,14 +1,16 @@
 en:
+  actions: Actions
   clear: Clear
-  go: Go
-  search: Search
-  view: View
-  none: None
-  totals: Totals
-  inline_help_link: '[?]'
   edit_dated_costs: Edit Costs
-  news: News
+  go: Go
+  inline_help_link: '[?]'
   map: Map
+  news: News
+  none: None
+  search: Search
+  total: Total
+  totals: Totals
+  view: View
 
   e9_crm:
     add_record_attribute: Add
