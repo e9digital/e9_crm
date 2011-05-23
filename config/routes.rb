@@ -65,7 +65,7 @@ Rails.application.routes.draw do
       resources :video_offers,                    :path => 'video',                    :except => [:show, :index]
 
       %w( contact file_download new_content_subscription newsletter_subscription video ).each do |path|
-        get "/#{path}", :to => redirect("/#{crm_path}/offers?type=#{path}")
+        get "/#{path}", :as => "#{path}_offers_redirect", :to => redirect("/#{crm_path}/offers?type=#{path}")
       end
     end
 
