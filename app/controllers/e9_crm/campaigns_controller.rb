@@ -30,6 +30,9 @@ class E9Crm::CampaignsController < E9Crm::ResourcesController
         scope = scope.select(
           'campaigns.*, count(deals.id) won_deals_count, count(deals_campaigns.id) deals_count'
         ).joins([:deals, :won_deals])
+      else
+        # don't include NoCampaign normally
+        scope = scope.typed
       end
       scope
     end

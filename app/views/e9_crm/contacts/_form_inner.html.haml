@@ -1,3 +1,5 @@
+= render_record_attribute_form(:users, f)
+
 %fieldset.contact-standard-fields
   %legend= e9_t(:form_legend_standard)
   .field
@@ -22,7 +24,6 @@
 
 %fieldset.contact-contact-fields
   %legend= e9_t(:form_legend_contact)
-  = render_record_attribute_form(:users                               , f)
   = render_record_attribute_form(:phone_number_attributes             , f)
   = render_record_attribute_form(:instant_messaging_handle_attributes , f)
   = render_record_attribute_form(:website_attributes                  , f)

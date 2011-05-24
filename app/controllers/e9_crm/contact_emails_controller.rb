@@ -6,7 +6,7 @@ class E9Crm::ContactEmailsController < E9Crm::ResourcesController
   def create
     create! do |success, failure|
       success.html { redirect_to :admin_sent_email }
-      success.js { head :ok }
+      success.js
     end
   end
 
@@ -32,5 +32,9 @@ class E9Crm::ContactEmailsController < E9Crm::ResourcesController
   # be passed in params (and also contact_ids)
   def template
     @_template ||= EmailTemplate.find(params[:etid])
+  end
+
+  def determine_layout
+    request.xhr? ? false : super
   end
 end

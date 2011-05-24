@@ -13,7 +13,6 @@ en:
         index_title_with_search_and_tags: "%{models} tagged \"%{tagged}\", matching \"%{search}\""
         form_legend_contact: Contact Information
         form_legend_standard: Personal Information
-        form_legend_user: Login Accounts
         send_email_template: Send Email
         send_email_newsletter: Send Newsletter
         contact_newsletter_confirmation: "The system will send the newsletter to all of the selected contacts (%{count}) if they are subscribed to receieve email.  Are you sure you want to proceed?"

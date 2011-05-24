@@ -35,6 +35,7 @@ class Campaign < ActiveRecord::Base
   scope :active,   lambda {|val=true| where(:active => val) }
   scope :inactive, lambda { active(false) }
   scope :of_group, lambda {|val| where(:campaign_group_id => val.to_param) }
+  scope :typed,    lambda { where(arel_table[:type].not_eq('NoCampaign')) }
 
   def new_visit_session_count
     page_views.new_visits.group(:session).count.keys.length

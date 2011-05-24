@@ -31,15 +31,20 @@ class Offer < Renderable
     def page
       SystemPage.find_by_identifier(Identifiers::PAGE)
     end
+
+    def partial_path
+      'e9_crm/offers/offer'
+    end
+
+    def element
+      'offer'
+    end
   end
 
   def to_s
     name
   end
 
-  def partial_path
-    'e9_crm/offers/offer'
-  end
 
   protected
 

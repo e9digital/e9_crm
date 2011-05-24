@@ -34,4 +34,8 @@ class E9Crm::OffersController < E9Crm::ResourcesController
       @current_page ||= Offer.page || super
     end
   end
+
+  def determine_layout
+    request.xhr? ? false : super
+  end
 end

@@ -1,5 +1,7 @@
 <% if resource.errors.any? %>
   $('form .errors').html("<%= escape_javascript(resource_error_messages!) %>");
+  try { $.fn.colorbox.resize(); } catch(e) {}
 <% else %>
-  window.location.reload(true);
+  try { $.fn.colorbox.close(); } catch(e) {}
+  $('form .errors').html("");
 <% end %>
