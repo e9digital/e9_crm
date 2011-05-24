@@ -9,6 +9,20 @@ class Offer < Renderable
   has_many :deals, :inverse_of => :offer
   has_many :leads, :class_name => 'Deal', :conditions => ["deals.status = ?", Deal::Status::Lead]
 
+  validates :conversion_alert_email, :email => { :allow_blank => true }
+
+  mount_uploader :file, FileUploader
+
+  self.delegate_options_methods = true
+  self.options_parameters = [
+    :submit_button_text,
+    :success_alert_text,
+    :success_page_text,
+    :download_link_text,
+    :conversion_alert_email,
+    :custom_form_html
+  ]
+
   class << self
     def conversion_email
       SystemEmail.find_by_identifier(Identifiers::CONVERSION_EMAIL)
@@ -19,45 +33,20 @@ class Offer < Renderable
     end
   end
 
-  self.delegate_options_methods = true
-  self.options_parameters = [
-    :submit_button_text,
-    :success_alert_text,
-    :download_link_text,
-    :conversion_alert_email,
-    :success_page_text,
-    :custom_form_html
-  ]
-
-  mount_uploader :file, FileUploader
-
-  validates :conversion_alert_email, :email => { :allow_blank => true }
-
   def to_s
     name
-  end
-
-  def template
-    asdf
   end
 
   def partial_path
     'e9_crm/offers/offer'
   end
 
-  def as_json(options={})
-    {}.tap do |hash|
-      hash[:id]       = self.id,
-      hash[:name]     = self.name,
-      hash[:template] = self.template,
-      hash[:errors]   = self.errors
-    end
-  end
-
   protected
 
     def _assign_initialization_defaults
-      self.submit_button_text ||= 'Submit'
+      self.submit_button_text ||= 'Submit!'
+      self.download_link_text ||= 'Click to download your file'
+      self.success_page_text  ||= 'Thank you!'
     end
 
   module Identifiers

@@ -1,0 +1,6 @@
+#offer-body
+  = resource.success_page_text
+
+- if resource.file?
+  #offer-download-link
+    = link_to(resource.download_link_text, resource.file_url)

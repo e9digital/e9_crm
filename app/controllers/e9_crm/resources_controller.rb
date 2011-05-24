@@ -47,6 +47,14 @@ class E9Crm::ResourcesController < E9Crm::BaseController
     end
   end
 
+  def build_params
+    params[resource_instance_name] || {}
+  end
+
+  def build_resource
+    get_resource_ivar || set_resource_ivar(end_of_association_chain.send(method_for_build, build_params))
+  end
+
   def default_ordered_on
     'created_at'
   end

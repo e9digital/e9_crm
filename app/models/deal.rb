@@ -4,6 +4,10 @@
 class Deal < ActiveRecord::Base
   include E9Rails::ActiveRecord::Initialization
   include E9Rails::ActiveRecord::Scopes::Times
+  include E9Rails::ActiveRecord::InheritableOptions
+
+  #
+  self.options_column = false
 
   belongs_to :campaign, :inverse_of => :deals
   belongs_to :tracking_cookie, :inverse_of => :deals
@@ -15,16 +19,35 @@ class Deal < ActiveRecord::Base
 
   money_columns :value
 
-  validates :name,  :presence => true
-  validates :value, :numericality => true
+  validates :value,      :numericality => true
 
-  validates :lead_email, :email => { :if => lambda {|r| r.lead? } }
+  # non-lead validations (deals in the admin)
+  # require a deal name
+  validates :name,       :presence => { :unless => lambda {|r| r.lead? } }
 
+  # lead only validations
+  # require lead_name and lead_email; gotten from current_user if it exists
+  validates :lead_name,  :presence => { :if => lambda {|r| r.lead? } }
+  validates :lead_email, :presence => { :if => lambda {|r| r.lead? } },
+                         :email    => { :if => lambda {|r| r.lead? }, :allow_blank => true }
+
+  # If a lead with a user, get the lead_name and lead_email from the user before validation
+  before_validation :get_name_and_email_from_user, :only => :create
+
+  before_create :transform_options_column
+
+  # If a lead with no user, find the user by email or create it, then if mailing_lists
+  # were passed, assign the user those mailing lists
+  after_create :find_or_create_user, :assign_user_mailing_lists
+
+  # money column definitions for pseudo attributes (added on the reports scope)
   %w(total_value average_value total_cost average_cost).each do |money_column|
     class_eval("def #{money_column}; (r = read_attribute(:#{money_column})) && Money.new(r) end")
   end
 
   delegate :name, :to => :owner, :prefix => true, :allow_nil => true
+
+  attr_accessor :mailing_list_ids
 
   scope :reports, lambda {
     select_sql = <<-SELECT.gsub(/\s+/, ' ')
@@ -134,7 +157,23 @@ class Deal < ActiveRecord::Base
   scope :category, lambda {|category| where(:category => category) }
   scope :owner,    lambda {|owner|    where(:contact_id => owner.to_param) }
 
+  def custom_info
+    read_attribute(:options)
+  end
+
+  def custom_info=(v)
+    write_attribute(:options, v)
+  end
+
   protected
+
+    def write_options(obj={})
+      @custom_options = obj.to_hash
+    end
+
+    def read_options
+      @custom_options ||= {}
+    end
 
     def method_missing(method_name, *args)
       if method_name =~ /(.*)\?$/ && Status::OPTIONS.member?($1)
@@ -155,7 +194,7 @@ class Deal < ActiveRecord::Base
     end
 
     def _do_close
-      self.closed_at = nil
+      self.closed_at = Time.now.utc
       notify_observers :before_close
     end
   
@@ -163,6 +202,44 @@ class Deal < ActiveRecord::Base
     # explicitly create Deals as 'lead' when they convert.
     def _assign_initialization_defaults
       self.status ||= Status::Pending
+    end
+
+    def transform_options_column
+      # NOTE this column can't be passed, it is only generated from
+      # the custom options pseudo column
+      self.custom_info = begin
+        options.to_hash.map do |k, v|
+          "%s:\n%s\n\n" % [k.to_s.titleize, v]
+        end.join
+      end
+    end
+
+    def get_name_and_email_from_user
+      if lead? && user.present?
+        self.lead_email = user.email
+        self.lead_name  = user.first_name
+      end
+    end
+
+    def find_or_create_user
+      if lead? && user.blank? && lead_email
+        u = User.find_by_email(lead_email) || create_prospect
+        update_attribute(:user_id, u.id)
+      end
+    end
+
+    def assign_user_mailing_lists
+      if @mailing_list_ids
+        user.mailing_list_ids |= @mailing_list_ids
+      end
+    end
+
+    def create_prospect
+      create_user(
+        :email      => lead_email,
+        :first_name => lead_name,
+        :status     => User::Status::Prospect
+      ) 
     end
 
   module Status

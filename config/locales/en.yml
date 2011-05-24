@@ -55,22 +55,32 @@ en:
               invalid: "Status must be one of (%{options})"
 
     models:
-      sales_campaign: Sales Campaign
-      email_campaign: Email Campaign
-      email_template: Email Template
-      affiliate_campaign: Affiliate Campaign
+      address_attribute: Address
       advertising_campaign: Advertising Campaign
+      affiliate_campaign: Affiliate Campaign
       campaign: Campaign
-      campaign_type: Campaign Type
+      campaign_group: Campaign Group
       company: Company
       contact: Contact
+      contact_email: Contact Email
+      contact_offer: Contact Offer
       dated_cost: Advertising Cost
       deal: Deal
-      page_view: Page View
-      tracking_cookie: Tracking Cookie
-      address_attribute: Address
+      email_campaign: Email Campaign
+      email_template: Email Template
+      file_download_offer: File Download Offer
       instant_messaging_handle_attribute: IM Handle
+      menu_options: Menu Option
+      new_content_subscription_offer: New Content Subscription Offer
+      newsletter_subscription_offer: Newsletter Subscription Offer
+      no_campaign: '(No Campaign)'
+      offer: Offer
+      page_view: Page View
       phone_number_attrubute: Phone
+      record_attribute: Attribute
+      sales_campaign: Sales Campaign
+      tracking_cookie: Tracking Cookie
+      video_offer: Video Offer
       website_attribute: Website
     attributes:
       campaign:
@@ -88,7 +98,13 @@ en:
         info: Background Information
       no_campaign:
         name: No Campaign
+      deal:
+        info: Details
+        custom_info: Lead Information
+        lead_email: Email
+        lead_name: First Name
       offer:
+        template: Teaser Text
         alert_email_instructions: (Enter an email if you want to be notified of conversions)
         submit_button_text: Submit Button Text
         success_alert_text: Success Alert Text

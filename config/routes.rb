@@ -2,7 +2,7 @@ Rails.application.routes.draw do
   crm_path = 'admin/crm'
 
   scope :module => :e9_crm do
-    resources :offers, :only => [] do
+    resources :offers, :as => :public_offer, :only => :show do
       resources :leads, :as => :deals, :only => [:new, :create], :path => ''
     end
   end
@@ -66,6 +66,10 @@ Rails.application.routes.draw do
 
       %w( contact file_download new_content_subscription newsletter_subscription video ).each do |path|
         get "/#{path}", :as => "#{path}_offers_redirect", :to => redirect("/#{crm_path}/offers?type=#{path}")
+        get "/#{path}/:id", :as => "#{path}_offers_edit_redirect", :to => redirect("/#{crm_path}/#{path}/%{id}/edit"), :constraints => { :id => /\d+/ }
+      end
+      
+      %w( contact file_download new_content_subscription newsletter_subscription video ).each do |path|
       end
     end
 

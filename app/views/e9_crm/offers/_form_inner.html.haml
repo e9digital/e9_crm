@@ -2,9 +2,13 @@
   = f.label :name, nil, :class => :req
   = f.text_field :name
 
-.field{:class => request.xhr? ? 'tinymcexhr' : 'tinymce'}
-  = f.label :template, nil, :class => :req
+.field.tinymce
+  = f.label :template
   = f.text_area :template
+
+.field
+  = f.label :custom_form_html
+  = f.text_area :custom_form_html
 
 - if request.xhr?
   - resource.region_type_ids.each_with_index do |id, i|
@@ -22,7 +26,3 @@
 .field
   = f.label :conversion_alert_email
   = f.text_field :conversion_alert_email
-
-.field
-  = f.label :custom_form_html
-  = f.text_area :custom_form_html

@@ -20,7 +20,7 @@ class E9Crm::DealsController < E9Crm::ResourcesController
   end
 
   # NOTE default => 'false' only exists to ensure this scope is called
-  has_scope :no_leads, :except => [:leads, :reports], :default => 'false' do |controller, scope|
+  has_scope :no_leads, :only => :index, :default => 'false' do |controller, scope|
     scope.leads(false)
   end
 

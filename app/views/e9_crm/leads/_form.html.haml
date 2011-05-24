@@ -1,13 +1,26 @@
-= form_for resource, :url => offer_deals_path(@offer), :remote => request.xhr? do |f|
+= form_for resource, :url => public_offer_deals_path(@offer), :remote => request.xhr? do |f|
   .errors= resource_error_messages!
+  .notice
 
-  - if !current_user
-    .field
-      = f.label :lead_name
-      = f.text_field :lead_name
+  - if f.object.user.blank?
     .field
       = f.label :lead_email
       = f.text_field :lead_email
+    .field
+      = f.label :lead_name
+      = f.text_field :lead_name
+
+  = @offer.custom_form_html.html_safe
+
+  - if @offer.kind_of?(SubscriptionOffer)
+    %fieldset
+      - @offer.class.mailing_lists.each do |ml|
+        .field.checkbox
+          = label_tag "#{resource_instance_name}_mailing_list_ids_#{ml.id}", ml.description
+          = check_box_tag "#{resource_instance_name}[mailing_list_ids][]", ml.id, true, :id => "#{resource_instance_name}_mailing_list_ids_#{ml.id}"
 
   .actions
-    = f.submit @offer.submit_button_text
+    - if @offer.submit_button_text.present?
+      = f.submit @offer.submit_button_text
+    - else
+      = f.submit

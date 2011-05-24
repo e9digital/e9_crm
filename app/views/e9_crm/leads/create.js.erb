@@ -1,0 +1,11 @@
+var $offer = $('#offer_<%= @offer.id %>_body');
+<% if resource.errors.any? %>
+$('form .errors', $offer).html("<%= escape_javascript(resource_error_messages!) %>");
+<% else %>
+  <% if @offer.kind_of?(SubscriptionOffer) %>
+$('form .errors', $offer).html("");
+$('form .notice', $offer).html("<%= escape_javascript(@offer.success_alert_text) %>");
+  <% else %>
+window.location = "<%= public_offer_path(@offer) %>";
+  <% end %>
+<% end %>

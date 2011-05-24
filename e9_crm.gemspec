@@ -23,7 +23,7 @@ Gem::Specification.new do |s|
   s.add_dependency("inherited_resources", "~> 1.1.2")
   s.add_dependency("has_scope")
   s.add_dependency("money")
-  s.add_dependency("e9_rails", "~> 0.0.14")
+  s.add_dependency("e9_rails", "~> 0.0.15")
   s.add_dependency("e9_tags", "~> 0.0.11")
   s.add_dependency("will_paginate")
 end

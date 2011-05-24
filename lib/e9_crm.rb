@@ -35,6 +35,10 @@ module E9Crm
     Rails.logger.send(@@log_level, "e9Crm: #{message}") if @@logging
   end
 
+  def E9Crm.configure
+    yield self
+  end
+
   def E9Crm.init!
     user_model = case @@user_model
     when Class; @@user_model

@@ -1,5 +1,5 @@
 = render 'e9_crm/offers/form_inner', :f => f
 
-.field
-  = f.label :success_page_text
+.field{:class => request.xhr? ? 'tinymcexhr' : 'tinymce'}
+  = f.label :success_page_text, nil, :class => :req
   = f.text_area :success_page_text
