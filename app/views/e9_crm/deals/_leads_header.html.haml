@@ -1,0 +1,12 @@
+.toolbar
+  .toolbar-left
+    = form_tag(resource_class, :method => :get, :class => 'scope-selects') do
+      %select{:name => 'offer'}
+        = deal_offer_select_options 
+      %select{:name => 'from'}
+        = deal_date_select_options
+      %select{:name => 'until'}
+        = deal_date_select_options(true)
+
+  .toolbar-right
+    = link_to_collection(Deal)

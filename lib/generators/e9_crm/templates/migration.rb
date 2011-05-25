@@ -78,7 +78,7 @@ class CreateE9CrmStructure < ActiveRecord::Migration
       t.string :lead_name, :lead_email
       t.string :category
       t.text :info
-      t.references :offer, :campaign, :tracking_cookie, :contact, :user
+      t.references :offer, :campaign, :contact, :user
       t.timestamp :created_at, :updated_at, :converted_at, :closed_at
       t.string :status, :limit => 32
       t.integer :value, :default => 0

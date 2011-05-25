@@ -37,6 +37,14 @@ module E9Crm::DealsHelper
     end
   end
 
+  def deal_offer_select_options
+    @_deal_offer_select_options ||= begin
+      options = Offer.all.map {|c| [c.name, c.id] }
+      options.unshift ['Any/No Offer', nil]
+      options_for_select(options)
+    end
+  end
+
   def deal_date_select_options(ending_month = false)
     @_first_deal_date ||= Deal.order(:created_at).first.try(:created_at) || Date.today
 

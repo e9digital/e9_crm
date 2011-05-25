@@ -6,11 +6,9 @@ class Deal < ActiveRecord::Base
   include E9Rails::ActiveRecord::Scopes::Times
   include E9Rails::ActiveRecord::InheritableOptions
 
-  #
   self.options_column = false
 
   belongs_to :campaign, :inverse_of => :deals
-  belongs_to :tracking_cookie, :inverse_of => :deals
   belongs_to :offer, :inverse_of => :deals
   belongs_to :user
 
@@ -33,8 +31,13 @@ class Deal < ActiveRecord::Base
 
   # If a lead with a user, get the lead_name and lead_email from the user before validation
   before_validation :get_name_and_email_from_user, :only => :create
+  before_validation :update_to_pending_status, :only => :update
 
+  # copy temp options over into custom_info column
   before_create :transform_options_column
+
+  # denormalize campaign code and offer name columns
+  before_save :ensure_denormalized_columns
 
   # If a lead with no user, find the user by email or create it, then if mailing_lists
   # were passed, assign the user those mailing lists
@@ -153,9 +156,10 @@ class Deal < ActiveRecord::Base
   scope :won,      lambda {|reverse=true| column_eq(:status, Status::Won, !reverse) }
   scope :lost,     lambda {|reverse=true| column_eq(:status, Status::Lost, !reverse) }
 
-  scope :status,   lambda {|status|   where(:status => status) }
   scope :category, lambda {|category| where(:category => category) }
+  scope :offer,    lambda {|offer|    where(:offer_id => offer.to_param) }
   scope :owner,    lambda {|owner|    where(:contact_id => owner.to_param) }
+  scope :status,   lambda {|status|   where(:status => status) }
 
   def custom_info
     read_attribute(:options)
@@ -214,6 +218,11 @@ class Deal < ActiveRecord::Base
       end
     end
 
+    def ensure_denormalized_columns
+      self.campaign_code ||= campaign.code if campaign.present?
+      self.offer_name    ||= offer.name    if offer.present?
+    end
+
     def get_name_and_email_from_user
       if lead? && user.present?
         self.lead_email = user.email
@@ -225,12 +234,21 @@ class Deal < ActiveRecord::Base
       if lead? && user.blank? && lead_email
         u = User.find_by_email(lead_email) || create_prospect
         update_attribute(:user_id, u.id)
+
+        u.create_contact_if_missing!
+        self.contacts << u.contact
       end
     end
 
     def assign_user_mailing_lists
       if @mailing_list_ids
         user.mailing_list_ids |= @mailing_list_ids
+      end
+    end
+
+    def update_to_pending_status
+      if self.status == Status::Lead
+        self.status = Status::Pending
       end
     end
 

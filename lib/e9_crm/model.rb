@@ -23,7 +23,7 @@ module E9Crm
 
       scope :primary, lambda { where(%Q{#{table_name}.options REGEXP "primary: [\\"']?true"}) }
 
-      before_save :create_contact_if_missing
+      before_save :create_contact_if_missing!
       after_destroy :cleanup_contact
     end
 
@@ -34,7 +34,7 @@ module E9Crm
       ["true", true].member? options.primary
     end
 
-    def create_contact_if_missing
+    def create_contact_if_missing!
       if contact.blank?
         # when creating a contact we should assume we're primary
         self.options.primary = true

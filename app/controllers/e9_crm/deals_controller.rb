@@ -7,26 +7,44 @@ class E9Crm::DealsController < E9Crm::ResourcesController
 
   filter_access_to :leads, :reports, :require => :read, :context => :admin
 
+  skip_after_filter :flash_to_headers
+
   prepend_before_filter :set_leads_index_title, :only => :leads
   prepend_before_filter :set_reports_index_title, :only => :reports
 
   ##
-  # Index/Reports Scopes
+  # All Scopes
   #
 
+  has_scope :until_time, :as => :until, :unless => 'params[:from].present?'
+
+  has_scope :from_time, :as => :from do |controller, scope, value|
+    if controller.params[:until]
+      scope.for_time_range(value, controller.params[:until])
+    else
+      scope.from_time(value)
+    end
+  end
+
+  ##
+  # Leads Scopes
+  #
+  
   # NOTE default => 'true' only exists to ensure this scope is called
   has_scope :only_leads, :only => :leads, :default => 'true' do |controller, scope|
     scope.leads(true)
   end
 
-  # NOTE default => 'false' only exists to ensure this scope is called
-  has_scope :no_leads, :only => :index, :default => 'false' do |controller, scope|
-    scope.leads(false)
-  end
+  has_scope :offer, :only => :leads
 
   ##
   # Index Scopes
   #
+  
+  # NOTE default => 'false' only exists to ensure this scope is called
+  has_scope :no_leads, :only => :index, :default => 'false' do |controller, scope|
+    scope.leads(false)
+  end
 
   has_scope :category, :only => :index
   has_scope :status, :only => :index
@@ -46,15 +64,6 @@ class E9Crm::DealsController < E9Crm::ResourcesController
     scope & Campaign.of_type("#{value}_campaign".classify)
   end
 
-  has_scope :until_time, :as => :until, :unless => 'params[:from].present?'
-
-  has_scope :from_time, :as => :from do |controller, scope, value|
-    if controller.params[:until]
-      scope.for_time_range(value, controller.params[:until])
-    else
-      scope.from_time(value)
-    end
-  end
 
   ##
   # Actions
@@ -70,15 +79,26 @@ class E9Crm::DealsController < E9Crm::ResourcesController
 
   protected
 
+  def add_edit_breadcrumb(opts = {})
+    @edit_title = e9_t(resource.lead? ? :new_title : :edit_title)
+    add_breadcrumb!(@edit_title)
+  end
+
   def collection
     get_collection_ivar || begin
       set_collection_ivar(
         if params[:action] == 'reports'
           end_of_association_chain.all
-        else
+
+        elsif params[:action] == 'deals'
+          # NOTE this is a pretty ugly join just to be able to sort on owner
           end_of_association_chain
             .joins("left outer join contacts on contacts.id = deals.contact_id")
             .select("deals.*, contacts.first_name owner_name")
+            .all
+
+        else
+          end_of_association_chain.includes(:contacts).paginate(pagination_parameters)
         end
       )
     end
@@ -93,6 +113,6 @@ class E9Crm::DealsController < E9Crm::ResourcesController
   end
 
   def ordered_if 
-    %w(index reports).member? params[:action]
+    %w(index leads reports).member? params[:action]
   end
 end

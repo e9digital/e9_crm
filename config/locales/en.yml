@@ -23,9 +23,9 @@ en:
         show: '%{model}'
 
     links:
-      edit: "Edit"
-      destroy: "Delete"
-      show: "View"
+      edit: "Edit %{model}"
+      destroy: "Delete %{model}"
+      show: "View %{model}"
       index: "Manage %{models}"
 
       campaign_group: 
@@ -96,13 +96,14 @@ en:
         info: Background Information
       company:
         info: Background Information
-      no_campaign:
-        name: No Campaign
       deal:
         info: Details
         custom_info: Lead Information
         lead_email: Email
         lead_name: First Name
+        campaign_code: Code
+        offer_name: Offer
+        created_at: Date
       offer:
         template: Teaser Text
         alert_email_instructions: (Enter an email if you want to be notified of conversions)

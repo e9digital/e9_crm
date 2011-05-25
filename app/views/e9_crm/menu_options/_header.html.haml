@@ -3,6 +3,5 @@
     %form{:action => menu_options_path, :method => :get, :class => 'scope-selects'}
       = label_tag 'menu_option_key_select', t(:view)
       = select_tag 'key', options_for_select(MenuOption::KEYS.sort, params[:key])
-      = submit_tag t(:go), :name => nil
   .toolbar-right
     = link_to_new_resource(MenuOption, :menu_option => {:key => params[:key]}, :class => 'new-menu-option')

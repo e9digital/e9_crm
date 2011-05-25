@@ -9,4 +9,5 @@
         = deal_owner_select_options 
 
   .toolbar-right
+    = link_to I18n.t('activerecord.links.index', :models => 'Leads'), leads_path
     = link_to_new_resource(Deal)

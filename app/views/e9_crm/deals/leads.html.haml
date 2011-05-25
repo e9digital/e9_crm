@@ -1,13 +1,8 @@
 = title (@index_title || e9_t(:index_title))
 
-= render 'header'
+= render 'leads_header'
 
-- if sortable_controller?
-  = form_tag polymorphic_path([:update_order, resource_class]) do
-    %div#records_table
-      = render 'table', :resources => collection, :field_map => {}
-- else
-  %div#records_table
-    = render 'table', :resources => collection
+%div#records_table
+  = render 'leads_table', :resources => collection
 
-= render 'footer'
+= will_paginate collection

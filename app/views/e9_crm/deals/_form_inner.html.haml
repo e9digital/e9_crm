@@ -1,8 +1,16 @@
-.actions
-  = link_to_destroy_resource(resource, :remote => false) if resource.persisted?
+.actions.top
+  - if resource.persisted?
+    - if resource.lead?
+      = link_to 'Back to Leads', leads_path
+    - else
+      = link_to_destroy_resource(resource, :remote => false)
+
 .field
   = f.label :name, nil, :class => :req
   = f.text_field :name
+.field.select
+  = f.label :category
+  = f.select :category, MenuOption.options_for('Deal Category'), :include_blank => 'No Category'
 .field
   = f.label :info
   = f.text_area :info
@@ -13,6 +21,9 @@
   = f.label :value, nil, :class => :req
   = f.text_field :value
 .field.select
+  = f.label :owner
+  = f.collection_select :contact_id, Contact.all, :id, :name, :prompt => true
+.field.select
   = f.label :contacts
   %select.list{'data-iname' => resource_instance_name, 'data-field' => '[contact_ids]'}
     = deal_contact_select_options
@@ -22,9 +33,3 @@
         %span= contact.name
         %input{:type => :hidden, :name => "contact[contact_ids][]", :value => contact.id}
         %a{:class => :remove, :title => "Remove", :alt => "Remove"} Remove
-.field.select
-  = f.label :owner
-  = f.collection_select :contact_id, Contact.all, :id, :name
-.field.select
-  = f.label :category
-  = f.select :category, MenuOption.options_for('Deal Category'), :include_blank => 'No Category'

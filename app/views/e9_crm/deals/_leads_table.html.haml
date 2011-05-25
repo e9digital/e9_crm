@@ -1,0 +1,34 @@
+%table.records
+  %thead
+    %tr
+      %th= orderable_column_link(:created_at)
+      %th= orderable_column_link(:offer_name)
+      %th= orderable_column_link(:campaign_code)
+      %th= orderable_column_link(:lead_name)
+      %th= orderable_column_link(:lead_email)
+      %th= orderable_column_link(:options, :custom_info)
+      %th= t(:actions)
+  %tbody
+    - if collection.empty?
+      %tr
+        %td{:colspan => 7}= e9_t(:no_records_text, :scope => 'e9_crm.leads')
+    - else
+      - collection.each do |record|
+        %tr{:id => "ids_#{record.id}", :class => cycle('odd', 'even')}
+          %td.record-created-at
+            = I18n.l(record.created_at)
+          %td.record-offer-name
+            = record.offer_name
+          %td.record-campaign-code
+            = record.campaign_code
+          %td.record-lead-name
+            = record.lead_name
+          %td.record-lead-email
+            = record.lead_email
+          %td.record-custom-info
+            = record.custom_info
+          %td.actions
+            - if record.contacts.present?
+              = link_to_show_resource(record.contacts.first)
+            = link_to 'Create Deal', edit_deal_path(record)
+            = link_to 'Delete Lead', record, :method => :delete, :remote => true, :confirm => I18n.t("#{resource_class.i18n_scope}.links.confirm_destroy")
