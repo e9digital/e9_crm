@@ -76,7 +76,7 @@ class CreateE9CrmStructure < ActiveRecord::Migration
       t.string :type
       t.string :name
       t.string :lead_name, :lead_email
-      t.string :category
+      t.string :category, :offer_name, :campaign_code
       t.text :info
       t.references :offer, :campaign, :contact, :user
       t.timestamp :created_at, :updated_at, :converted_at, :closed_at
