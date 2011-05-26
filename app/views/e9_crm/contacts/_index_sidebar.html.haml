@@ -1,6 +1,6 @@
 .actions
   = link_to_new_resource(Contact)
-  = link_to_new_resource(Company)
+  = link_to_collection(Company)
 
 -# Email actions (template, newsletter)
 - etag, ntag = contact_email_template_select_tag, contact_newsletter_select_tag

@@ -36,6 +36,11 @@ en:
         merge_required: 'Merge Required! <a href="%{merge_path}">MERGE ME</a>.'
 
       models:
+        campaign:
+          not_a_number: "%{attribute} must be a number (maximum 2 decimal places)."
+          attributes:
+            code:
+              invalid: "%{attribute} must be comprised of letters and numbers only."
         contact:
           attributes:
             users:
@@ -44,7 +49,7 @@ en:
         contact_email:
           attributes:
             contact_ids:
-              blank: "You cannot send an emailwith no recipients!"
+              blank: "You cannot send an email with no recipients!"
             user_ids:
               blank: "None of the contacts selected are configured with primary emails.  Please correct this and try again."
         deal:
@@ -86,6 +91,11 @@ en:
       campaign:
         name: Name
         code_hint: Append to URL
+        code_hint_help: "Be careful when creating tracking codes.  They are NOT EDITABLE after you save them.\n\nTo track the success of this campaign, you can append ?%{code}={Your Code} to the end of any and all URLs on your website.\n\nIt might look something like this: http://www.example.com/about-us?%{code}=alpha, where \"alpha\" represents the code you created.\n\nYou can provide this tracking URL to a salesperson or an affiliate or it can be placed at the end of a link in any of your advertisements."
+        affiliate_fee: Affiliate Fee
+        affiliate_fee_help: This is the fee payable for each lead this affiliate sends you where it converts to a sale.
+        sales_fee: Sales Fee
+        sales_fee_help: This is the fee payable for each lead this salesperson sends you where it converts to a sale.
       contact:
         avatar: Photo
         users: Email Addresses

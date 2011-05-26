@@ -1,6 +1,12 @@
 class E9Crm::ResourcesController < E9Crm::BaseController
   include E9Rails::Helpers::ResourceErrorMessages
-  include E9Rails::Helpers::Pagination
+
+  # NOTE depending on e9_base pagination (which should eventually use this module)
+  #include E9Rails::Helpers::Pagination
+
+  # TODO implement role on e9_crm models?
+  #include E9::Roles::Controller
+  #filter_access_to :update, :edit, :attribute_check => true, :load_method => :filter_target, :context => :admin
 
   class_inheritable_accessor :should_paginate_index
   self.should_paginate_index = true
@@ -24,6 +30,10 @@ class E9Crm::ResourcesController < E9Crm::BaseController
   end
 
   protected
+
+  def filter_target
+    resource
+  end
 
   # NOTE parent is defined so it's always available, it will be overridden on controllers which have belongs_to routes
   def parent; end

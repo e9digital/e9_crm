@@ -4,8 +4,8 @@
   %legend= e9_t(:salesperson_information_legend, :scope => 'e9_crm.campaigns')
   .field
     = f.label :sales_person_id
-    = f.collection_select :sales_person_id, Contact.sales_persons.all, :id, :name, :prompt => true
+    = f.collection_select :sales_person_id, Contact.sales_persons.ordered.all, :id, :name, :prompt => true
   .field
-    = f.label :sales_fee
+    = help_label f, :sales_fee
     = f.text_field :sales_fee
 

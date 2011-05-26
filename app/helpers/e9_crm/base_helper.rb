@@ -1,5 +1,34 @@
 module E9Crm::BaseHelper
 
+  def kramdown(string)
+    Kramdown::Document.new(string).to_html.html_safe
+  end
+
+  alias :k :kramdown
+
+  def help_tooltip(string)
+    return <<-HTML.strip.html_safe
+      <span class="help" rel="tooltip" title="#{CGI.escape_html(string)}">#{t(:inline_help_link)}</span>
+    HTML
+  end
+
+  def help_label(form_or_id, key, options = {})
+    options[:key] ||= :"#{key}_help"
+
+    help_title = options.delete(:title) || resource_humanize(options.delete(:key))
+
+    str = ''.html_safe
+    str.safe_concat resource_humanize(key)
+    str.safe_concat ' '
+    str.safe_concat help_tooltip(help_title)
+
+    if form_or_id.respond_to?(:label)
+      form_or_id.label(key, str, options)
+    else
+      label_tag(form_or_id, str, options)
+    end
+  end
+
   ##
   # Field maps
   #

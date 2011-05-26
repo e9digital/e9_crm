@@ -8,12 +8,13 @@ class Contact < ActiveRecord::Base
   include Rails.application.routes.url_helpers
 
   before_validation :ensure_user_references
+  before_destroy :ensure_no_associated_deals
 
   ##
   # Associations
   #
   belongs_to :company
-  has_many :owned_deals, :class_name => 'Deal'
+  has_many :owned_deals, :class_name => 'Deal', :dependent => :restrict
   has_and_belongs_to_many :associated_deals, :class_name => 'Deal'
 
   has_many :users, :inverse_of => :contact, :dependent => :nullify do
@@ -83,6 +84,8 @@ class Contact < ActiveRecord::Base
   end
   accepts_nested_attributes_for :users, :allow_destroy => true
 
+  delegate :email, :to => 'users.primary.first', :allow_nil => true
+
   def page_views
     PageView.by_user(users)
   end
@@ -149,6 +152,7 @@ class Contact < ActiveRecord::Base
   scope :sales_persons, lambda { where(:status => Status::SalesPerson) }
   scope :affiliates, lambda { where(:status => Status::Affiliate) }
   scope :contacts, lambda { where(:status => Status::Contact) }
+  scope :ordered, lambda { order(arel_table[:first_name].asc) }
 
   scope :by_title, lambda {|val| where(:title => val) }
   scope :by_company, lambda {|val| where(:company_id => val) }
@@ -284,6 +288,10 @@ class Contact < ActiveRecord::Base
     end
   end
 
+  def to_liquid
+    Drop.new(self)
+  end
+
   protected
 
     def _assign_initialization_defaults
@@ -306,6 +314,16 @@ class Contact < ActiveRecord::Base
       attributes.keys.member?('value') && attributes['value'].blank? ||
         attributes.keys.member?('email') && attributes['email'].blank?
     end
+
+    def ensure_no_associated_deals
+      unless self.associated_deals.empty?
+        object.errors.add(:associated_deals, :delete_restricted)
+      end
+    end
+
+  class Drop < ::E9::Liquid::Drops::Base
+    source_methods :first_name, :last_name, :name, :email, :title, :company_name
+  end
 
   module Status
     VALUES      = %w(contact sales_person affiliate)

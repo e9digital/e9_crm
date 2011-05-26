@@ -2,12 +2,13 @@
 #
 class MenuOption < ActiveRecord::Base
   KEYS = [
+    #'Task Category',
+    #'Task Status',
+    'Address',
     'Deal Category',
     'Email',
     'Instant Messaging Handle',
     'Phone Number',
-    #'Task Category',
-    #'Task Status',
     'Website'
   ].freeze
 
@@ -16,7 +17,7 @@ class MenuOption < ActiveRecord::Base
 
   acts_as_list :scope => 'menu_options.key = \"#{key}\"'
 
-  scope :options_for, lambda {|key| where(:key => key) }
+  scope :options_for, lambda {|key| where(:key => key).order('menu_options.position ASC') }
 
   ##
   # A direct SQL selection of values for a given key

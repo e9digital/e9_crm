@@ -2,11 +2,11 @@ class E9Crm::CampaignsController < E9Crm::ResourcesController
   defaults :resource_class => Campaign
   include E9Rails::Controllers::Orderable
 
-  filter_access_to :reports, :require => :read, :context => :admin
+  self.should_paginate_index = false
 
   has_scope :of_group, :as => :group, :only => :index
 
-  has_scope :active, :only => :index do |_, scope, value|
+  has_scope :active, :only => :index, :default => 'true' do |_, scope, value|
     scope.active(E9.true_value?(value))
   end
 
@@ -14,31 +14,23 @@ class E9Crm::CampaignsController < E9Crm::ResourcesController
     scope.of_type("#{value}_campaign".classify)
   end
 
-  def reports
-    index!
-  end
-
   protected
 
-    def set_reports_index_title
-      @index_title = I18n.t(:reports_title, :scope => 'e9.e9_crm.campaigns')
+    def collection_scope
+      end_of_association_chain.typed.includes(:campaign_group)
+
+      # NOTE this is a pretty ugly join just to be able to sort on campaign group name
+      end_of_association_chain.typed
+        .joins("left outer join campaign_groups on campaign_groups.id = campaigns.campaign_group_id")
+        .select("campaigns.*, campaign_groups.name campaign_group_name")
     end
 
-    def collection_scope
-      scope = end_of_association_chain
-      if params[:action] == 'reports'
-        scope = scope.select(
-          'campaigns.*, count(deals.id) won_deals_count, count(deals_campaigns.id) deals_count'
-        ).joins([:deals, :won_deals])
-      else
-        # don't include NoCampaign normally
-        scope = scope.typed
-      end
-      scope
+    def default_ordered_on
+      'campaign_group_name,name'
     end
-    
-    # no pagination
-    def collection
-      get_collection_ivar || set_collection_ivar(collection_scope.all)
+
+    def default_ordered_dir
+      'ASC'
     end
+
 end

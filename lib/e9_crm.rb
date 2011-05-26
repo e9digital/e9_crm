@@ -5,6 +5,8 @@ require 'money'
 require 'inherited_resources'
 require 'will_paginate'
 require 'has_scope'
+require 'kramdown'
+require 'e9_base'
 
 require 'e9_crm/rails_extensions'
 
@@ -12,6 +14,7 @@ module E9Crm
   autoload :VERSION,            'e9_crm/version'
   autoload :Controller,         'e9_crm/controller'
   autoload :Model,              'e9_crm/model'
+  autoload :Email,              'e9_crm/email'
   autoload :TrackingController, 'e9_crm/tracking_controller'
 
   mattr_accessor :cookie_name
@@ -51,6 +54,8 @@ module E9Crm
     end
 
     ActionController::Base.send(:include, E9Crm::Controller)
+
+    ::Email.send(:include, E9Crm::Email)
 
     E9Crm.tracking_controllers.each do |controller|
       controller.send(:include, E9Crm::TrackingController)

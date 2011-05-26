@@ -2,6 +2,8 @@ class E9Crm::MenuOptionsController < E9Crm::ResourcesController
   defaults :resource_class => MenuOption
   include E9Rails::Controllers::Sortable
 
+  self.should_paginate_index = false
+
   has_scope :options_for, :as => :key, :only => :index
 
   # NOTE The reason this is set in a filter instead of just a default scope value 

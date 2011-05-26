@@ -26,9 +26,14 @@ class Campaign < ActiveRecord::Base
     NoCampaign.first || NoCampaign.create
   end
 
+  validates :name,          :presence     => true,
+                            :uniqueness   => { :allow_blank => true, :case_sensitive => false }
+
   validates :code,          :presence     => { :unless => lambda {|r| r.is_a?(NoCampaign) } },
-                            :length       => { :maximum => 32 }, 
-                            :uniqueness   => { :ignore_case => true, :allow_blank => true }
+                            :length       => { :maximum => 32 },
+                            :format       => { :allow_blank => true, :with => /^[\w\d]+$/ },
+                            :uniqueness   => { :case_sensitive => false, :allow_blank => true }
+
   validates :affiliate_fee, :numericality => true
   validates :sales_fee,     :numericality => true
 

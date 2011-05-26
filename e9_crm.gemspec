@@ -26,4 +26,6 @@ Gem::Specification.new do |s|
   s.add_dependency("e9_rails", "~> 0.0.15")
   s.add_dependency("e9_tags", "~> 0.0.11")
   s.add_dependency("will_paginate")
+  s.add_dependency("kramdown", "~> 0.13")
+  s.add_dependency("e9_base")
 end

@@ -4,7 +4,7 @@ module E9Crm::CampaignsHelper
   end
 
   def display_campaign_code(val)
-    val || 'n/a'
+    val && "?#{E9Crm.query_param}=#{val}" || 'n/a'
   end
 
   def display_campaign_type(val)
@@ -18,7 +18,7 @@ module E9Crm::CampaignsHelper
   end
 
   def campaign_group_select_options
-    options = CampaignGroup.select('name, id').all.map {|c| [c.name, c.id] }
+    options = CampaignGroup.select('name, id').ordered.all.map {|c| [c.name, c.id] }
     options.unshift(['All Groups', nil])
     options_for_select(options)
   end
@@ -29,8 +29,7 @@ module E9Crm::CampaignsHelper
 
   def campaign_active_select_options
     options = [
-      ['All Statuses', nil],
-      ['Active',      true],
+      ['Active',     true],
       ['Inactive',   false]
     ]
     options_for_select(options)

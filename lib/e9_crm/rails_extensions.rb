@@ -16,6 +16,37 @@ class Array
   end
 end
 
+
+#
+# Money is too clever by half and attempts to deal with parsing Strings into
+# currency e.g. 
+#
+#   "asdf 0.23 asdf".to_money #=> #<Money cents:23 currency:USD>
+#
+# This is problematic if you want to actually validate money as it parses most
+# bogus strings to zero, so unless you want to validate > 0, most any input
+# will pass validation.
+#
+# This silly hack prevents "asdf".to_money from parsing to 0 cents, instead
+# returning itself.  The #cents method allows for our composed_of column to
+# still work, simply returning self, which would fail a numericality validation.
+#
+require 'money'
+
+class String
+  def to_money(currency = nil)
+    if match /^$|[^\$\d\.\,]/
+      self
+    else
+      Money.parse(self, currency)
+    end
+  end
+
+  def cents
+    self
+  end
+end
+
 class ActiveRecord::Base
   #
   # Basic conversion for "money" columns using the Money class and Rails composed_of
@@ -26,7 +57,7 @@ class ActiveRecord::Base
         composed_of :#{column_name},
                     :class_name => 'Money',
                     :mapping => %w(#{column_name} cents),
-                    :converter => Proc.new { |value| value.respond_to?(:to_money) ? value.to_money : Money.empty }
+                    :converter => Proc.new {|v| v.respond_to?(:to_money) ? v.to_money : v }
       EVAL
     end
   end
