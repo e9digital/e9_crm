@@ -1,8 +1,7 @@
+*NOTE his plugin requires the private e9_base CMS gem and WILL NOT WORK without it.*
+
 CRM Plugin for the e9 CMS
 =========================
-
-It should be noted that while this plugin is intended for use in the
-e9 CMS, it does neither includes nor requires it.
 
 To use, add as a gem and install by running:
 
