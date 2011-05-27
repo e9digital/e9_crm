@@ -1,6 +1,7 @@
 en:
   actions: Actions
   clear: Clear
+  clear_all_filters: Clear All Filters
   edit_dated_costs: Edit Costs
   go: Go
   inline_help_link: '[?]'

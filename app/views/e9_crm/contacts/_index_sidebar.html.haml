@@ -28,9 +28,10 @@
     = submit_tag t(:go), :name => nil
 
   = form_tag(resource_class, :method => :get, :class => 'scope-selects') do
-    %select{:name => 'company'}
+    = label_tag 'contact_company_select', Company.model_name.human
+    %select{:name => 'company', :id => 'contact_company_select'}
       = company_select_options
 
   = render 'tag_table'
   .actions
-    = submit_tag t(:clear), :name => nil, :id => 'contact_search_clear'
+    = submit_tag t(:clear_all_filters), :name => nil, :id => 'contact_search_clear'

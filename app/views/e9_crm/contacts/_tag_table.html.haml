@@ -1,15 +1,9 @@
 - tagged_params = Array.wrap(params[:tagged])
-%table.tag-table
-  %thead
-    %th{:colspan => 2}
-      = t(:tags_name, :scope => :e9_tags)
-  %tbody
-    - contact_tags.sort.group_by {|tag| tag[0].upcase }.each do |letter, tags|
-      %tr
-        %td.tag-starts-with= letter
-        %td.tags
-          %ul.tags
-            - tags.each do |tag|; tag_id = "tagged-#{tag.downcase.dasherize}"
-              %li.tag
-                = label_tag(tag_id, tag)
-                = check_box_tag('tagged[]', tag, tagged_params.member?(tag), :id => tag_id)
+%label= t(:tags_name, :scope => :e9_tags)
+.tag-holder
+  - contact_tags.sort.group_by {|tag| tag[0].upcase }.each do |letter, tags|
+    %ul.tags
+      - tags.each do |tag|; tag_id = "tagged-#{tag.downcase.dasherize}"
+        %li.tag
+          = label_tag(tag_id, tag)
+          = check_box_tag('tagged[]', tag, tagged_params.member?(tag), :id => tag_id)
