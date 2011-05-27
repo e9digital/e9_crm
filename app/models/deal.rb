@@ -18,6 +18,7 @@ class Deal < ActiveRecord::Base
   money_columns :value
 
   validates :value,      :numericality => true
+  validates :campaign,   :presence     => true
 
   # non-lead validations (deals in the admin)
   # require a deal name
@@ -29,11 +30,14 @@ class Deal < ActiveRecord::Base
   validates :lead_email, :presence => { :if => lambda {|r| r.lead? } },
                          :email    => { :if => lambda {|r| r.lead? }, :allow_blank => true }
 
-  # If a lead with a user, get the lead_name and lead_email from the user before validation
-  before_validation :get_name_and_email_from_user, :only => :create
-  before_validation :update_to_pending_status, :only => :update
+  # NOTE should offer be validated?
+  #validates :offer,      :presence => { :if => lambda {|r| r.lead? } }
 
-  # copy temp options over into custom_info column
+  # If a lead with a user, get the lead_name and lead_email from the user before validation
+  before_validation :get_name_and_email_from_user, :on => :create
+  before_validation :update_to_pending_status,     :on => :update
+
+  # copy temp options over into info column
   before_create :transform_options_column
 
   # denormalize campaign code and offer name columns
@@ -167,14 +171,6 @@ class Deal < ActiveRecord::Base
   scope :owner,    lambda {|owner|    where(:contact_id => owner.to_param) }
   scope :status,   lambda {|status|   where(:status => status) }
 
-  def custom_info
-    read_attribute(:options)
-  end
-
-  def custom_info=(v)
-    write_attribute(:options, v)
-  end
-
   protected
 
     def write_options(obj={})
@@ -215,13 +211,7 @@ class Deal < ActiveRecord::Base
     end
 
     def transform_options_column
-      # NOTE this column can't be passed, it is only generated from
-      # the custom options pseudo column
-      self.custom_info = begin
-        options.to_hash.map do |k, v|
-          "%s:\n%s\n\n" % [k.to_s.titleize, v]
-        end.join
-      end
+      self.info = options.to_hash.map {|k, v| "%s:\n%s\n\n" % [k.to_s.titleize, v] }.join
     end
 
     def ensure_denormalized_columns

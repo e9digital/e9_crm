@@ -108,11 +108,12 @@ en:
         info: Background Information
         not_ok_to_email: "This contact will not receive bulk email."
         tag_instructions: "Tags are words or phrases that describe or categorize this contact.\n\nWhen searching a particular tag, the system will show all contacts with that tag."
+        no_deals: There are no deals associated with this contact.
+        no_leads: There are no leads associated with this contact.
       company:
         info: Background Information
       deal:
         info: Details
-        custom_info: Lead Information
         lead_email: Email
         lead_name: First Name
         campaign_code: Code

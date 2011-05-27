@@ -13,7 +13,6 @@ class Campaign < ActiveRecord::Base
   has_many   :lost_deals, :class_name => 'Deal', :conditions => ['deals.status = ?', Deal::Status::Lost]
   has_many   :pending_deals, :class_name => 'Deal', :conditions => ['deals.status = ?', Deal::Status::Pending]
   has_many   :leads, :class_name => 'Deal', :conditions => ['deals.status = ?', Deal::Status::Lead]
-
   has_many   :page_views, :inverse_of => :campaign, :dependent => :nullify
 
   # only advertising campaigns use this association
@@ -41,6 +40,7 @@ class Campaign < ActiveRecord::Base
   scope :inactive, lambda { active(false) }
   scope :of_group, lambda {|val| where(:campaign_group_id => val.to_param) }
   scope :typed,    lambda { where(arel_table[:type].not_eq('NoCampaign')) }
+  scope :ordered,  lambda { order(arel_table[:name].asc) }
 
   def new_visit_session_count
     page_views.new_visits.group(:session).count.keys.length
@@ -67,6 +67,6 @@ class Campaign < ActiveRecord::Base
   end
 
   def to_s
-    name
+    name.tap {|n| n << " (#{code})" if code.present? }
   end
 end

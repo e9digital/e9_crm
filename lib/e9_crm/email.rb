@@ -3,9 +3,11 @@ module E9Crm
     extend ActiveSupport::Concern
 
     included do
+      attr_accessor :contact
+
       def locals_with_contact
         default_locals.merge({
-          :contact => recipient.try(:contact)
+          :contact => @contact || recipient.try(:contact)
         })
       end
 

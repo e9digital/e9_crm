@@ -4,5 +4,10 @@
   #records_table
     = render 'table', :resources => collection
 
+  = form_tag email_templates_path, :method => :get do
+    %label{:for => 'template-chooser'} Choose a Template
+    %select{:name => 'id', :id => 'template-chooser'}
+      %option{:value => '1'} One
+
 #index-sidebar
   = render 'index_sidebar'

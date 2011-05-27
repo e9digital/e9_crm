@@ -14,15 +14,50 @@
   .contact-info
     %label #{Contact.human_attribute_name(:info)}:
     = contact_simple_format(resource.info.presence || t(:none))
+
   - if company = resource.company
     .contact-company
-      %label= company.name
-
-      .contact-company-links.actions
-        = google_search_link(company.name)
-        = google_news_link(company.name)
-
+      %h2
+        %span.contact-subheader= company.name
+        %span.contact-actions
+          = google_search_link(company.name)
+          = google_news_link(company.name)
       - if company.info.present?
         = k(company.info)
+
+  .contact-deals
+    %h2
+      %span.contact-subheader Deals
+      %span.contact-actions
+        = link_to_new_resource(Deal, :deal => { :contact_ids => [resource.id] })
+
+    %ul
+      - if (deals = resource.associated_deals.leads(false).limit(5)).blank?
+        %li= resource_humanize(:no_deals)
+      - else
+        - deals.each do |deal|
+          %li
+            .contact-deal-status
+              = deal.status
+            .contact-deal-name
+              = link_to deal.name, edit_deal_path(deal)
+            .contact-deal-value
+              = deal.value
+
+  .contact.leads
+    %h2
+      %span.contact-subheader Leads 
+
+    %ul
+      - if (leads = resource.associated_deals.leads.limit(5)).blank?
+        %li= resource_humanize(:no_leads)
+      - else
+        - leads.each do |lead|
+          %li
+            .contact-lead-created-at
+              = l(lead.created_at)
+            .contact-lead-name
+              = link_to lead.offer_name, edit_deal_path(lead)
+
 .contact-sidebar
   = render 'sidebar'

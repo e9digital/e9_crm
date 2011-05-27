@@ -12,11 +12,11 @@
   = f.label :category
   = f.select :category, MenuOption.options_for('Deal Category'), :include_blank => 'No Category'
 .field
+  = f.label :campaign, :for => 'deal_campaign_select'
+  = f.collection_select :campaign_id, Campaign.ordered.all, :id, :to_s, {:prompt => true}, :id => 'deal_campaign_select'
+.field
   = f.label :info
   = f.text_area :info
-.field
-  = f.label :custom_info
-  = f.text_area :custom_info
 .field
   = f.label :value, nil, :class => :req
   = f.text_field :value

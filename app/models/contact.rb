@@ -84,7 +84,11 @@ class Contact < ActiveRecord::Base
   end
   accepts_nested_attributes_for :users, :allow_destroy => true
 
-  delegate :email, :to => 'users.primary.first', :allow_nil => true
+  def primary_user
+    users.primary.first
+  end
+
+  delegate :email, :to => :primary_user, :allow_nil => true
 
   def page_views
     PageView.by_user(users)

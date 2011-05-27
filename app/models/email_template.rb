@@ -8,4 +8,15 @@ class EmailTemplate < Email
   validates :text_body,  :presence => true
   validates :subject,    :presence => true
   validates :from_email, :presence => true, :email => { :allow_blank => true }
+
+  def as_json(options = {})
+    {}.tap do |hash|
+      hash[:to]        = recipient.email_to
+      hash[:reply_to]  = reply_email
+      hash[:from]      = from_email
+      hash[:subject]   = render(:subject)
+      hash[:html_body] = render(:html_body)
+      hash[:text_body] = render(:text_body)
+    end
+  end
 end
