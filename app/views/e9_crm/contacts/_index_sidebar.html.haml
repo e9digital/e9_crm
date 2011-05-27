@@ -3,8 +3,9 @@
   = link_to_collection(Company)
 
 -# Email actions (template, newsletter)
-- etag, ntag = contact_email_template_select_tag, contact_newsletter_select_tag
-- if [etag, ntag].any?(&:present?)
+-#- etag, ntag = contact_email_template_select_tag, contact_newsletter_select_tag
+-#- if [etag, ntag].any?(&:present?)
+- if (etag = contact_newsletter_select_tag).present?
   %fieldset
     %legend= e9_t(:email_actions_legend)
     - if etag
@@ -12,11 +13,11 @@
         = etag
         = hidden_field_tag 'uids', @contact_ids.join(','), :id => 'contact_email_uids'
         = submit_tag e9_t(:send_email_template), :name => nil
-    - if ntag
-      = form_tag send_email_admin_user_email_path('__ID__'), :method => :put, :id => 'contact_newsletter_form', 'data-confirm' => e9_t(:contact_newsletter_confirmation, :count => collection.length), 'data-empty' => e9_t(:no_contacts_notification), 'data-count' => @contact_ids.length  do
-        = ntag
-        = hidden_field_tag 'uids', @contact_ids.join(','), :id => 'contact_newsletter_uids'
-        = submit_tag e9_t(:send_email_newsletter), :name => nil
+    -#- if ntag
+      -#= form_tag send_email_admin_user_email_path('__ID__'), :method => :put, :id => 'contact_newsletter_form', 'data-confirm' => e9_t(:contact_newsletter_confirmation, :count => collection.length), 'data-empty' => e9_t(:no_contacts_notification), 'data-count' => @contact_ids.length  do
+        -#= ntag
+        -#= hidden_field_tag 'uids', @contact_ids.join(','), :id => 'contact_newsletter_uids'
+        -#= submit_tag e9_t(:send_email_newsletter), :name => nil
 
 -# Search filter options
 %fieldset
@@ -25,6 +26,11 @@
     = label_tag 'contact_search_field', t(:search)
     = text_field_tag 'search', params[:search], :id => 'contact_search_field'
     = submit_tag t(:go), :name => nil
+
+  = form_tag(resource_class, :method => :get, :class => 'scope-selects') do
+    %select{:name => 'company'}
+      = company_select_options
+
   = render 'tag_table'
   .actions
     = submit_tag t(:clear), :name => nil, :id => 'contact_search_clear'

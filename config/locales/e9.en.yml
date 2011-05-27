@@ -16,7 +16,7 @@ en:
         send_email_template: Send Email
         send_email_newsletter: Send Newsletter
         contact_newsletter_confirmation: "The system will send the newsletter to all of the selected contacts (%{count}) if they are subscribed to receieve email.  Are you sure you want to proceed?"
-        no_contacts_notification: "You cannot send an email with no recipients!"
+        no_contacts_notification: "Either you have selected no contacts, or all of those selected are opted out of bulk email.  Please correct this and try again."
         email_actions_legend: Email Actions
         search_options_legend: Search Filters
       contact_merges:

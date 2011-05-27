@@ -64,7 +64,6 @@ class E9Crm::DealsController < E9Crm::ResourcesController
     scope & Campaign.of_type("#{value}_campaign".classify)
   end
 
-
   ##
   # Actions
   #

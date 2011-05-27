@@ -12,4 +12,4 @@
 
   - if record.company_id?
     %span.contact-who-company
-      = link_to_contact_search(:search, record.company_name)
+      = link_to_contact_search(:company, record.company_id, record.company_name)

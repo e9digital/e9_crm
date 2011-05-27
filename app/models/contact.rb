@@ -154,6 +154,7 @@ class Contact < ActiveRecord::Base
   scope :contacts, lambda { where(:status => Status::Contact) }
   scope :ordered, lambda { order(arel_table[:first_name].asc) }
 
+  scope :ok_to_email, lambda { where(:ok_to_email => true) }
   scope :by_title, lambda {|val| where(:title => val) }
   scope :by_company, lambda {|val| where(:company_id => val) }
   scope :tagged, lambda {|tags| 
@@ -164,6 +165,7 @@ class Contact < ActiveRecord::Base
     end
   }
 
+  # NOTE for future restriction?
   scope :deal_owners, lambda { scoped }
 
   def self.available_to_deal(deal) 
@@ -317,7 +319,8 @@ class Contact < ActiveRecord::Base
 
     def ensure_no_associated_deals
       unless self.associated_deals.empty?
-        object.errors.add(:associated_deals, :delete_restricted)
+        errors.add(:associated_deals, :delete_restricted)
+        false
       end
     end
 

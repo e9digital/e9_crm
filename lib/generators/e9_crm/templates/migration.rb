@@ -26,6 +26,7 @@ class CreateE9CrmStructure < ActiveRecord::Migration
       t.string :title
       t.string :avatar
       t.string :status
+      t.boolean :ok_to_email, :default => true
       t.text :info
       t.references :company
       t.timestamps

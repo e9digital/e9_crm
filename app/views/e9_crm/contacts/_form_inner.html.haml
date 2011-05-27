@@ -1,9 +1,15 @@
-= render_record_attribute_form(:users, f)
+%fieldset.nested-associations
+  %legend= f.label(:users)
+  = render_record_attribute_association(:users, f)
+  = link_to_add_record_attribute(:users)
+  .field.checkbox
+    = f.label :ok_to_email
+    = f.check_box :ok_to_email
 
 %fieldset.contact-standard-fields
   %legend= e9_t(:form_legend_standard)
   .field
-    = f.label :first_name
+    = f.label :first_name, nil, :class => :req
     = f.text_field :first_name
   .field
     = f.label :last_name

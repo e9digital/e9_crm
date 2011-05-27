@@ -25,11 +25,11 @@
       - collection.each do |record|
         %tr{:id => "ids_#{record.id}", :class => cycle('odd', 'even')}
           %td.record-campaign-type
-            = record.campaign_type[/(.*)Campaign/, 1]
+            = display_campaign_type(record.campaign_type)
           %td.record-campaign-name
-            = record.campaign_name
+            = record.campaign_name || 'n/a'
           %td.record-campaign-group
-            = record.campaign_group
+            = record.campaign_group || 'n/a'
           %td.record-new-visits
             - dat[:new_visits] << record.new_visits
             = record.new_visits
@@ -47,16 +47,16 @@
             = record.won_deal_count.to_i
           %td.record-total-value
             - dat[:total_value] << record.total_value
-            = record.total_value
+            = record.total_value || no_money
           %td.record-averate-value
             - dat[:average_value] << record.average_value
-            = record.average_value
+            = record.average_value || no_money
           %td.record-total-cost
             - dat[:total_cost] << record.total_cost
-            = record.total_cost
+            = record.total_cost || no_money
           %td.record-average-cost
             - dat[:average_cost] << record.average_cost
-            = record.average_cost
+            = record.average_cost || no_money
           %td.record-average-elapsed
             - dat[:average_elapsed] << record.average_elapsed
             = record.average_elapsed && "%s days" % record.average_elapsed || 'n/a'
@@ -75,12 +75,12 @@
         %td.record-won-deal-count
           = dat[:won_deal_count].sum.to_i
         %td.record-total-value
-          = dat[:total_value].average
-        %td.record-averate-value
-          = dat[:average_value].average
+          = dat[:total_value].compact.sum.to_money
+        %td.record-average-value
+          = dat[:average_value].compact.average.to_money
         %td.record-total-cost
-          = dat[:total_cost].compact.sum
+          = dat[:total_cost].compact.sum.to_money
         %td.record-average-cost
-          = dat[:average_cost].compact.average
+          = dat[:average_cost].compact.average.to_money
         %td.record-average-elapsed
           = "%s days" % dat[:average_elapsed].compact.average

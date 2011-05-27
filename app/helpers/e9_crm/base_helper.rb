@@ -101,6 +101,8 @@ module E9Crm::BaseHelper
     )
   end
 
+  # tries to build an associated resource, looking to the assocatiaon's model for a method
+  # named "%{association_name}_build_parameters}" first for any default params
   def build_associated_resource(association_name)
     params_method = "#{association_name}_build_parameters"
     build_params = resource_class.send(params_method) if resource_class.respond_to?(params_method)

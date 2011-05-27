@@ -7,4 +7,5 @@ class Company < ActiveRecord::Base
 
   validates :name, :presence   => true, :uniqueness => { :allow_blank => true, :case_sensitive => false }
 
+  scope :ordered, lambda { order(arel_table[:name].asc) }
 end

@@ -11,17 +11,23 @@ class E9Crm::ContactsController < E9Crm::ResourcesController
   before_filter :determine_title, :only => :index
   before_filter :load_contact_ids, :only => :index
   before_filter :build_nested_associations, :only => [:new, :edit]
+  before_filter :set_tag_instructions_scope
 
   has_scope :search, :by_title, :by_company, :only => :index
   has_scope :tagged, :only => :index, :type => :array
+  has_scope :by_company, :as => :company, :only => :index
 
   # record attributes templates js
   skip_before_filter :authenticate_user!, :filter_access_filter, :only => :templates
   before_filter :build_resource, :only => :templates
-  caches_action :templates
+  #caches_action :templates
 
+  # NOTE for some reason create! { redirect } is trying to redirect on failure
   def create
-    create! { resource_path }
+    create! do |success, failure|
+      success.html { redirect_to resource_path }
+      failure.html { render :new }
+    end
   end
 
   def update
@@ -36,7 +42,7 @@ class E9Crm::ContactsController < E9Crm::ResourcesController
   #
   def load_contact_ids
     @contact_ids ||= begin
-      contact_id_sql = end_of_association_chain.scoped.select('contacts.id').to_sql
+      contact_id_sql = end_of_association_chain.scoped.ok_to_email.select('contacts.id').to_sql
       Contact.connection.send(:select_values, contact_id_sql, 'Contact ID Load')
     end
   end
@@ -46,20 +52,33 @@ class E9Crm::ContactsController < E9Crm::ResourcesController
   #
   def determine_title
     params.delete(:search) if params[:search].blank?
-
-    @index_title ||= if params[:tagged] && params[:search]
-      e9_t(:index_title_with_search_and_tags, :tagged => params[:tagged].join(' or '), :search => params[:search])
-    elsif params[:tagged]
-      e9_t(:index_title_with_tags, :tagged => params[:tagged].join(' or '))
-    elsif params[:search]
-      e9_t(:index_title_with_search, :search => params[:search])
+    
+    @index_title = 'Contacts'.tap do |t|
+      if params[:search]
+        t << " matching \"#{params[:search]}\""
+      end
+      if params[:tagged]
+        t << " tagged #{params[:tagged].map {|t| "\"#{t}\"" }.join(' or ')}"
+      end
+      if params[:company] =~ /\d+/ && company = Company.find_by_id(params[:company])
+        t << " in company \"#{company.name}\""
+      end
     end
+  end
+
+  # we don't need @index_title in the breadcrumb here (too long)
+  def add_index_breadcrumb
+    add_breadcrumb! e9_t(:index_title), collection_path
   end
 
   def collection_scope
     #TODO fix eager loading, which totally breaks because of the left outer joins in search
     #super.includes(:users => :subscriptions)
     scope = super
+  end
+
+  def set_tag_instructions_scope
+    @tag_instructions_scope = 'activerecord.attributes.contact'
   end
 
   def build_nested_associations

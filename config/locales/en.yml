@@ -42,6 +42,7 @@ en:
             code:
               invalid: "%{attribute} must be comprised of letters and numbers only."
         contact:
+          delete_restricted: "This contact is related to leads and/or deals and can not be deleted."
           attributes:
             users:
               taken: "Two or more of the login accounts entered share a duplicate email."
@@ -49,7 +50,7 @@ en:
         contact_email:
           attributes:
             contact_ids:
-              blank: "You cannot send an email with no recipients!"
+              blank: "Either you have selected no contacts, or all of those selected are opted out of bulk email.  Please correct this and try again."
             user_ids:
               blank: "None of the contacts selected are configured with primary emails.  Please correct this and try again."
         deal:
@@ -78,7 +79,7 @@ en:
       menu_options: Menu Option
       new_content_subscription_offer: New Content Subscription Offer
       newsletter_subscription_offer: Newsletter Subscription Offer
-      no_campaign: '(No Campaign)'
+      no_campaign: No Campaign
       offer: Offer
       page_view: Page View
       phone_number_attrubute: Phone
@@ -101,9 +102,11 @@ en:
         users: Email Addresses
         address_attributes: Addresses
         instant_messaging_handle_attributes: IM Handles
-        phone_number_attrubutes: Phone Numbers
+        phone_number_attributes: Phone Numbers
         website_attributes: Websites
         info: Background Information
+        not_ok_to_email: "This contact will not receive bulk email."
+        tag_instructions: "Tags are words or phrases that describe or categorize this contact.\n\nWhen searching a particular tag, the system will show all contacts with that tag."
       company:
         info: Background Information
       deal:

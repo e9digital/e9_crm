@@ -3,12 +3,17 @@ module E9Crm::CampaignsHelper
     Money === val && val || 'n/a'
   end
 
+  def no_money
+    @_no_money ||= Money.new(0)
+  end
+
   def display_campaign_code(val)
     val && "?#{E9Crm.query_param}=#{val}" || 'n/a'
   end
 
-  def display_campaign_type(val)
-    val[/(.*)Campaign/, 1]
+  def display_campaign_type(val = '')
+    retv = val[/(.*)Campaign/, 1]
+    retv == 'No' ? 'No Campaign' : retv
   end
 
   def campaign_type_select_options(with_all_option = true)

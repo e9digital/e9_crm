@@ -1,6 +1,8 @@
 .contact-body
   = title resource.name
-  = render 'who', :record => resource
+  .contact-photo
+    %img{:src => resource.avatar_url, :alt => "Avatar for #{resource.name}"}
+  = render 'who', :record => resource, :hide_name => true
   .contact-links.actions
     = link_to_edit_resource(resource)
     = google_search_link(resource.name)

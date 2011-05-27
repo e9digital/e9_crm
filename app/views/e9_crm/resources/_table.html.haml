@@ -22,3 +22,6 @@
           %td.links
             - field_map[:links][record].each do |link|
               = link
+
+- if @controller.should_paginate_index
+  = will_paginate collection

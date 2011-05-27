@@ -9,6 +9,12 @@ module E9Crm::ContactsHelper
     end
   end
 
+  def company_select_options
+    options = Company.select('name', 'id').ordered.all.map {|c| [c.name, c.id] }
+    options.unshift(['Any Company', nil])
+    options_for_select(options, params[:company])
+  end
+
   def link_to_google(query, opts = {})
     return unless query.present?
 
@@ -75,7 +81,7 @@ module E9Crm::ContactsHelper
   def records_table_field_map_for_contact
     {
       :fields => { 
-        :avatar => proc {|r| "<img src=\"#{r.avatar_url}\" alt=\"Avatar for #{r.name}\" />".html_safe  },
+        :avatar => proc {|r| link_to("<img src=\"#{r.avatar_url}\" alt=\"Avatar for #{r.name}\" />".html_safe, contact_path(r)) },
         :details => proc {|r| render('details', :record => r) }
       },
 

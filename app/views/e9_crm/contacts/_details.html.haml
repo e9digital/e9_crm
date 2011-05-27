@@ -7,9 +7,12 @@
 
 - if record.users.any?
   .contact-emails
+    - unless record.ok_to_email?
+      .contact-email-warning
+        = resource_humanize(:not_ok_to_email)
     - record.users.each do |user|
       .contact-email
-        = '* ' if contact_user_subscribed_to_newsletter?(user)
+        -#= '* ' if contact_user_subscribed_to_newsletter?(user)
         = link_to(user.email, "mailto:#{user.email}")
         = "(#{user.options.type})" if user.options.type
         = "(primary)"              if user.primary?

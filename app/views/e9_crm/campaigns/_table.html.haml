@@ -31,3 +31,6 @@
             - if record.is_a?(AdvertisingCampaign)
               = link_to t(:edit_dated_costs), advertising_campaign_dated_costs_path(record), :class => 'dated-costs'
             = link_to_edit_campaign(record)
+
+- if @controller.should_paginate_index
+  = will_paginate collection

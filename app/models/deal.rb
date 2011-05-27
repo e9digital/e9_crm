@@ -38,6 +38,7 @@ class Deal < ActiveRecord::Base
 
   # denormalize campaign code and offer name columns
   before_save :ensure_denormalized_columns
+  before_save :ensure_associated_campaign
 
   # If a lead with no user, find the user by email or create it, then if mailing_lists
   # were passed, assign the user those mailing lists
@@ -52,21 +53,30 @@ class Deal < ActiveRecord::Base
 
   attr_accessor :mailing_list_ids
 
+  # 
+  # reports is technically a deal scope, but actually returns campaigns
+  # and a selection of relevant pseudo columns.
+  #
+  # NOTE reports probably should be a campaign scope?  It doesn't really seem
+  # to matter.  The resultset is neither Deals nor Campaigns, anyway, but
+  # a selection of calculated columns aggregated from data from both tables.
+  # 
   scope :reports, lambda {
-    select_sql = <<-SELECT.gsub(/\s+/, ' ')
-      campaigns.id                            campaign_id,
-      campaigns.type                          campaign_type,
-      campaigns.name                          campaign_name,
-      campaign_groups.name                    campaign_group,
-      SUM(IF(deals.status != 'lead',1,0))     deal_count, 
-      COUNT(deals.id)                         lead_count,
-      SUM(IF(deals.status='won',1,0))         won_deal_count,
-      campaigns.new_visits                    new_visits, 
-      campaigns.repeat_visits                 repeat_visits, 
+    selects = <<-SQL.gsub(/\s+/, ' ')
+      campaigns.type                                 campaign_type,
+      campaigns.name                                 campaign_name,
+      campaigns.new_visits                           new_visits,
+      campaigns.repeat_visits                        repeat_visits,
 
-      SUM(IF(deals.status='won',value,0))     total_value, 
-      AVG(IF(deals.status='won',value,NULL))  average_value, 
+      deals.closed_at                                closed_at,
+      deals.created_at                               created_at,
 
+      campaign_groups.name                           campaign_group,
+      SUM(IF(deals.status != 'lead',1,0))            deal_count, 
+      COUNT(deals.id)                                lead_count,
+      SUM(IF(deals.status='won',1,0))                won_deal_count,
+      SUM(IF(deals.status='won',deals.value,0))      total_value, 
+      AVG(IF(deals.status='won',deals.value,NULL))   average_value, 
       SUM(CASE campaigns.type
         WHEN "AdvertisingCampaign" 
           THEN dated_costs.cost 
@@ -77,8 +87,7 @@ class Deal < ActiveRecord::Base
                  campaigns.affiliate_fee
         ELSE 
           0 
-        END)                                   total_cost,
-
+        END)                                         total_cost,
       SUM(CASE campaigns.type
         WHEN "AdvertisingCampaign" 
           THEN dated_costs.cost 
@@ -89,30 +98,27 @@ class Deal < ActiveRecord::Base
                  campaigns.affiliate_fee
         ELSE 
           0 
-        END) / SUM(IF(deals.status='won',1,0)) average_cost,
-
+        END) / SUM(IF(deals.status='won',1,0))      average_cost,
       FLOOR(AVG(
         DATEDIFF(
           deals.closed_at,
-          deals.created_at)))                  average_elapsed
+          deals.created_at)))                       average_elapsed
+    SQL
 
-    SELECT
+    joins = <<-SQL.gsub(/\s+/, ' ')
+      RIGHT JOIN campaigns
+        ON deals.campaign_id = campaigns.id
 
-    join_sql = <<-JOINS.gsub(/\s+/, ' ')
-      LEFT OUTER JOIN dated_costs 
-        ON deals.campaign_id          = dated_costs.costable_id 
+      LEFT JOIN dated_costs 
+        ON campaigns.id = dated_costs.costable_id 
         AND dated_costs.costable_type = "Campaign" 
 
-      LEFT OUTER JOIN campaigns 
-        ON campaigns.id = deals.campaign_id 
-
-      LEFT OUTER JOIN campaign_groups
+      LEFT JOIN campaign_groups
         ON campaign_groups.id = campaigns.campaign_group_id
-    JOINS
+    SQL
 
-    select(select_sql).joins(join_sql).group(:campaign_id)
+    select(selects).joins(joins).group('campaigns.id')
   }
-
 
   validate do |record|
     return unless record.status_changed?
@@ -221,6 +227,10 @@ class Deal < ActiveRecord::Base
     def ensure_denormalized_columns
       self.campaign_code ||= campaign.code if campaign.present?
       self.offer_name    ||= offer.name    if offer.present?
+    end
+
+    def ensure_associated_campaign
+      self.campaign ||= Campaign.default
     end
 
     def get_name_and_email_from_user
