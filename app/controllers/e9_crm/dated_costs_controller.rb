@@ -1,19 +1,32 @@
-class E9Crm::DatedCostsController < E9Crm::CampaignSubclassController
+class E9Crm::DatedCostsController < E9Crm::ResourcesController
   belongs_to :advertising_campaign, :optional => true
   defaults :resource_class => DatedCost
   include E9Rails::Controllers::Orderable
 
+  self.should_paginate_index = true
+
   filter_access_to :bulk_create, :require => :create, :context => :admin
 
+  prepend_before_filter :association_chain
   before_filter :add_breadcrumbs
   before_filter :generate_temp_id, :only => :new
 
+  respond_to :json, :only => :new
+
   def index
     if params[:advertising_campaign_id]
+      @index_title = "Advertising Costs for #{parent.name}" if parent
       index!
     else
       @advertising_campaigns = AdvertisingCampaign.all
       render 'bulk_form'
+    end
+  end
+
+  def new
+    new! do |format|
+      format.html
+      format.json { render :json => { :html => render_html_for_action } }
     end
   end
 
@@ -33,8 +46,16 @@ class E9Crm::DatedCostsController < E9Crm::CampaignSubclassController
 
   protected
 
-    def collection
-      get_collection_ivar || set_collection_ivar(end_of_association_chain.all)
+    def render_html_for_action(action = nil)
+      action ||= params[:action]
+
+      html = nil
+
+      lookup_context.update_details(:formats => [Mime::HTML.to_sym]) do
+        html = render_to_string(action, :layout => false)
+      end
+
+      html
     end
 
     def default_ordered_on
@@ -45,11 +66,17 @@ class E9Crm::DatedCostsController < E9Crm::CampaignSubclassController
       'ASC'
     end
 
-    def add_breadcrumbs
-      if parent?
+    def add_index_breadcrumb
+      #association_chain
+
+      add_breadcrumb! Campaign.model_name.collection.titleize, campaigns_path
+
+      if parent
         add_breadcrumb! parent.name, edit_advertising_campaign_path(parent)
       end
+    end
 
+    def add_breadcrumbs
       add_breadcrumb! e9_t(:index_title)
     end
 

@@ -9,12 +9,13 @@ class E9Crm::CampaignSubclassController < E9Crm::ResourcesController
   end
 
   protected
+
     def parent_redirect_path
       campaigns_path(:type => type_param)
     end
 
     def type_param
-      resource_class.name[/(.*)Campaign/, 1].underscore
+      resource_class.name[/(.*)Campaign/, 1].underscore rescue nil
     end
 
     def add_index_breadcrumb
