@@ -3,8 +3,8 @@
     %label= Contact.human_attribute_name(:users)
     - resource.users.each do |user|
       .contact-email
-        = '* ' if contact_user_subscribed_to_newsletter?(user)
-        = link_to(user.email, "mailto:#{user.email}")
+        -#= '* ' if contact_user_subscribed_to_newsletter?(user)
+        = link_to(user.email, "mailto:#{user.email}", 'data-contact-id' => resource.id, 'data-user-id' => user.id, :class => 'contact-mailto')
         = "(#{user.options.type})" if user.options.type
         = "(primary)"              if user.primary?
 
@@ -35,4 +35,3 @@
         .address= address_attribute.to_html
         .actions
           = google_maps_link(address_attribute)
-
