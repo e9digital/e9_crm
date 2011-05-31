@@ -19,6 +19,7 @@ module E9Crm
 
   module Rack
     autoload :ContactAutoCompleter, 'e9_crm/rack/contact_auto_completer'
+    autoload :CompanyAutoCompleter, 'e9_crm/rack/company_auto_completer'
   end
 
   mattr_accessor :cookie_name
