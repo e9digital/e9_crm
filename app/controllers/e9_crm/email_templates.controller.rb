@@ -3,10 +3,16 @@ class E9Crm::EmailTemplatesController < E9Crm::ResourcesController
   include E9Rails::Controllers::Orderable
   self.should_paginate_index = false
 
+  filter_access_to :select, :require => :read, :context => :admin
+
   before_filter :handle_unacceptable_mimetype, :only => :show
 
   respond_to :json, :only => :show
   respond_to :html, :except => :show
+
+  def select
+    index!
+  end
 
   def show
     unless params[:contact_id] =~ /\d+/ && @contact = Contact.find_by_id(params[:contact_id])
@@ -14,7 +20,7 @@ class E9Crm::EmailTemplatesController < E9Crm::ResourcesController
     else
       object           = resource
       object.contact   = @contact
-      object.recipient = @contact.primary_user
+      object.recipient = params[:user_id] =~ /\d+/ && @contact.users.find_by_id(params[:user_id]) || @contact.primary_user
 
       render :json => object
     end
@@ -28,5 +34,9 @@ class E9Crm::EmailTemplatesController < E9Crm::ResourcesController
 
   def default_ordered_dir
     'ASC'
+  end
+
+  def determine_template
+    request.xhr? ? false : super
   end
 end

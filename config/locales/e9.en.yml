@@ -27,6 +27,9 @@ en:
         send_email: Send Email
       deals:
         new_title: Create Deal
+      email_templates:
+        select_title: Choose a Template
+        select_submit: Go
       leads:
         index_title: Leads 
       reports:

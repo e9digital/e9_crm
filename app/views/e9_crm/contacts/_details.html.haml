@@ -13,6 +13,6 @@
     - record.users.each do |user|
       .contact-email
         -#= '* ' if contact_user_subscribed_to_newsletter?(user)
-        = link_to(user.email, "mailto:#{user.email}")
+        = link_to(user.email, "mailto:#{user.email}", 'data-contact-id' => record.id, 'data-user-id' => user.id, :class => 'contact-mailto')
         = "(#{user.options.type})" if user.options.type
         = "(primary)"              if user.primary?

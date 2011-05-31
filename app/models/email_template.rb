@@ -11,7 +11,7 @@ class EmailTemplate < Email
 
   def as_json(options = {})
     {}.tap do |hash|
-      hash[:to]        = recipient.email_to
+      hash[:to]        = recipient.email
       hash[:reply_to]  = reply_email
       hash[:from]      = from_email
       hash[:subject]   = render(:subject)
