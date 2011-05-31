@@ -46,7 +46,7 @@ class Deal < ActiveRecord::Base
 
   # If a lead with no user, find the user by email or create it, then if mailing_lists
   # were passed, assign the user those mailing lists
-  after_create :find_or_create_user, :assign_user_mailing_lists
+  after_create :find_or_create_user, :assign_user_mailing_lists, :add_user_contact
 
   # money column definitions for pseudo attributes (added on the reports scope)
   %w(total_value average_value total_cost average_cost).each do |money_column|
@@ -234,10 +234,12 @@ class Deal < ActiveRecord::Base
       if lead? && user.blank? && lead_email
         u = User.find_by_email(lead_email) || create_prospect
         update_attribute(:user_id, u.id)
-
-        u.create_contact_if_missing!
-        self.contacts << u.contact
       end
+    end
+
+    def add_user_contact
+      user.create_contact_if_missing!
+      self.contacts << user.contact
     end
 
     def assign_user_mailing_lists
