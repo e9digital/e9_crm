@@ -119,6 +119,7 @@ en:
         campaign_code: Code
         offer_name: Offer
         created_at: Date
+        owner: Responsible
       offer:
         template: Teaser Text
         alert_email_instructions: (Enter an email if you want to be notified of conversions)
