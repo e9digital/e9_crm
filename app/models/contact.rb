@@ -305,7 +305,14 @@ class Contact < ActiveRecord::Base
     end
 
     def ensure_user_references
-      users.each {|u| u.contact = self }
+      users.each {|u| 
+        # We set contact as self on all our users so they have a reference to the contact.
+        # This doesn't happen with nested associations by default.
+        u.contact = self 
+
+        # make sure our users have our first name if it's blank
+        u.first_name = self.first_name if u.first_name.blank?
+      }
     end
 
     # override has_destroy_flag? to force destroy on persisted associations as well
