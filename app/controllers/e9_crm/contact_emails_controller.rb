@@ -20,7 +20,7 @@ class E9Crm::ContactEmailsController < E9Crm::ResourcesController
         ContactEmail.new_from_template(template, :contact_ids => params[:uids])
       end
 
-      object.from_email ||= current_user.email
+      object.from_email = object.from_email.presence || current_user.email
 
       object.valid?
 
