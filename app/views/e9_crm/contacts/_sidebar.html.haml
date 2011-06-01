@@ -25,6 +25,7 @@
     %label= Contact.human_attribute_name(:website_attributes)
     - resource.website_attributes.each do |website_attribute|
       .contact-website
+        - url = website_attribute.value =~/^\w+:\/\// ? website_attribute.value : "http://#{website_attribute.value}"
         = link_to(website_attribute.to_s, website_attribute.to_s, :rel => "external nofollow")
 
 - if resource.address_attributes.any?
