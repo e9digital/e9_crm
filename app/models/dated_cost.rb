@@ -12,6 +12,10 @@ class DatedCost < ActiveRecord::Base
 
   attr_accessor :temp_id
 
+  def self.default_scope
+    order('dated_costs.created_at ASC')
+  end
+
   def as_json(options={})
     {}.tap do |hash|
       hash[:id]            = self.id

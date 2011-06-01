@@ -22,11 +22,10 @@
   = f.text_field :value
 .field.select
   = f.label :owner
-  = f.collection_select :contact_id, Contact.all, :id, :name, :prompt => true
+  = f.collection_select :contact_id, Contact.sales_persons.all, :id, :name, :prompt => true
 .field.select
   = f.label :contacts
-  %select.list{'data-iname' => resource_instance_name, 'data-field' => '[contact_ids]'}
-    = deal_contact_select_options
+  %input#contact_autocomplete.list{:type => 'text', 'data-values' => f.object.contact_ids.join(','), 'data-iname' => resource_instance_name, 'data-field' => '[contact_ids]'}
   %ul.select
     - f.object.contacts.each do |contact|
       %li

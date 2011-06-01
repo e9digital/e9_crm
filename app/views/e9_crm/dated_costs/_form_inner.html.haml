@@ -6,7 +6,7 @@
   - unless request.xhr?
     = f.label :date, nil, :class => :req, :for => id
   = f.text_field :date, :class => 'date-picker', :value => l(f.object.date), :id => id
-.field
+.field.cost
   - fid = "dated_cost_cost_#{id}"
   - unless request.xhr?
     = f.label :cost, nil, :class => :req, :for => id

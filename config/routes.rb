@@ -1,6 +1,9 @@
 Rails.application.routes.draw do
   crm_path = 'admin/crm'
 
+  get '/autocomplete/contacts' => E9Crm::Rack::ContactAutoCompleter
+  get '/autocomplete/companies' => E9Crm::Rack::CompanyAutoCompleter
+
   scope :module => :e9_crm do
     resources :offers, :as => :public_offer, :only => :show do
       resources :leads, :as => :deals, :only => [:new, :create], :path => ''
