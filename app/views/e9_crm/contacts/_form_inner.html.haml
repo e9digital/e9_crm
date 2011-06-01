@@ -30,14 +30,14 @@
 
 %fieldset.contact-contact-fields
   %legend= e9_t(:form_legend_contact)
-  = render_record_attribute_form(:phone_number_attributes             , f)
-  = render_record_attribute_form(:instant_messaging_handle_attributes , f)
-  = render_record_attribute_form(:website_attributes                  , f)
-  = render_record_attribute_form(:address_attributes                  , f)
+  = render_record_attribute_form(:phone_number_attributes, f)
+  = render_record_attribute_form(:instant_messaging_handle_attributes, f)
+  = render_record_attribute_form(:website_attributes, f)
+  = render_record_attribute_form(:address_attributes, f)
 
 %fieldset.contact-background-info
-  %legend= f.label(:info)
-  .field.tinymce
+  %legend= help_label(f, :info, :key => :markdown_help, :header => 'Markdown Help')
+  .field
     = f.text_area :info
 
 - content_for :bottom_javascripts do

@@ -3,7 +3,7 @@
 %fieldset
   %legend= e9_t(:affiliate_information_legend, :scope => 'e9_crm.campaigns')
   .field
-    = f.label :affilate, nil, :class => :req, :for => 'campaign_affiliate_id'
+    = f.label :affiliate, :class => :req, :for => 'campaign_affiliate_id'
     = f.collection_select :affiliate_id, Contact.affiliates.ordered.all, :id, :name, {:prompt => true}, :id => 'campaign_affiliate_id'
   .field
     = help_label f, :affiliate_fee

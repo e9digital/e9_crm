@@ -6,9 +6,9 @@ module E9Crm::BaseHelper
 
   alias :k :kramdown
 
-  def help_tooltip(string)
+  def help_tooltip(string, data_title = nil)
     return <<-HTML.strip.html_safe
-      <span class="help" rel="tooltip" title="#{CGI.escape_html(string)}">#{t(:inline_help_link)}</span>
+      <span class="help" rel="tooltip" #{data_title ? %Q[data-title="#{data_title}"] : nil } title="#{CGI.escape_html(string)}">#{t(:inline_help_link)}</span>
     HTML
   end
 
@@ -20,7 +20,7 @@ module E9Crm::BaseHelper
     str = ''.html_safe
     str.safe_concat resource_humanize(key)
     str.safe_concat ' '
-    str.safe_concat help_tooltip(help_title)
+    str.safe_concat help_tooltip(help_title, options.delete(:header))
 
     if form_or_id.respond_to?(:label)
       form_or_id.label(key, str, options)

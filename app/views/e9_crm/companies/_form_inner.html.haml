@@ -1,6 +1,6 @@
 .field
   = f.label :name, nil, :class => :req
   = f.text_field :name
-.field.tinymce
-  = f.label :info
+.field
+  = help_label(f, :info, :key => :markdown_help, :header => 'Markdown Help')
   = f.text_area :info

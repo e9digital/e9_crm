@@ -39,11 +39,11 @@ class E9Crm::LeadsController < ApplicationController
 
   def build_resource
     get_resource_ivar || set_resource_ivar(
-      # TODO mailing list ids?
+      # NOTE mailing list ids come from the form (to allow opt-outs)
       Deal.leads.new((params[resource_instance_name] || {}).reverse_merge(
-        :user            => current_user,
-        :offer           => @offer,
-        :campaign        => tracking_campaign
+        :user             => current_user,
+        :offer            => @offer,
+        :campaign         => tracking_campaign
       ))
     )
   end

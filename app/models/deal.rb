@@ -46,7 +46,7 @@ class Deal < ActiveRecord::Base
 
   # If a lead with no user, find the user by email or create it, then if mailing_lists
   # were passed, assign the user those mailing lists
-  after_create :initialize_user_data
+  after_create :handle_user_if_lead
 
   # money column definitions for pseudo attributes (added on the reports scope)
   %w(total_value average_value total_cost average_cost).each do |money_column|
@@ -55,6 +55,8 @@ class Deal < ActiveRecord::Base
 
   delegate :name, :to => :owner, :prefix => true, :allow_nil => true
 
+  # mailing_list_ids may be set on Deals when they are being created as leads, this is
+  # done via opt-in checkboxes on the form
   attr_accessor :mailing_list_ids
 
   # 
@@ -230,7 +232,7 @@ class Deal < ActiveRecord::Base
       end
     end
 
-    def initialize_user_data
+    def handle_user_if_lead
       if lead? 
         if user.blank? && lead_email
           user = User.find_by_email(lead_email) || create_prospect
@@ -241,7 +243,6 @@ class Deal < ActiveRecord::Base
           user.create_contact_if_missing!
           self.contacts << user.contact
 
-          # TODO mailing list ids? From offer?
           if @mailing_list_ids
             user.mailing_list_ids |= @mailing_list_ids
           end

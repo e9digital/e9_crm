@@ -11,6 +11,10 @@ Rails.application.routes.draw do
   end
 
   scope :path => crm_path, :module => :e9_crm do
+    # NOTE this should be handled by base, and is here because base doesn't have a sensible
+    # user api, which crm needs to check for email uniqueness errors
+    resources :users, :only => :new
+
     resources :companies, :except => :show
     resources :contacts do
       # page_views currently not routed, but near working
