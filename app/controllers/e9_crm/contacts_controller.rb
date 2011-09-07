@@ -18,9 +18,14 @@ class E9Crm::ContactsController < E9Crm::ResourcesController
   has_scope :by_company, :as => :company, :only => :index
 
   # record attributes templates js
+  #caches_action :templates
+  
   skip_before_filter :authenticate_user!, :filter_access_filter, :only => :templates
   before_filter :build_resource, :only => :templates
-  #caches_action :templates
+
+  def templates
+    render RecordAttribute::TEMPLATES
+  end
 
   # NOTE for some reason create! { redirect } is trying to redirect on failure
   def create

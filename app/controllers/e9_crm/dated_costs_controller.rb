@@ -67,8 +67,6 @@ class E9Crm::DatedCostsController < E9Crm::ResourcesController
     end
 
     def add_index_breadcrumb
-      #association_chain
-
       add_breadcrumb! Campaign.model_name.collection.titleize, campaigns_path
 
       if parent

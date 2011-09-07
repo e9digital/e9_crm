@@ -10,7 +10,7 @@ module E9Crm::ContactsHelper
   end
 
   def company_select_options
-    options = Company.select('name', 'id').ordered.all.map {|c| [c.name, c.id] }
+    options = Company.select("companies.name, companies.id").ordered.all.map {|c| [c.name, c.id] }
     options.unshift(['Any Company', nil])
     options_for_select(options, params[:company])
   end

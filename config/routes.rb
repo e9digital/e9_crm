@@ -35,10 +35,6 @@ Rails.application.routes.draw do
       collection { get :select }
     end
 
-    resources :menu_options, :except => [:show] do
-      collection { post :update_order }
-    end
-
     resources :dated_costs, :path => 'advertising_costs', :only => [:index] do
       collection do
         post :bulk_create

@@ -17,7 +17,7 @@ class E9Crm::CampaignsController < E9Crm::ResourcesController
   protected
 
     def collection_scope
-      end_of_association_chain.typed.includes(:campaign_group)
+      #end_of_association_chain.typed.includes(:campaign_group)
 
       # NOTE this is a pretty ugly join just to be able to sort on campaign group name
       end_of_association_chain.typed

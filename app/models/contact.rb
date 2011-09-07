@@ -94,22 +94,12 @@ class Contact < ActiveRecord::Base
     PageView.by_user(users)
   end
 
-  has_many :record_attributes, :as => :record
-  RECORD_ATTRIBUTES = %w[users phone_number_attributes instant_messaging_handle_attributes website_attributes address_attributes]
-  # NOTE Mind the hack here, "users" are "attributes" but not added in this loop.  This was so the RECORD_ATTRIBUTES constant
-  #      would include :users (for building the templates.js).
-  RECORD_ATTRIBUTES.select {|r| r =~ /attributes$/ }.each do |association_name|
-    has_many association_name.to_sym, :class_name => association_name.classify, :as => :record
-    accepts_nested_attributes_for association_name.to_sym, :allow_destroy => true, :reject_if => :reject_record_attribute?
-  end
-
-  def build_all_record_attributes
-    RECORD_ATTRIBUTES.each do |attr|
-      params_method = "#{attr}_build_parameters"
-      build_params = self.class.send(params_method) if self.class.respond_to?(params_method)
-      send(attr).send(:build, build_params || {})
-    end
-  end
+  has_record_attributes :users, 
+                        :phone_number_attributes, 
+                        :instant_messaging_handle_attributes, 
+                        :website_attributes, 
+                        :address_attributes,
+                        :skip_name_format => true
 
   ##
   # Validations

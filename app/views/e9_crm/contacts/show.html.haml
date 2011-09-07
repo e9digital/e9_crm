@@ -1,16 +1,21 @@
 .contact-body
   = title resource.name
+
   .contact-photo
     %img{:src => resource.avatar_url, :alt => "Avatar for #{resource.name}"}
+
   = render 'who', :record => resource, :hide_name => true
+
   .contact-links.actions
     = link_to_edit_resource(resource)
     = google_search_link(resource.name)
     = google_news_link(resource.name)
+
   - if (tags = resource.tags(:show_all => true)).present?
     .contact-tags
       %label #{Tag.model_name.human.pluralize}:
       = contact_tag_list(tags)
+
   .contact-info
     %label #{Contact.human_attribute_name(:info)}:
     = contact_simple_format(resource.info.presence || t(:none))

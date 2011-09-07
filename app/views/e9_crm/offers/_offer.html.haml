@@ -1,4 +1,4 @@
-%div{:id => "offer_#{renderable.id}_body"}
+%div{:id => "offer_#{offer.id}_body"}
 - content_for :bottom_javascripts do
   :javascript
-    $(function(){ $("#offer_#{renderable.id}_body").load("#{new_public_offer_deal_path(renderable)}") });
+    $(function(){ $("#offer_#{offer.id}_body").load("#{new_public_offer_deal_path(offer)}") });

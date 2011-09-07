@@ -1,12 +1,9 @@
-require 'rails'
+require 'e9_base'
 require 'e9_rails'
 require 'e9_tags'
+require 'e9_attributes'
+
 require 'money'
-require 'inherited_resources'
-require 'will_paginate'
-require 'has_scope'
-require 'kramdown'
-require 'e9_base'
 
 require 'e9_crm/rails_extensions'
 
@@ -65,6 +62,8 @@ module E9Crm
     E9Crm.tracking_controllers.each do |controller|
       controller.send(:include, E9Crm::TrackingController)
     end
+
+    MenuOption.keys |= %w(Deal\ Category)
   end
 
   class Engine < ::Rails::Engine
