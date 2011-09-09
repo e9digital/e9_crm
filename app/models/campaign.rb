@@ -13,6 +13,7 @@ class Campaign < ActiveRecord::Base
   has_many   :lost_deals, :class_name => 'Deal', :conditions => ['deals.status = ?', Deal::Status::Lost]
   has_many   :pending_deals, :class_name => 'Deal', :conditions => ['deals.status = ?', Deal::Status::Pending]
   has_many   :leads, :class_name => 'Deal', :conditions => ['deals.status = ?', Deal::Status::Lead]
+  has_many   :non_leads, :class_name => 'Deal', :conditions => ['deals.status != ?', Deal::Status::Lead]
   has_many   :page_views, :inverse_of => :campaign, :dependent => :nullify
 
   # only advertising campaigns use this association

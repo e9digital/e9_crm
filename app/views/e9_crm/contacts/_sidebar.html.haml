@@ -25,14 +25,14 @@
     %label= Contact.human_attribute_name(:website_attributes)
     - resource.website_attributes.each do |website_attribute|
       .contact-website
-        - url = website_attribute.value =~/^\w+:\/\// ? website_attribute.value : "http://#{website_attribute.value}"
-        = link_to(website_attribute.to_s, website_attribute.to_s, :rel => "external nofollow")
+        = website_attribute.to_s
 
 - if resource.address_attributes.any?
   .contact-addresses
     %label= Contact.human_attribute_name(:address_attributes)
     - resource.address_attributes.each do |address_attribute|
       .contact-address
-        .address= address_attribute.to_html
+        .address
+          = address_attribute.to_s
         .actions
-          = google_maps_link(address_attribute)
+          = address_attribute.link

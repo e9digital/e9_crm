@@ -26,7 +26,7 @@ class E9Crm::CampaignsController < E9Crm::ResourcesController
     end
 
     def default_ordered_on
-      'campaign_group_name,name'
+      'type,campaign_group_name,name'
     end
 
     def default_ordered_dir

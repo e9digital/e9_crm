@@ -3,6 +3,7 @@ class E9Crm::ResourcesController < E9Crm::BaseController
 
   # NOTE depending on e9_base pagination (which should eventually use this module)
   #include E9Rails::Helpers::Pagination
+  include E9::DestroyRestricted::Controller
 
   # TODO implement role on e9_crm models?
   #include E9::Roles::Controller

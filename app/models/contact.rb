@@ -184,7 +184,7 @@ class Contact < ActiveRecord::Base
 
   # The parameters for building the JS template for associated users
   def self.users_build_parameters # :nodoc:
-    { :status => User::Status::Prospect }
+    { :role => :prospect }
   end
 
   ##

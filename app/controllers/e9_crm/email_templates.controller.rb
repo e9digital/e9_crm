@@ -28,6 +28,10 @@ class E9Crm::EmailTemplatesController < E9Crm::ResourcesController
 
   protected
 
+  def collection
+    @email_templates ||= end_of_association_chain.order(:name).all
+  end
+
   def default_ordered_on
     'name'
   end

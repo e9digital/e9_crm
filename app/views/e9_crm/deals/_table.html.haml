@@ -25,10 +25,11 @@
             = record.category
           %td.record-owner
             = record.owner_name
-          %td.record-value
+          %td.record-value.num
             - dat[:value] << record.value
-            = record.value
-          %td.actions
+            = record.value.to_money.format
+          %td.links
+            = link_to_show_resource(record)
             = link_to_edit_resource(record)
             = link_to_destroy_resource(record)
 
@@ -36,8 +37,8 @@
       %tr{:class => 'record-totals'}
         %td.record-totals-label{:colspan => 4}
           #{t(:total)}:
-        %td.record-totals
-          = dat[:value].sum
+        %td.record-totals.num
+          = dat[:value].sum.to_money.format
         %td
 
 - if @controller.should_paginate_index

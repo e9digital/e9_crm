@@ -7,4 +7,4 @@
     = f.collection_select :sales_person_id, Contact.sales_persons.ordered.all, :id, :name, :prompt => true
   .field
     = help_label f, :sales_fee
-    = f.text_field :sales_fee
+    = f.text_field :sales_fee, :value => f.object.sales_fee.to_s

@@ -14,11 +14,11 @@
   - if (tags = resource.tags(:show_all => true)).present?
     .contact-tags
       %label #{Tag.model_name.human.pluralize}:
-      = contact_tag_list(tags)
+      = contact_tag_list(tags.sort)
 
   .contact-info
     %label #{Contact.human_attribute_name(:info)}:
-    = contact_simple_format(resource.info.presence || t(:none))
+    = resource.info.present? && k(resource.info) || t(:none)
 
   - if company = resource.company
     .contact-company

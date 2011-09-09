@@ -12,23 +12,41 @@
   = f.label :category
   = f.select :category, MenuOption.options_for('Deal Category'), :include_blank => 'No Category'
 .field
-  = f.label :campaign, :for => 'deal_campaign_select'
-  = f.collection_select :campaign_id, Campaign.ordered.all, :id, :to_s, {:prompt => true}, :id => 'deal_campaign_select'
-.field
-  = f.label :info
+  = help_label(f, :info, :key => :markdown_help, :header => 'Markdown Help')
   = f.text_area :info
 .field
   = f.label :value, nil, :class => :req
   = f.text_field :value
 .field.select
-  = f.label :owner
-  = f.collection_select :contact_id, Contact.sales_persons.all, :id, :name, :prompt => true
+  = f.label :campaign, :for => 'deal_campaign_select'
+  = f.collection_select :campaign_id, Campaign.ordered.all, :id, :to_s, {:prompt => true}, :id => 'deal_campaign_select'
+.field.select
+  = f.label :status
+  = f.select :status, Deal::Status::OPTIONS[1..-1]
 .field.select
   = f.label :contacts
-  %input#contact_autocomplete.list{:type => 'text', 'data-values' => f.object.contact_ids.join(','), 'data-iname' => resource_instance_name, 'data-field' => '[contact_ids]'}
+  %input#contact_autocomplete.list{:type => 'text', 'data-values' => resource.contact_ids.join(','), 'data-iname' => resource_instance_name, 'data-field' => '[contact_ids]', :id => 'deal_contacts'}
   %ul.select
     - f.object.contacts.each do |contact|
       %li.ui-state-default
         %span.content= contact.name
         %input{:type => :hidden, :name => "contact[contact_ids][]", :value => contact.id}
         %a{:class => :remove, :title => "Remove", :alt => "Remove"} Remove
+.field.select
+  = f.label :owner
+  = f.select :contact_id, deal_contacts_array, { :prompt => true }, :id => :deal_owner 
+.field
+  Created At:
+  = l(resource.created_at)
+.field
+  Closed At:
+  = resource.closed_at ? l(resource.closed_at) : 'n/a'
+.field
+  Campaign Cost:
+  = resource.campaign.try(:cost) || 0
+.field
+  Campaign Deal Count:
+  = resource.campaign ? resource.campaign.non_leads.count : 0
+.field
+  Cost:
+  = deal_cost(resource)

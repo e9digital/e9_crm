@@ -2,8 +2,8 @@
   %thead
     %tr
       %th= orderable_column_link(:type)
-      %th= orderable_column_link(:name)
       %th= orderable_column_link('campaign_group_name', :campaign_group)
+      %th= orderable_column_link(:name)
       %th= orderable_column_link(:code)
       %th= orderable_column_link(:affiliate_fee)
       %th= orderable_column_link(:sales_fee)
@@ -17,10 +17,10 @@
         %tr{:id => "ids_#{record.id}", :class => cycle('odd', 'even')}
           %td.record-type
             = record.type[/(.*)Campaign/, 1]
-          %td.record-name
-            = record.name
           %td.record-campaign-group
             = record.campaign_group_name || e9_t(:no_group, :scope => 'e9_crm.campaigns')
+          %td.record-name
+            = record.name
           %td.record-code
             = display_campaign_code(record.code)
           %td.record-affiliate-fee

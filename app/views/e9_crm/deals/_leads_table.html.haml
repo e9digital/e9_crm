@@ -6,7 +6,7 @@
       %th= orderable_column_link(:campaign_code)
       %th= orderable_column_link(:lead_name)
       %th= orderable_column_link(:lead_email)
-      %th= orderable_column_link(:options, :custom_info)
+      %th= orderable_column_link(:info)
       %th= t(:actions)
   %tbody
     - if collection.empty?
@@ -25,8 +25,8 @@
             = record.lead_name
           %td.record-lead-email
             = record.lead_email
-          %td.record-custom-info
-            = record.custom_info
+          %td.record-info
+            = record.info
           %td.actions
             - if record.contacts.present?
               = link_to_show_resource(record.contacts.first)

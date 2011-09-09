@@ -17,4 +17,11 @@ class EmailTemplate < Email
       hash[:text_body] = render(:text_body)
     end
   end
+
+  protected
+
+  def ensure_body_field_presence
+    self.html_body = self.html_body.presence || ''
+    self.text_body = self.text_body.presence || ''
+  end
 end

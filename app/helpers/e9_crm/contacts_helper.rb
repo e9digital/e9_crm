@@ -4,6 +4,7 @@ module E9Crm::ContactsHelper
     @_contact_tags ||= begin 
       relation = Tagging.joins(:tag).select('distinct tags.name')
                         .where(:context => E9Tags.escape_context('users*'))
+                        .order('tags.name ASC')
 
       Tagging.connection.send(:select_values, relation.to_sql, 'Contact Tags Select')
     end

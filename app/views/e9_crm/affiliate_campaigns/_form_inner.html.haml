@@ -7,4 +7,4 @@
     = f.collection_select :affiliate_id, Contact.affiliates.ordered.all, :id, :name, {:prompt => true}, :id => 'campaign_affiliate_id'
   .field
     = help_label f, :affiliate_fee
-    = f.text_field :affiliate_fee
+    = f.text_field :affiliate_fee, :value => f.object.affiliate_fee.to_s

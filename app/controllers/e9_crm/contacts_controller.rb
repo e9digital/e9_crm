@@ -95,7 +95,7 @@ class E9Crm::ContactsController < E9Crm::ResourcesController
     'first_name'
   end
 
-  def default_ordered_at
+  def default_ordered_dir
     'ASC'
   end
 end

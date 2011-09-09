@@ -12,6 +12,8 @@ class E9Crm::DealsController < E9Crm::ResourcesController
   prepend_before_filter :set_leads_index_title, :only => :leads
   prepend_before_filter :set_reports_index_title, :only => :reports
 
+  before_filter :prepop_deal_owner_contact, :only => [:new, :edit]
+
   ##
   # All Scopes
   #
@@ -103,6 +105,14 @@ class E9Crm::DealsController < E9Crm::ResourcesController
     end
   end
 
+  def prepop_deal_owner_contact
+    object = params[:id] ? resource : build_resource
+
+    if !object.owner && contact = current_user.contact
+      object.owner = contact
+    end
+  end
+
   def set_leads_index_title
     @index_title = I18n.t(:index_title, :scope => 'e9.e9_crm.leads')
   end
@@ -113,5 +123,13 @@ class E9Crm::DealsController < E9Crm::ResourcesController
 
   def ordered_if 
     %w(index leads reports).member? params[:action]
+  end
+
+  def default_ordered_on 
+    'name' 
+  end
+
+  def default_ordered_dir 
+    'ASC' 
   end
 end

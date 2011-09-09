@@ -32,7 +32,7 @@ module E9Crm::DealsHelper
   def deal_owner_select_options
     @_deal_owner_select_options ||= begin
       options = Contact.deal_owners.all.map {|c| [c.name, c.id] }
-      options.unshift ['Any Owner', nil]
+      options.unshift ['All Responsible', nil]
       options_for_select(options)
     end
   end
@@ -68,5 +68,27 @@ module E9Crm::DealsHelper
     options.unshift([label, nil])
 
     options_for_select(options)
+  end
+
+  def deal_cost(deal)
+    campaign = deal.campaign
+     
+    if campaign.blank?
+      0
+    else
+      c = campaign.non_leads.count
+      c > 0 ? campaign.cost.to_f / c : campaign.cost
+    end.to_money
+  end
+
+  def deal_contacts
+    @_eligible_responsible_contacts ||= begin
+      roles = E9::Roles.list.map(&:role).select {|r| r > 'user' && r < 'e9_user' }
+      User.includes(:contact).for_roles(roles).all.map(&:contact).compact
+    end
+  end
+
+  def deal_contacts_array
+    deal_contacts.map {|c| [c.name, c.id] }.sort_by {|name, id| name.upcase }
   end
 end

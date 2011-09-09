@@ -1,5 +1,4 @@
-= title e9_t(:select_title)
-= form_tag email_templates_path, :id => "email_templates_select", :method => :get do
+= form_tag email_templates_path, :class => "email-template-sel", :method => :get do
   = hidden_field_tag "contact_id", params[:contact_id]
   = hidden_field_tag "user_id", params[:user_id]
   = select_tag "id", options_for_select(collection.map {|e| [e.name, e.id] })

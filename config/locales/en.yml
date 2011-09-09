@@ -12,15 +12,11 @@ en:
   total: Total
   totals: Totals
   view: View
+  save: Save
 
   e9_crm:
     add_record_attribute: Add
     destroy_record_attribute: Remove
-
-  # activemodel translation looks to %{i18n_scope}.attributes.%{model_name}.%{attribute} 
-  # then simply attributes.%{attribute}, dropping i18n_scope, e.g "activerecord"
-  attributes:
-    markdown_help: "You can style the text in this field using the Markdown syntax as follows:\n\nA line break is created by putting 2 spaces\n\nat the end of the line above and then a return.\n\nA paragraph is created by putting a blank line between the first paragraph and the second paragraph.\n\nThis is the start of the next paragraph.\n\n*italics*\n\n**bold**\n\n***bold and italic text***\n\n* Item in a bulleted list\n\t* A sub-item, indented with 4 spaces\n* Another item in a bulleted list\n\n1. Item in numbered list\n2. Another Item in numbered list\n3. Another Item in numbered list\n\n# First-level heading\n\n## Second-level heading\n\n### Third-level heading\n\n#### Fourth-level heading\n\n> This is a blockquote.\n> Blockquote with hard wrap\n>\n> This is the second paragraph in the blockquote.\n>\n> ## This is an H2 in a blockquote\n\n[This is a link](http://www.google.com \"Google\")\n\n![Image Alt Text](image url \"Image Title\")\n\n--- Horizontal rules are created by 3 hyphens\n\nIf you need to actually render the following characters AND they are NOT rendering, place a backslash before the character like \*italics\* will actually render with the asterisks instead of italicizing the word.\n\n\\\tbackslash\n*\tasterisk\n_\tunderscore\n{}\tcurly braces\n[]\tsquare brackets\n()\tparentheses\n#\thash mark\n+\tplus sign\n-\tminus sign (hyphen)\n.\tdot\n!\texclamation mark"
 
   activerecord:
     titles:
@@ -119,6 +115,14 @@ en:
         no_leads: 'There are no leads associated with this contact.'
       company:
         info: Background Information
+      email_template:
+        text_body_help: |
+          <h3>Variables:</h3>
+          <p>You can insert the following to render variable data in the field</p>
+          <p>
+            &#123;&#123;contact.first_name&#125;&#125;<br/>
+            &#123;&#123;recipient.email&#125;&#125;<br/>
+          </p>
       deal:
         info: Details
         lead_email: Email

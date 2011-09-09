@@ -260,7 +260,7 @@ class Deal < ActiveRecord::Base
       create_user(
         :email      => lead_email,
         :first_name => lead_name,
-        :status     => User::Status::Prospect
+        :role       => :prospect
       ) 
     end
 
