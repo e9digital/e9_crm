@@ -23,6 +23,14 @@
     %select{:name => 'company', :id => 'contact_company_select'}
       = company_select_options
 
-  = render 'tag_table'
+  .field#contact_tag_list
+    %label{:for => 'contact_tag_autocomplete'} Tags
+    %input#contact_tag_autocomplete.list{:type => 'text', 'data-iname' => 'contact', 'data-field' => '[tagged]', :placeholder => 'Enter a tag...'}
+    %ul#contact_tag_select.select
+      - Array.wrap(params[:tagged]).each do |tag|
+        %li.ui-state-default
+          %span.content= tag
+          %a{:class => :remove, :title => "Remove", :alt => "Remove"} Remove
+
   .actions
     = submit_tag t(:clear_all_filters), :name => nil, :id => 'contact_search_clear'
