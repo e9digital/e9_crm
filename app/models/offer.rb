@@ -45,6 +45,9 @@ class Offer < Renderable
     name
   end
 
+  def to_liquid
+    Drop.new(self)
+  end
 
   protected
 
@@ -53,6 +56,10 @@ class Offer < Renderable
       self.download_link_text ||= 'Click to download your file'
       self.success_page_text  ||= 'Thank you!'
     end
+
+  class Drop < ::E9::Liquid::Drops::Base
+    source_methods :name, :deals, :leads
+  end
 
   module Identifiers
     CONVERSION_EMAIL = 'offer_conversion_email'

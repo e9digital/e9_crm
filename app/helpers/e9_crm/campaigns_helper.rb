@@ -1,10 +1,16 @@
 module E9Crm::CampaignsHelper
   def display_campaign_fee(val)
-    Money === val && val || 'n/a'
+    Money === val && val.format || 'n/a'
   end
 
   def no_money
     @_no_money ||= Money.new(0)
+  end
+
+  def m(val)
+    val ||= no_money
+    val = val.to_money
+    val.format
   end
 
   def display_campaign_code(val)

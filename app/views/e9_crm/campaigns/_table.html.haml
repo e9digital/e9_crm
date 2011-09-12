@@ -23,9 +23,9 @@
             = record.name
           %td.record-code
             = display_campaign_code(record.code)
-          %td.record-affiliate-fee
+          %td.record-affiliate-fee.num
             = display_campaign_fee(record.affiliate_fee)
-          %td.record-sales-fee
+          %td.record-sales-fee.num
             = display_campaign_fee(record.sales_fee)
           %td.links
             - if record.is_a?(AdvertisingCampaign)

@@ -14,6 +14,12 @@ en:
   view: View
   save: Save
 
+  flash:
+    e9_crm:
+      contact_emails:
+        create:
+          notice: Contact email sent to recipients.
+
   e9_crm:
     add_record_attribute: Add
     destroy_record_attribute: Remove
@@ -23,7 +29,6 @@ en:
       show: 'Show %{model}'
       campaign:
         show: '%{model}'
-
     links:
       index: "Manage %{models}"
       new: "New %{model}"
@@ -31,14 +36,12 @@ en:
       destroy: "Delete"
       show: "View"
       confirm_destroy: Are you sure?  This cannot be undone.
-
       campaign_group: 
         confirm_destroy: Are you sure?  This cannot be undone.  Any campaigns which are associated with this group will become groupless.
 
     errors:
       messages:
         merge_required: 'Merge Required! <a href="%{merge_path}">MERGE ME</a>.'
-
       models:
         campaign:
           not_a_number: "%{attribute} must be a number (maximum 2 decimal places)."
@@ -46,7 +49,7 @@ en:
             code:
               invalid: "%{attribute} must be comprised of letters and numbers only."
         contact:
-          delete_restricted: "This contact is related to leads and/or deals and can not be deleted."
+          delete_restricted: "You cannot delete a contact that has deals or leads."
           attributes:
             users:
               taken: "Two or more of the login accounts entered share a duplicate email."
@@ -115,6 +118,18 @@ en:
         no_leads: 'There are no leads associated with this contact.'
       company:
         info: Background Information
+      email:
+        body_help:
+          <p>System emails have variable data which you can interpolate into the fields</p>
+          <h3>Offer Conversion Email:</h3>
+          <p>
+            &#123;&#123; offer.name &#125;&#125;<br/>
+            &#123;&#123; lead.lead_email &#125;&#125;<br/>
+            &#123;&#123; lead.lead_name &#125;&#125;<br/>
+            &#123;&#123; lead.info &#125;&#125;<br/>
+            &#123;&#123; lead.created_at &#125;&#125;<br/>
+          </p>
+        
       email_template:
         text_body_help: |
           <h3>Variables:</h3>
@@ -131,8 +146,16 @@ en:
         offer_name: Offer
         created_at: Date
         owner: Responsible
+        won_deal_count: Won count 
       offer:
         template: Teaser Text
+        template_help: |
+          <h3>Variables:</h3>
+          <p>You can insert the following to render variable data in the field</p>
+          <p>
+            &#123;&#123;campaign.name&#125;&#125;<br/>
+            &#123;&#123;campaign.code&#125;&#125;<br/>
+          </p>
         alert_email_instructions: (Enter an email if you want to be notified of conversions)
         submit_button_text: Submit Button Text
         success_alert_text: Success Alert Text

@@ -2,8 +2,8 @@
   %thead
     %tr
       %th= orderable_column_link(:campaign_type)
-      %th= orderable_column_link(:campaign_name)
       %th= orderable_column_link(:campaign_group)
+      %th= orderable_column_link(:campaign_name)
       %th= orderable_column_link(:new_visits)
       %th= orderable_column_link(:repeat_visits)
       %th= orderable_column_link(:lead_count)
@@ -26,61 +26,61 @@
         %tr{:id => "ids_#{record.id}", :class => cycle('odd', 'even')}
           %td.record-campaign-type
             = display_campaign_type(record.campaign_type)
-          %td.record-campaign-name
-            = record.campaign_name || 'n/a'
           %td.record-campaign-group
             = record.campaign_group || 'n/a'
-          %td.record-new-visits
+          %td.record-campaign-name
+            = record.campaign_name || 'n/a'
+          %td.record-new-visits.num
             - dat[:new_visits] << record.new_visits
             = record.new_visits
-          %td.record-repeat-visits
+          %td.record-repeat-visits.num
             - dat[:repeat_visits] << record.repeat_visits
             = record.repeat_visits
-          %td.record-lead-count
+          %td.record-lead-count.num
             - dat[:lead_count] << record.lead_count
             = record.lead_count.to_i
-          %td.record-deal-count
+          %td.record-deal-count.num
             - dat[:deal_count] << record.deal_count
             = record.deal_count.to_i
-          %td.record-won-deal-count
+          %td.record-won-deal-count.num
             - dat[:won_deal_count] << record.won_deal_count
             = record.won_deal_count.to_i
-          %td.record-total-value
+          %td.record-total-value.num
             - dat[:total_value] << record.total_value
-            = record.total_value || no_money
-          %td.record-averate-value
+            = m record.total_value
+          %td.record-averate-value.num
             - dat[:average_value] << record.average_value
-            = record.average_value || no_money
-          %td.record-total-cost
+            = m record.average_value
+          %td.record-total-cost.num
             - dat[:total_cost] << record.total_cost
-            = record.total_cost || no_money
-          %td.record-average-cost
+            = m record.total_cost
+          %td.record-average-cost.num
             - dat[:average_cost] << record.average_cost
-            = record.average_cost || no_money
-          %td.record-average-elapsed
+            = m record.average_cost
+          %td.record-average-elapsed.num
             - dat[:average_elapsed] << record.average_elapsed
             = record.average_elapsed && "%s days" % record.average_elapsed || 'n/a'
     %tfooter
       %tr{:class => 'record-totals'}
         %td.record-totals-label{:colspan => 3}
           #{t(:totals)}:
-        %td.record-new-visits
+        %td.record-new-visits.num
           = dat[:new_visits].sum
-        %td.record-repeat-visits
+        %td.record-repeat-visits.num
           = dat[:repeat_visits].sum
-        %td.record-lead-count
+        %td.record-lead-count.num
           = dat[:lead_count].sum
-        %td.record-deal-count
+        %td.record-deal-count.num
           = dat[:deal_count].sum.to_i
-        %td.record-won-deal-count
+        %td.record-won-deal-count.num
           = dat[:won_deal_count].sum.to_i
-        %td.record-total-value
-          = dat[:total_value].compact.sum.to_money
-        %td.record-average-value
-          = dat[:average_value].compact.average.to_money
-        %td.record-total-cost
-          = dat[:total_cost].compact.sum.to_money
-        %td.record-average-cost
-          = dat[:average_cost].compact.average.to_money
-        %td.record-average-elapsed
+        %td.record-total-value.num
+          = m dat[:total_value].compact.sum
+        %td.record-average-value.num
+          = m dat[:average_value].compact.average
+        %td.record-total-cost.num
+          = m dat[:total_cost].compact.sum
+        %td.record-average-cost.num
+          = m dat[:average_cost].compact.average
+        %td.record-average-elapsed.num
           = "%s days" % dat[:average_elapsed].compact.average

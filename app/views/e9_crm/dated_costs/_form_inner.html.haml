@@ -10,6 +10,6 @@
   - fid = "dated_cost_cost_#{id}"
   - unless request.xhr?
     = f.label :cost, nil, :class => :req, :for => id
-  = f.text_field :cost, :id => id
+  = f.text_field :cost, :id => id, :value => f.object.cost.to_money
 .actions
   = f.submit

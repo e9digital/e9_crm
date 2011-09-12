@@ -3,7 +3,7 @@
   = f.text_field :name
 
 .field.tinymce
-  = f.label :template
+  = help_label(f, :template, :markdown => true)
   = f.text_area :template
 
 .field

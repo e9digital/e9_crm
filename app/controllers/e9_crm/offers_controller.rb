@@ -14,7 +14,8 @@ class E9Crm::OffersController < E9Crm::ResourcesController
 
   def show
     clear_breadcrumbs
-    @show_title = resource.name
+    add_home_crumb
+    add_breadcrumb! @show_title = resource.name
   end
 
   protected
@@ -37,5 +38,13 @@ class E9Crm::OffersController < E9Crm::ResourcesController
 
   def determine_layout
     request.xhr? ? false : super
+  end
+
+  def default_ordered_on
+    :name
+  end
+
+  def default_ordered_dir
+    :ASC
   end
 end

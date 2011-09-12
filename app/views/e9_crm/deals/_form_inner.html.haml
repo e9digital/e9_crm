@@ -16,21 +16,21 @@
   = f.text_area :info
 .field
   = f.label :value, nil, :class => :req
-  = f.text_field :value
+  = f.text_field :value, :value => f.object.value.to_s
 .field.select
-  = f.label :campaign, :for => 'deal_campaign_select'
+  = f.label :campaign, :for => 'deal_campaign_select', :class => 'req'
   = f.collection_select :campaign_id, Campaign.ordered.all, :id, :to_s, {:prompt => true}, :id => 'deal_campaign_select'
 .field.select
   = f.label :status
   = f.select :status, Deal::Status::OPTIONS[1..-1]
 .field.select
   = f.label :contacts
-  %input#contact_autocomplete.list{:type => 'text', 'data-values' => resource.contact_ids.join(','), 'data-iname' => resource_instance_name, 'data-field' => '[contact_ids]', :id => 'deal_contacts'}
+  %input#contact_autocomplete.list{:type => 'text', 'data-values' => resource.contact_ids.join(','), 'data-iname' => resource_instance_name, 'data-field' => '[contact_ids]'}
   %ul.select
     - f.object.contacts.each do |contact|
       %li.ui-state-default
         %span.content= contact.name
-        %input{:type => :hidden, :name => "contact[contact_ids][]", :value => contact.id}
+        %input{:type => :hidden, :name => "#{resource_instance_name}[contact_ids][]", :value => contact.id}
         %a{:class => :remove, :title => "Remove", :alt => "Remove"} Remove
 .field.select
   = f.label :owner

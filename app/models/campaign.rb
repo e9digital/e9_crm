@@ -70,4 +70,12 @@ class Campaign < ActiveRecord::Base
   def to_s
     name.tap {|n| n << " (#{code})" if code.present? }
   end
+
+  def to_liquid
+    Drop.new(self)
+  end
+
+  class Drop < ::E9::Liquid::Drops::Base
+    source_methods :name, :code
+  end
 end

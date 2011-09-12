@@ -27,8 +27,7 @@ class Deal < ActiveRecord::Base
   # lead only validations
   # require lead_name and lead_email; gotten from current_user if it exists
   validates :lead_name,  :presence => { :if => lambda {|r| r.lead? } }
-  validates :lead_email, :presence => { :if => lambda {|r| r.lead? } },
-                         :email    => { :if => lambda {|r| r.lead? }, :allow_blank => true }
+  validates :lead_email, :presence => { :if => lambda {|r| r.lead? } }
 
   # NOTE should offer be validated?
   #validates :offer,      :presence => { :if => lambda {|r| r.lead? } }
@@ -47,6 +46,7 @@ class Deal < ActiveRecord::Base
   # If a lead with no user, find the user by email or create it, then if mailing_lists
   # were passed, assign the user those mailing lists
   after_create :handle_user_if_lead
+  after_create :send_offer_conversion_email_if_lead
 
   # money column definitions for pseudo attributes (added on the reports scope)
   %w(total_value average_value total_cost average_cost).each do |money_column|
@@ -173,6 +173,10 @@ class Deal < ActiveRecord::Base
   scope :owner,    lambda {|owner|    where(:contact_id => owner.to_param) }
   scope :status,   lambda {|status|   where(:status => status) }
 
+  def to_liquid
+    Drop.new(self)
+  end
+
   protected
 
     def write_options(obj={})
@@ -250,6 +254,15 @@ class Deal < ActiveRecord::Base
       end
     end
 
+    def send_offer_conversion_email_if_lead
+      if lead? && offer && email = offer.conversion_alert_email.presence
+        Rails.logger.debug("Sending Deal Conversion Alert to [#{email}]")
+        Offer.conversion_email.send!(email, :offer => offer, :lead => self)
+      end
+    rescue
+      Rails.logger.debug("Deal conversion alert failed: #{$!}")
+    end
+
     def update_to_pending_status
       if self.status == Status::Lead
         self.status = Status::Pending
@@ -263,6 +276,13 @@ class Deal < ActiveRecord::Base
         :role       => :prospect
       ) 
     end
+
+  class Drop < ::E9::Liquid::Drops::Base
+    source_methods :name, :category, :lead_email, :lead_name, :info, :offer,
+                   :campaign, :contacts, :owner, :status
+
+    date_methods :closed_at, :converted_at
+  end
 
   module Status
     OPTIONS  = %w(lead pending won lost)

@@ -1,4 +1,6 @@
 class E9Crm::ResourcesController < E9Crm::BaseController
+  inherit_resources
+
   include E9Rails::Helpers::ResourceErrorMessages
 
   # NOTE depending on e9_base pagination (which should eventually use this module)
@@ -11,8 +13,6 @@ class E9Crm::ResourcesController < E9Crm::BaseController
 
   class_inheritable_accessor :should_paginate_index
   self.should_paginate_index = true
-
-  inherit_resources
 
   respond_to :js
 

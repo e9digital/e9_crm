@@ -12,6 +12,14 @@ module E9Crm
       prepend_before_filter do
         E9Crm.log("E9Crm controller request")
       end
+
+      alias :liquid_env_without_crm :liquid_env
+
+      def liquid_env
+        liquid_env_without_crm.tap do |env|
+          env[:campaign] = tracking_campaign
+        end
+      end
     end
 
     protected

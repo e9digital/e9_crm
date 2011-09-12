@@ -6,4 +6,8 @@ class NoCampaign < Campaign
   def cost
     0
   end
+
+  def code
+    'No Code'
+  end
 end

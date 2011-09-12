@@ -1,10 +1,5 @@
 require 'e9_base'
-require 'e9_rails'
-require 'e9_tags'
-require 'e9_attributes'
-
 require 'money'
-
 require 'e9_crm/rails_extensions'
 
 module E9Crm
@@ -55,7 +50,7 @@ module E9Crm
       user_model.send(:include, E9Crm::Model)
     end
 
-    ActionController::Base.send(:include, E9Crm::Controller)
+    ApplicationController.send(:include, E9Crm::Controller)
 
     ::Email.send(:include, E9Crm::Email)
 

@@ -16,6 +16,7 @@ module E9Crm::DealsHelper
   def deal_status_select_options
     @_deal_status_select_options ||= begin
       options = Deal::Status::OPTIONS - %w(lead)
+      options.map! {|o| [o.titleize, o] }
       options.unshift ['All Statuses', nil]
       options_for_select(options)
     end
@@ -23,7 +24,7 @@ module E9Crm::DealsHelper
 
   def deal_category_select_options
     @_deal_category_select_options ||= begin
-      options = MenuOption.options_for('Deal Category')
+      options = MenuOption.options_for('Deal Category').sort
       options.unshift ['All Categories', nil]
       options_for_select(options)
     end
@@ -31,7 +32,7 @@ module E9Crm::DealsHelper
 
   def deal_owner_select_options
     @_deal_owner_select_options ||= begin
-      options = Contact.deal_owners.all.map {|c| [c.name, c.id] }
+      options = deal_contacts_array
       options.unshift ['All Responsible', nil]
       options_for_select(options)
     end
@@ -39,7 +40,7 @@ module E9Crm::DealsHelper
 
   def deal_offer_select_options
     @_deal_offer_select_options ||= begin
-      options = Offer.all.map {|c| [c.name, c.id] }
+      options = Offer.all.map {|c| [c.name, c.id] }.sort_by {|name, id| name.upcase }
       options.unshift ['Any/No Offer', nil]
       options_for_select(options)
     end
@@ -84,11 +85,11 @@ module E9Crm::DealsHelper
   def deal_contacts
     @_eligible_responsible_contacts ||= begin
       roles = E9::Roles.list.map(&:role).select {|r| r > 'user' && r < 'e9_user' }
-      User.includes(:contact).for_roles(roles).all.map(&:contact).compact
+      User.includes(:contact).for_roles(roles).all.map(&:contact).compact.sort_by {|c| c.name.upcase }
     end
   end
 
   def deal_contacts_array
-    deal_contacts.map {|c| [c.name, c.id] }.sort_by {|name, id| name.upcase }
+    deal_contacts.map {|c| [c.name, c.id] }
   end
 end
