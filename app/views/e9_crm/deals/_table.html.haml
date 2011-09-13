@@ -31,7 +31,7 @@
           %td.links
             = link_to_show_resource(record)
             = link_to_edit_resource(record)
-            = link_to_destroy_resource(record)
+            = link_to_destroy_resource(record) unless record.closed?
 
     %tfooter
       %tr{:class => 'record-totals'}
@@ -40,6 +40,3 @@
         %td.record-totals.num
           = dat[:value].sum.to_money.format
         %td
-
-- if @controller.should_paginate_index
-  = will_paginate collection

@@ -14,4 +14,9 @@ class SalesCampaign < Campaign
   def cost
     sales_fee
   end
+
+  def set_cost(options = {})
+    dated_costs.clear
+    dated_costs.create(options.merge(:cost => cost))
+  end
 end

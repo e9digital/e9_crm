@@ -8,7 +8,7 @@ class DatedCost < ActiveRecord::Base
   money_columns :cost
   belongs_to :costable, :polymorphic => true
   validates :date, :date => true
-  validates :cost, :numericality => { :greater_than => 0 }
+  validates :cost, :numericality => true
 
   attr_accessor :temp_id
 

@@ -12,9 +12,9 @@
 
   = @offer.custom_form_html.html_safe
 
-  - if @offer.kind_of?(SubscriptionOffer)
+  - if @offer.mailing_lists.any?
     %fieldset
-      - @offer.class.mailing_lists.each do |ml|
+      - @offer.mailing_lists.each do |ml|
         .field.checkbox
           = label_tag "#{resource_instance_name}_mailing_list_ids_#{ml.id}", ml.description
           = check_box_tag "#{resource_instance_name}[mailing_list_ids][]", ml.id, true, :id => "#{resource_instance_name}_mailing_list_ids_#{ml.id}"

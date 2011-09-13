@@ -16,12 +16,21 @@ class Offer < Renderable
   self.delegate_options_methods = true
   self.options_parameters = [
     :submit_button_text,
-    :success_alert_text,
     :success_page_text,
-    :download_link_text,
     :conversion_alert_email,
-    :custom_form_html
+    :custom_form_html,
+    :mailing_list_ids
   ]
+
+  def has_mailing_list?(ml)
+    (mailing_list_ids || []).map(&:to_s).member?(ml.id.to_s)
+  end
+
+  def mailing_lists
+    @_mailing_lists ||= begin
+      mailing_list_ids ? MailingList.find_all_by_id(mailing_list_ids) : []
+    end
+  end
 
   class << self
     def conversion_email
@@ -53,7 +62,6 @@ class Offer < Renderable
 
     def _assign_initialization_defaults
       self.submit_button_text ||= 'Submit!'
-      self.download_link_text ||= 'Click to download your file'
       self.success_page_text  ||= 'Thank you!'
     end
 

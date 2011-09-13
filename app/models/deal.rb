@@ -13,40 +13,47 @@ class Deal < ActiveRecord::Base
   belongs_to :user
 
   belongs_to :owner, :class_name => 'Contact', :foreign_key => :contact_id
+  belongs_to :dated_cost
+
   has_and_belongs_to_many :contacts
 
   money_columns :value
 
   validates :value,      :numericality => true
   validates :campaign,   :presence     => true
+  validate do |record|
+    if !Status::OPTIONS.include?(record.status)
+      record.errors.add(:status, :inclusion, :options => Status::OPTIONS)
+    elsif record.status_changed? && record.won? || record.lost? and record.status_was == Status::Lead
+      record.errors.add(:status, :illegal_conversion)
+    end
+  end
 
   # non-lead validations (deals in the admin)
-  # require a deal name
-  validates :name,       :presence => { :unless => lambda {|r| r.lead? } }
+  validates :name, :presence => true, :unless => lambda {|r| r.lead? }
 
   # lead only validations
-  # require lead_name and lead_email; gotten from current_user if it exists
-  validates :lead_name,  :presence => { :if => lambda {|r| r.lead? } }
-  validates :lead_email, :presence => { :if => lambda {|r| r.lead? } }
-
-  # NOTE should offer be validated?
-  #validates :offer,      :presence => { :if => lambda {|r| r.lead? } }
+  validates :lead_name,  :presence => true, :if => lambda {|r| r.lead? }
+  validates :lead_email, :presence => true, :email => { :allow_blank => true }, :if => lambda {|r| r.lead? }
 
   # If a lead with a user, get the lead_name and lead_email from the user before validation
   before_validation :get_name_and_email_from_user, :on => :create
   before_validation :update_to_pending_status,     :on => :update
+  before_validation :disallow_campaign_change_if_closed, :on => :update
+
+  before_destroy :disallow_destroy_if_closed
 
   # copy temp options over into info column
   before_create :transform_options_column
 
+  # If a lead with no user, find the user by email or create it, then if mailing_lists
+  # were passed, assign the user those mailing lists
+  after_create :handle_lead_creation, :if => lambda {|r| r.lead? }
+
   # denormalize campaign code and offer name columns
   before_save :ensure_denormalized_columns
   before_save :ensure_associated_campaign
-
-  # If a lead with no user, find the user by email or create it, then if mailing_lists
-  # were passed, assign the user those mailing lists
-  after_create :handle_user_if_lead
-  after_create :send_offer_conversion_email_if_lead
+  before_save :handle_status_conversion, :if => lambda {|r| r.status_changed? }
 
   # money column definitions for pseudo attributes (added on the reports scope)
   %w(total_value average_value total_cost average_cost).each do |money_column|
@@ -73,38 +80,17 @@ class Deal < ActiveRecord::Base
       campaigns.name                                 campaign_name,
       campaigns.new_visits                           new_visits,
       campaigns.repeat_visits                        repeat_visits,
-
       deals.closed_at                                closed_at,
       deals.created_at                               created_at,
-
       campaign_groups.name                           campaign_group,
       SUM(IF(deals.status != 'lead',1,0))            deal_count, 
       COUNT(deals.id)                                lead_count,
       SUM(IF(deals.status='won',1,0))                won_deal_count,
       SUM(IF(deals.status='won',deals.value,0))      total_value, 
       AVG(IF(deals.status='won',deals.value,NULL))   average_value, 
-      SUM(CASE campaigns.type
-        WHEN "AdvertisingCampaign" 
-          THEN dated_costs.cost 
-        WHEN "SalesCampaign"       
-          THEN campaigns.sales_fee
-        WHEN "AffiliateCampaign"   
-          THEN campaigns.sales_fee + 
-                 campaigns.affiliate_fee
-        ELSE 
-          0 
-        END)                                         total_cost,
-      SUM(CASE campaigns.type
-        WHEN "AdvertisingCampaign" 
-          THEN dated_costs.cost 
-        WHEN "SalesCampaign"       
-          THEN campaigns.sales_fee
-        WHEN "AffiliateCampaign"   
-          THEN campaigns.sales_fee + 
-                 campaigns.affiliate_fee
-        ELSE 
-          0 
-        END) / SUM(IF(deals.status='won',1,0))      average_cost,
+      SUM(dated_costs.cost)                          total_cost,
+      SUM(dated_costs.cost) / 
+        SUM(IF(deals.status='won',1,0))              average_cost,
       FLOOR(AVG(
         DATEDIFF(
           deals.closed_at,
@@ -125,33 +111,6 @@ class Deal < ActiveRecord::Base
 
     select(selects).joins(joins).group('campaigns.id')
   }
-
-  validate do |record|
-    return unless record.status_changed?
-
-    case record.status
-    when Status::Lead
-      if [Status::Won, Status::Lost].member?(record.status_was)
-        record.errors.add(:status, :illegal_reversion)
-      elsif record.persisted?
-        # "revert" isn't happening on new records
-        record.send :_do_revert
-      end
-    when Status::Pending
-      if record.status_was == Status::Lead
-        record.send :_do_convert
-      end
-    when Status::Won, Status::Lost
-      if record.status_was == Status::Lead
-        record.errors.add(:status, :illegal_conversion)
-      elsif record.persisted?
-        # "close" isn't happening on new records
-        record.send :_do_close
-      end
-    else
-      record.errors.add(:status, :invalid, :options => Status::OPTIONS.join(', '))
-    end
-  end
 
   scope :column_op, lambda {|op, column, value, reverse=false|
     conditions = arel_table[column].send(op, value)
@@ -177,6 +136,10 @@ class Deal < ActiveRecord::Base
     Drop.new(self)
   end
 
+  def closed?
+    [Status::Won, Status::Lost].include? status
+  end
+
   protected
 
     def write_options(obj={})
@@ -195,29 +158,15 @@ class Deal < ActiveRecord::Base
       end
     end
 
-    def _do_convert
-      self.converted_at = Time.now.utc
-      notify_observers :before_convert
-    end
-
-    def _do_revert
-      self.converted_at = nil
-      notify_observers :before_revert
-    end
-
-    def _do_close
-      self.closed_at = Time.now.utc
-      notify_observers :before_close
-    end
-  
     # Typically, new Deals are 'pending', with the assumption that offers
     # explicitly create Deals as 'lead' when they convert.
     def _assign_initialization_defaults
       self.status ||= Status::Pending
     end
 
+    # this is for leads
     def transform_options_column
-      self.info = options.to_hash.map {|k, v| "%s:\n%s\n\n" % [k.to_s.titleize, v] }.join
+      self.info ||= options.to_hash.map {|k, v| "%s:\n%s\n\n" % [k.to_s.titleize, v] }.join
     end
 
     def ensure_denormalized_columns
@@ -236,31 +185,34 @@ class Deal < ActiveRecord::Base
       end
     end
 
-    def handle_user_if_lead
-      if lead? 
-        if user.blank? && lead_email
-          user = User.find_by_email(lead_email) || create_prospect
-          update_attribute(:user_id, u.id)
-        end
-
-        if user.present?
-          user.create_contact_if_missing!
-          self.contacts << user.contact
-
-          if @mailing_list_ids
-            user.mailing_list_ids |= @mailing_list_ids
-          end
-        end
+    def handle_lead_creation
+      # If user is not set explicitly yet a lead_email was passed, set the 
+      # user, first by attempting to find it by lead_email, and on that 
+      # failing, by creating a new prospect.
+      if user.blank?
+        self.user = User.find_by_email(lead_email) || create_prospect
+        update_attribute(:user_id, user.id)
       end
-    end
 
-    def send_offer_conversion_email_if_lead
-      if lead? && offer && email = offer.conversion_alert_email.presence
-        Rails.logger.debug("Sending Deal Conversion Alert to [#{email}]")
-        Offer.conversion_email.send!(email, :offer => offer, :lead => self)
+      # Assign the user's contact to the lead, creating it first if it does 
+      # not yet exist
+      user.create_contact_if_missing!
+      self.contacts << user.contact
+
+      # finally if mailing_list_ids were passed in the creation of this lead
+      # pass them along to the user.
+      if @mailing_list_ids
+        user.mailing_list_ids |= @mailing_list_ids
       end
-    rescue
-      Rails.logger.debug("Deal conversion alert failed: #{$!}")
+
+      begin
+        if offer && alert_email = offer.conversion_alert_email.presence
+          Rails.logger.debug("Sending Deal Conversion Alert to [#{alert_email}]")
+          Offer.conversion_email.send!(alert_email, :offer => offer, :lead => self)
+        end
+      rescue
+        Rails.logger.debug("Deal conversion alert failed: #{$!}")
+      end
     end
 
     def update_to_pending_status
@@ -277,11 +229,46 @@ class Deal < ActiveRecord::Base
       ) 
     end
 
+    def handle_status_conversion
+      case status
+      when Status::Lead
+        self.converted_at = nil
+      when Status::Pending
+        self.converted_at = Time.now.utc
+        self.closed_at = nil
+      when Status::Won, Status::Lost
+        self.converted_at ||= Time.now.utc
+        self.closed_at = Time.now.utc
+      end
+
+      # create cost if applicable, else destroy costs
+      if campaign.respond_to?(:set_cost)
+        dated_cost.try(:delete)
+
+        if status == Status::Won
+          create_dated_cost(:costable => campaign, :date => converted_at.to_date)
+        end
+      end
+    end
+
+    def disallow_destroy_if_closed
+      if closed?
+        errors.add(:status, :closed_no_destroy)
+        return false
+      end
+    end
+
+    def disallow_campaign_change_if_closed
+      if closed? && campaign_id_changed?
+        errors.add(:campaign, :closed_no_change)
+      end
+    end
+
   class Drop < ::E9::Liquid::Drops::Base
     source_methods :name, :category, :lead_email, :lead_name, :info, :offer,
                    :campaign, :contacts, :owner, :status
 
-    date_methods :closed_at, :converted_at
+    date_methods   :closed_at, :converted_at
   end
 
   module Status

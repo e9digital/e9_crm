@@ -1,2 +1,0 @@
-class ContactOffer < Offer
-end

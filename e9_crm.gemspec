@@ -28,4 +28,5 @@ Gem::Specification.new do |s|
   s.add_dependency("e9_attributes")
   s.add_dependency("will_paginate")
   s.add_dependency("kramdown", "~> 0.13")
+  s.add_dependency("state_machine", "~> 1.0")
 end

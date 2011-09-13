@@ -62,10 +62,13 @@ en:
               blank: "None of the contacts selected are configured with primary emails.  Please correct this and try again."
         deal:
           attributes:
+            campaign:
+              closed_no_change: You cannot change the campaign of a closed deal. To do so, you must commit the status as "pending" then try again.
             status:
               illegal_conversion: A Deal with "lead" status can only be converted to "pending"
               illegal_reversion: A Deal that has been marked "won" or "lost" cannot be reverted to a "lead"
-              invalid: "Status must be one of (%{options})"
+              closed_no_destroy: You cannot delete a closed deal. To remove it, you must commit the status as "pending" then try again.
+              inclusion: "Status must be one of (%{options})"
 
     models:
       address_attribute: Address
@@ -148,6 +151,7 @@ en:
         owner: Responsible
         won_deal_count: Won count 
       offer:
+        mailing_list_ids: Subscriptions
         template: Teaser Text
         template_help: |
           <h3>Variables:</h3>

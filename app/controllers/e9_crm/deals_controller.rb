@@ -7,7 +7,7 @@ class E9Crm::DealsController < E9Crm::ResourcesController
 
   filter_access_to :leads, :reports, :require => :read, :context => :admin
 
-  skip_after_filter :flash_to_headers
+  skip_after_filter :flash_to_headers, :except => :destroy
 
   prepend_before_filter :set_leads_index_title, :only => :leads
   prepend_before_filter :set_reports_index_title, :only => :reports

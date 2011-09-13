@@ -8,13 +8,13 @@ class Campaign < ActiveRecord::Base
 
   belongs_to :campaign_group
 
-  has_many   :deals, :inverse_of => :campaign, :dependent => :nullify
-  has_many   :won_deals, :class_name => 'Deal', :conditions => ['deals.status = ?', Deal::Status::Won]
-  has_many   :lost_deals, :class_name => 'Deal', :conditions => ['deals.status = ?', Deal::Status::Lost]
-  has_many   :pending_deals, :class_name => 'Deal', :conditions => ['deals.status = ?', Deal::Status::Pending]
-  has_many   :leads, :class_name => 'Deal', :conditions => ['deals.status = ?', Deal::Status::Lead]
-  has_many   :non_leads, :class_name => 'Deal', :conditions => ['deals.status != ?', Deal::Status::Lead]
-  has_many   :page_views, :inverse_of => :campaign, :dependent => :nullify
+  has_many :deals, :inverse_of => :campaign, :dependent => :nullify
+  has_many :won_deals, :class_name => 'Deal', :conditions => ['deals.status = ?', Deal::Status::Won]
+  has_many :lost_deals, :class_name => 'Deal', :conditions => ['deals.status = ?', Deal::Status::Lost]
+  has_many :pending_deals, :class_name => 'Deal', :conditions => ['deals.status = ?', Deal::Status::Pending]
+  has_many :leads, :class_name => 'Deal', :conditions => ['deals.status = ?', Deal::Status::Lead]
+  has_many :non_leads, :class_name => 'Deal', :conditions => ['deals.status != ?', Deal::Status::Lead]
+  has_many :page_views, :inverse_of => :campaign, :dependent => :nullify
 
   # only advertising campaigns use this association
   has_many :dated_costs, :as => :costable

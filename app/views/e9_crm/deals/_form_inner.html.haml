@@ -2,8 +2,8 @@
   - if resource.persisted?
     - if resource.lead?
       = link_to 'Back to Leads', leads_path
-    - else
-      = link_to_destroy_resource(resource, :remote => false)
+    - elsif !resource.closed?
+      = link_to_destroy_resource(resource, :remote => false) 
 
 .field
   = f.label :name, nil, :class => :req

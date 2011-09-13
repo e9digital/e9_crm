@@ -24,7 +24,7 @@ module E9Crm::DealsHelper
 
   def deal_category_select_options
     @_deal_category_select_options ||= begin
-      options = MenuOption.options_for('Deal Category').sort
+      options = MenuOption.options_for('Deal Category')
       options.unshift ['All Categories', nil]
       options_for_select(options)
     end

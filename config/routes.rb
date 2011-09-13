@@ -61,22 +61,7 @@ Rails.application.routes.draw do
       end
     end
 
-    resources :offers, :only  => [:index, :destroy]
-    scope :path => :offers do
-      resources :contact_offers,                  :path => 'contact',                  :except => [:show, :index]
-      resources :file_download_offers,            :path => 'file_download',            :except => [:show, :index]
-      resources :new_content_subscription_offers, :path => 'new_content_subscription', :except => [:show, :index]
-      resources :newsletter_subscription_offers,  :path => 'newsletter_subscription',  :except => [:show, :index]
-      resources :video_offers,                    :path => 'video',                    :except => [:show, :index]
-
-      %w( contact file_download new_content_subscription newsletter_subscription video ).each do |path|
-        get "/#{path}", :as => "#{path}_offers_redirect", :to => redirect("/#{crm_path}/offers?type=#{path}")
-        get "/#{path}/:id", :as => "#{path}_offers_edit_redirect", :to => redirect("/#{crm_path}/#{path}/%{id}/edit"), :constraints => { :id => /\d+/ }
-      end
-      
-      %w( contact file_download new_content_subscription newsletter_subscription video ).each do |path|
-      end
-    end
+    resources :offers, :except => :show
 
     # leads are simply a scoped view of deals (only index)
     get :leads,            :as => :leads,          :to => 'deals#leads'

@@ -1,5 +1,0 @@
-= render 'e9_crm/offers/form_inner', :f => f
-
-.field{:class => request.xhr? ? 'tinymcexhr' : 'tinymce'}
-  = help_label(f, :success_page_text, :key => :markdown_help, :header => "Markdown Help", :class => :req)
-  = f.text_area :success_page_text

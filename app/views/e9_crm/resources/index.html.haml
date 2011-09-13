@@ -9,3 +9,6 @@
 - else
   %div#records_table
     = render 'table', :resources => collection
+
+- if controller.should_paginate_index
+  = will_paginate collection

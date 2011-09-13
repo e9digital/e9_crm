@@ -1,9 +1,28 @@
+- content_for :bottom_javascripts do
+  -#= render 'shared/admin/tiny_mce') if use_tiny_mce?
+  = render 'shared/admin/tiny_mce'
+
 .field
   = f.label :name, nil, :class => :req
   = f.text_field :name
 
+.field
+  = f.label :submit_button_text
+  = f.text_field :submit_button_text
+
+.field
+  = f.label :conversion_alert_email
+  = f.text_field :conversion_alert_email
+
+%fieldset
+  %legend= f.label(:mailing_list_ids)
+  - offer_mailing_lists.each do |ml|
+    .field.checkbox
+      = check_box_tag "offer[mailing_list_ids][]", ml.id, resource.has_mailing_list?(ml), :id => "offer_mailing_list_ids_#{ml.id}"
+      = label_tag "offer_mailing_list_ids_#{ml.id}", ml.name
+
 .field.tinymce
-  = help_label(f, :template, :markdown => true)
+  = f.label :template
   = f.text_area :template
 
 .field
@@ -18,11 +37,3 @@
       = hidden_field_tag 'offer[node_ids][]', id, :id => "offer_node_ids_#{i}"
 - else
   = render 'shared/admin/region_type_select', :f => f
-
-.field
-  = f.label :submit_button_text
-  = f.text_field :submit_button_text
-
-.field
-  = f.label :conversion_alert_email
-  = f.text_field :conversion_alert_email

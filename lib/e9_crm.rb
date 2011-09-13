@@ -8,6 +8,7 @@ module E9Crm
   autoload :Model,                  'e9_crm/model'
   autoload :Email,                  'e9_crm/email'
   autoload :TrackingController,     'e9_crm/tracking_controller'
+  autoload :SystemEmailsController, 'e9_crm/system_emails_controller'
 
   module Rack
     autoload :ContactAutoCompleter, 'e9_crm/rack/contact_auto_completer'
@@ -53,6 +54,7 @@ module E9Crm
     ApplicationController.send(:include, E9Crm::Controller)
 
     ::Email.send(:include, E9Crm::Email)
+    ::Admin::SystemEmailsController.send(:include, E9Crm::SystemEmailsController)
 
     E9Crm.tracking_controllers.each do |controller|
       controller.send(:include, E9Crm::TrackingController)

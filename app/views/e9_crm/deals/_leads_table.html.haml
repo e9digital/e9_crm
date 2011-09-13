@@ -29,9 +29,6 @@
             = record.info
           %td.actions
             - if record.contacts.present?
-              = link_to_show_resource(record.contacts.first)
+              = link_to 'View Contact', record.contacts.first
             = link_to 'Create Deal', edit_deal_path(record)
             = link_to 'Delete Lead', record, :method => :delete, :remote => true, :confirm => I18n.t("#{resource_class.i18n_scope}.links.confirm_destroy")
-
-- if @controller.should_paginate_index
-  = will_paginate collection

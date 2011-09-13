@@ -1,11 +1,16 @@
 module E9Crm::OffersHelper
   def records_table_field_map_for_offer
     {
-      :fields => { 
-        :name => nil,
-        :type => lambda {|r| r.class.model_name.human }
-      }
+      :fields => { :name => nil }
     }
+  end
+
+  def offer_mailing_lists
+    @_offer_mailing_lists ||= begin
+      retv =  MailingList.newsletters.all
+      retv << MailingList.new_content_alerts
+      retv.compact
+    end
   end
 
   def offer_select_options(with_all_option = true)

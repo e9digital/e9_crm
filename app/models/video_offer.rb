@@ -1,2 +1,0 @@
-class VideoOffer < Offer
-end

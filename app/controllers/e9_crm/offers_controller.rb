@@ -7,6 +7,7 @@ class E9Crm::OffersController < E9Crm::ResourcesController
   skip_before_filter :authenticate_user!, :filter_access_filter, :only => :show
 
   before_filter :throw_forbidden_unless_offer_cookied, :only => :show
+  before_filter :ensure_mailing_list_ids, :only => [:create, :update]
 
   has_scope :of_type, :as => :type, :only => :index do |_, scope, value|
     scope.of_type("#{value}_offer".classify)
@@ -29,11 +30,7 @@ class E9Crm::OffersController < E9Crm::ResourcesController
   end
 
   def find_current_page
-    if params[:action] != 'show'
-      super
-    else
-      @current_page ||= Offer.page || super
-    end
+    @current_page ||= params[:action] == 'show' && Offer.page || super
   end
 
   def determine_layout
@@ -46,5 +43,9 @@ class E9Crm::OffersController < E9Crm::ResourcesController
 
   def default_ordered_dir
     :ASC
+  end
+
+  def ensure_mailing_list_ids
+    params[:offer][:mailing_list_ids] ||= []
   end
 end

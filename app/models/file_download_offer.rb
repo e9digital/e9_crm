@@ -1,2 +1,0 @@
-class FileDownloadOffer < Offer
-end
