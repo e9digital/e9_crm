@@ -13,7 +13,7 @@ class Deal < ActiveRecord::Base
   belongs_to :user
 
   belongs_to :owner, :class_name => 'Contact', :foreign_key => :contact_id
-  belongs_to :dated_cost
+  belongs_to :dated_cost, :dependent => :delete
 
   has_and_belongs_to_many :contacts
 
@@ -39,9 +39,6 @@ class Deal < ActiveRecord::Base
   # If a lead with a user, get the lead_name and lead_email from the user before validation
   before_validation :get_name_and_email_from_user, :on => :create
   before_validation :update_to_pending_status,     :on => :update
-  before_validation :disallow_campaign_change_if_closed, :on => :update
-
-  before_destroy :disallow_destroy_if_closed
 
   # copy temp options over into info column
   before_create :transform_options_column
@@ -54,6 +51,7 @@ class Deal < ActiveRecord::Base
   before_save :ensure_denormalized_columns
   before_save :ensure_associated_campaign
   before_save :handle_status_conversion, :if => lambda {|r| r.status_changed? }
+  before_save :handle_dated_cost, :if => lambda {|r| r.status_changed? || r.campaign_id_changed? }
 
   # money column definitions for pseudo attributes (added on the reports scope)
   %w(total_value average_value total_cost average_cost).each do |money_column|
@@ -240,27 +238,15 @@ class Deal < ActiveRecord::Base
         self.converted_at ||= Time.now.utc
         self.closed_at = Time.now.utc
       end
+    end
 
-      # create cost if applicable, else destroy costs
+    def handle_dated_cost
       if campaign.respond_to?(:set_cost)
         dated_cost.try(:delete)
 
         if status == Status::Won
-          create_dated_cost(:costable => campaign, :date => converted_at.to_date)
+          create_dated_cost(:cost => campaign.cost, :costable => campaign, :date => converted_at.to_date)
         end
-      end
-    end
-
-    def disallow_destroy_if_closed
-      if closed?
-        errors.add(:status, :closed_no_destroy)
-        return false
-      end
-    end
-
-    def disallow_campaign_change_if_closed
-      if closed? && campaign_id_changed?
-        errors.add(:campaign, :closed_no_change)
       end
     end
 
