@@ -1,8 +1,9 @@
 Rails.application.routes.draw do
   crm_path = 'admin/crm'
 
-  get '/autocomplete/contacts' => E9Crm::Rack::ContactAutoCompleter
+  get '/autocomplete/contacts'  => E9Crm::Rack::ContactAutoCompleter
   get '/autocomplete/companies' => E9Crm::Rack::CompanyAutoCompleter
+  get '/users/email_test.json'  => E9Crm::Rack::EmailAvailabilityChecker
 
   scope :module => :e9_crm do
     resources :offers, :as => :public_offer, :only => :show do
@@ -41,7 +42,7 @@ Rails.application.routes.draw do
       end
     end
 
-    resources :campaigns, :only  => [:index, :destroy] do
+    resources :campaigns, :only  => [:index, :destroy, :new] do
       # page_views currently not routed, but near working
       #resources :page_views, :path => 'activity', :only => :index
     end

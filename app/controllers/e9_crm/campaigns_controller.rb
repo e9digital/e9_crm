@@ -2,6 +2,8 @@ class E9Crm::CampaignsController < E9Crm::ResourcesController
   defaults :resource_class => Campaign
   include E9Rails::Controllers::Orderable
 
+  before_filter :redirect_new_to_subclass, :only => :new
+
   self.should_paginate_index = false
 
   has_scope :of_group, :as => :group, :only => :index
@@ -11,10 +13,16 @@ class E9Crm::CampaignsController < E9Crm::ResourcesController
   end
 
   has_scope :of_type, :as => :type, :only => :index do |_, scope, value|
-    scope.of_type("#{value}_campaign".classify)
+    scope.of_type("#{type}_campaign".classify)
   end
 
   protected
+
+    def redirect_new_to_subclass
+      types = %w(advertising affiliate email sales)
+      type = types.member?(params[:type]) ? params[:type] : types.first
+      redirect_to send("new_#{type}_campaign_path")
+    end
 
     def collection_scope
       #end_of_association_chain.typed.includes(:campaign_group)

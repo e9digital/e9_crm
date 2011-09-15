@@ -21,9 +21,13 @@
       = check_box_tag "offer[mailing_list_ids][]", ml.id, resource.has_mailing_list?(ml), :id => "offer_mailing_list_ids_#{ml.id}"
       = label_tag "offer_mailing_list_ids_#{ml.id}", ml.name
 
-.field.tinymce
-  = f.label :template
+.field
+  = help_label(f, :template, :markdown => true)
   = f.text_area :template
+
+.field.tinymce
+  = f.label :success_page_text
+  = f.text_area :success_page_text
 
 .field
   = f.label :custom_form_html

@@ -210,16 +210,32 @@ class Contact < ActiveRecord::Base
     [first_name, last_name].join(' ').to_s.strip
   end
 
-  def merge_and_destroy!(other_contact)
-    other_contact.users.clear_primary!
+  # NOTE there's no non-destructive `merge`
+  def merge_and_destroy!(other)
+    merge_tags(other)
 
-    self.users                               |= other_contact.users
-    self.website_attributes                  |= other_contact.website_attributes
-    self.address_attributes                  |= other_contact.address_attributes
-    self.phone_number_attributes             |= other_contact.phone_number_attributes
-    self.instant_messaging_handle_attributes |= other_contact.instant_messaging_handle_attributes
+    if success = save
+      merge_destructive_and_destroy!(other)
+    end
 
-    other_contact.destroy
+    success
+  end
+
+  def merge_tags(other)
+    tags       =  self.tag_list_on('users__h__')
+    other_tags = other.tag_list_on('users__h__')
+    set_tag_list_on('users__h__', tags | other_tags)
+  end
+
+  def merge_destructive_and_destroy!(other)
+    other.users.clear_primary!
+    self.associated_deals                    |= other.associated_deals
+    self.users                               |= other.users
+    self.website_attributes                  |= other.website_attributes
+    self.address_attributes                  |= other.address_attributes
+    self.phone_number_attributes             |= other.phone_number_attributes
+    self.instant_messaging_handle_attributes |= other.instant_messaging_handle_attributes
+    other.destroy
   end
 
   def valid?(context = nil)
@@ -248,33 +264,33 @@ class Contact < ActiveRecord::Base
       unless errors.delete(:"users.email").blank?
         users.dup.each_with_index do |user, i|
           user.errors[:email].each do |error|
-            if error.taken? && users.select {|u| u.email == user.email }.length == 1
-              existing_user = User.find_by_email(user.email)
+            #if error.taken? && users.select {|u| u.email == user.email }.length == 1
+              #existing_user = User.find_by_email(user.email)
 
-              if contact = existing_user.contact
-                args = if new_record?
-                  [contact, 'new', {:contact => self.attributes}]
-                else
-                  [contact, self]
-                end
+              #if contact = existing_user.contact
+                #args = if new_record?
+                  #[contact, 'new', {:contact => self.attributes}]
+                #else
+                  #[contact, self]
+                #end
 
-                errors.add(:users, :merge_required, {
-                  :email => user.email, 
-                  :merge_path => new_contact_merge_path(*args)
-                })
+                #errors.add(:users, :merge_required, {
+                  #:email => user.email, 
+                  #:merge_path => new_contact_merge_path(*args)
+                #})
 
-                return false
-              else
-                self.users.delete(user)
-                self.users << existing_user
-              end
-            else
+                #return false
+              #else
+                #self.users.delete(user)
+                #self.users << existing_user
+              #end
+            #else
               if error.label
                 errors.add(:users, error.label.to_sym, :email => user.email)
               else
                 errors.add(:users, nil, :message => error, :email => user.email)
               end
-            end
+            #end
           end
         end
 
