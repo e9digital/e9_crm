@@ -1,4 +1,7 @@
 class E9Crm::LeadsController < ApplicationController
+  # NOTE this controller, contrary to sanity, doesn't handle admin/crm/leads,
+  #      rather it handles only public side lead creation
+
   # TODO these should all be included in e9_base
   include E9Rails::Helpers::ResourceLinks
   include E9Rails::Helpers::Title

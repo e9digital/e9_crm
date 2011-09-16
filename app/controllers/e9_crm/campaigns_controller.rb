@@ -13,7 +13,7 @@ class E9Crm::CampaignsController < E9Crm::ResourcesController
   end
 
   has_scope :of_type, :as => :type, :only => :index do |_, scope, value|
-    scope.of_type("#{type}_campaign".classify)
+    scope.of_type("#{value}_campaign".classify)
   end
 
   protected

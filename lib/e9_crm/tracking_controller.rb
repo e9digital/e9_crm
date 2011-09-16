@@ -3,7 +3,7 @@ module E9Crm
     extend ActiveSupport::Concern
 
     included do
-      before_filter :check_for_new_session 
+      prepend_before_filter :check_for_new_session 
       after_filter  :track_page_view
 
       prepend_before_filter do
@@ -22,10 +22,13 @@ module E9Crm
     # only happen once per session.
     #
     def check_for_new_session
-      if request.session_options[:id].blank?
+      if request.session_options[:id].blank? && request.get?
         E9Crm.log("No session found, page view will increment campaign counter cache")
         @_should_cache = true
       end
+
+      E9Crm.log("session id: #{request.session_options[:id]}")
+      E9Crm.log("session get?: #{request.get?}")
     end
 
     #
@@ -48,16 +51,18 @@ module E9Crm
     #                 has been assigned.
     #
     def track_page_view
-      @_page_view ||= tracking_cookie.page_views.create({
-        :request_path => request.fullpath,
-        :user_agent   => request.user_agent,
-        :referer      => request.referer,
-        :remote_ip    => request.remote_ip,
-        :session      => request.session_options[:id],
-        :campaign     => tracking_campaign,
-        :new_visit    => session[:new_visit].present?,
-        :should_cache => !!@_should_cache
-      })
+      if request.get?
+        @_page_view ||= tracking_cookie.page_views.create({
+          :request_path => request.fullpath,
+          :user_agent   => request.user_agent,
+          :referer      => request.referer,
+          :remote_ip    => request.remote_ip,
+          :session      => request.session_options[:id],
+          :campaign     => tracking_campaign,
+          :new_visit    => session[:new_visit].present?,
+          :should_cache => !!@_should_cache
+        })
+      end
     end
   end
 end

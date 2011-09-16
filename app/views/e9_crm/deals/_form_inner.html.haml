@@ -32,18 +32,27 @@
 .field.select
   = f.label :owner
   = f.select :contact_id, deal_contacts_array, { :prompt => true }, :id => :deal_owner 
-.field
-  Created At:
-  = l(resource.created_at)
-.field
-  Closed At:
-  = resource.closed_at ? l(resource.closed_at) : 'n/a'
-.field
-  Campaign Cost:
-  = resource.campaign.try(:cost) || 0
-.field
-  Campaign Deal Count:
-  = resource.campaign ? resource.campaign.non_leads.count : 0
-.field
-  Cost:
-  = deal_cost(resource)
+
+.debug-fields
+  .field.date-picker
+    = f.label :created_at
+    = f.text_field :created_at, :class => 'date-picker', :value => l(resource.created_at.try(:to_date))
+  .field.date-picker
+    = f.label :closed_at
+    = f.text_field :closed_at, :class => 'date-picker', :value => l(resource.closed_at.try(:to_date))
+
+  .field
+    Created At:
+    = l(resource.created_at)
+  .field
+    Closed At:
+    = resource.closed_at ? l(resource.closed_at) : 'n/a'
+  .field
+    Campaign Cost:
+    = resource.campaign.try(:cost) || 0
+  .field
+    Campaign Deal Count:
+    = resource.campaign ? resource.campaign.non_leads.count : 0
+  .field
+    Cost:
+    = deal_cost(resource)

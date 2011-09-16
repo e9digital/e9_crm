@@ -42,6 +42,9 @@
 
 - content_for :bottom_javascripts do
   = javascript_include_tag templates_contacts_path
+
   #merge-dialog{:title => t(:email_taken_title), 'data-id' => resource.try(:id) }
-    %p= I18n.t(resource.persisted? ? :edit_conflict : :merge_conflict).html_safe
+    = t(resource.persisted? ? :edit_conflict : :merge_conflict).html_safe
+  #duplicate-dialog{:title => t(:duplicate_email_title), 'data-id' => resource.try(:id) }
+    = t(:duplicate_email_warning).html_safe
 

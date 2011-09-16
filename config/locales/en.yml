@@ -1,7 +1,10 @@
 en:
   email_taken_title: Oops!
+  duplicate_email_title: Oops!
   edit_conflict: "<p>This email is already attached to another contact and cannot be used.</p><p>Do you want to merge these contacts now?</p><p>Be careful!  If you have made extensive edits you may want to save first and come back to merge.</p>"
   merge_conflict: "<p>This email is already attached to another contact and cannot be used.</p><p>Do you want to edit that contact instead?</p>"
+  duplicate_email_warning: "<p>You cannot enter the same email twice.</p>"
+  no_offer_value: No Offer
 
   actions: Actions
   clear: Clear
@@ -58,6 +61,10 @@ en:
             users:
               taken: "Two or more of the login accounts entered share a duplicate email."
               invalid: "One or more of the emails you entered is invalid."
+        offer:
+          attributes:
+            deals:
+              delete_restricted: "You cannot delete this offer because it has leads and/or deals."
         contact_email:
           attributes:
             contact_ids:

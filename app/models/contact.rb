@@ -9,6 +9,7 @@ class Contact < ActiveRecord::Base
 
   before_validation :ensure_user_references
   before_destroy :ensure_no_associated_deals
+  after_destroy :destroy_or_nullify_users
 
   ##
   # Associations
@@ -17,7 +18,7 @@ class Contact < ActiveRecord::Base
   has_many :owned_deals, :class_name => 'Deal', :dependent => :restrict
   has_and_belongs_to_many :associated_deals, :class_name => 'Deal'
 
-  has_many :users, :inverse_of => :contact, :dependent => :nullify do
+  has_many :users, :inverse_of => :contact do
 
     ##
     # Resets the primary user on a contact
@@ -264,33 +265,33 @@ class Contact < ActiveRecord::Base
       unless errors.delete(:"users.email").blank?
         users.dup.each_with_index do |user, i|
           user.errors[:email].each do |error|
-            #if error.taken? && users.select {|u| u.email == user.email }.length == 1
-              #existing_user = User.find_by_email(user.email)
+            if error.taken? && users.select {|u| u.email == user.email }.length == 1
+              existing_user = User.find_by_email(user.email)
 
-              #if contact = existing_user.contact
-                #args = if new_record?
-                  #[contact, 'new', {:contact => self.attributes}]
-                #else
-                  #[contact, self]
-                #end
+              if contact = existing_user.contact
+                args = if new_record?
+                  [contact, 'new', {:contact => self.attributes}]
+                else
+                  [contact, self]
+                end
 
-                #errors.add(:users, :merge_required, {
-                  #:email => user.email, 
-                  #:merge_path => new_contact_merge_path(*args)
-                #})
+                errors.add(:users, :merge_required, {
+                  :email => user.email, 
+                  :merge_path => new_contact_merge_path(*args)
+                })
 
-                #return false
-              #else
-                #self.users.delete(user)
-                #self.users << existing_user
-              #end
-            #else
+                return false
+              else
+                self.users.delete(user)
+                self.users << existing_user
+              end
+            else
               if error.label
                 errors.add(:users, error.label.to_sym, :email => user.email)
               else
                 errors.add(:users, nil, :message => error, :email => user.email)
               end
-            #end
+            end
           end
         end
 
@@ -339,6 +340,14 @@ class Contact < ActiveRecord::Base
         errors.add(:associated_deals, :delete_restricted)
         false
       end
+    end
+
+    def destroy_or_nullify_users
+      without_access_control do
+        users.prospects.destroy_all
+      end
+
+      users.update_all("contact_id = NULL")
     end
 
   class Drop < ::E9::Liquid::Drops::Base

@@ -1,0 +1,13 @@
+= title e9_t(:show_title)
+
+.deal-header
+  .deal-category
+    = resource.category
+  .deal-value
+    = resource.value.format
+  .deal-status
+    = resource.status
+
+.deal-body
+  .deal-info
+    = k(resource.info)

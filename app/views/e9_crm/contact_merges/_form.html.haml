@@ -2,6 +2,19 @@
   = hidden_field_tag :contact_a_id, @contact_a.id
   = hidden_field_tag :contact_b_id, @contact_b.id
 
+  .field
+    = f.label :avatar
+
+    .contact-a-value
+      %label{:for => "contact_avatar_a"}
+        <img src="#{@contact_a.avatar_url}" alt="Photo for #{@contact_a.name}" />
+      = radio_button_tag 'contact_avatar', 'a', :checked => true
+
+    .contact-b-value
+      %label{:for => "contact_avatar_b"}
+        <img src="#{@contact_b.avatar_url}" alt="Photo for #{@contact_b.name}" />
+      = radio_button_tag 'contact_avatar', 'b'
+
   = render 'field', :column => :first_name, :f => f
   = render 'field', :column => :last_name, :f => f
   = render 'field', :column => :company_name, :f => f

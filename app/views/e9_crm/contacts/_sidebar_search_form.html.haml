@@ -1,0 +1,22 @@
+%fieldset
+  %legend= e9_t(:search_options_legend)
+  .actions
+    = submit_tag t(:clear_all_filters), :name => nil, :id => 'contact_search_clear'
+
+  = form_tag(resource_class, :method => :get, :id => 'contact_search_form') do
+    = label_tag 'contact_search_field', t(:search)
+    = text_field_tag 'search', params[:search], :id => 'contact_search_field'
+
+  = form_tag(resource_class, :method => :get, :class => 'scope-selects') do
+    = label_tag 'contact_company_select', Company.model_name.human
+    %select{:name => 'company', :id => 'contact_company_select'}
+      = company_select_options
+
+  .field#contact_tag_list
+    %label{:for => 'contact_tag_autocomplete'} Tags
+    %input#contact_tag_autocomplete.list{:type => 'text', 'data-iname' => 'contact', 'data-field' => '[tagged]', :placeholder => 'Enter a tag...'}
+    %ul#contact_tag_select.select
+      - Array.wrap(params[:tagged]).each do |tag|
+        %li.ui-state-default
+          %span.content= tag
+          %a{:class => :remove, :title => "Remove", :alt => "Remove"} Remove

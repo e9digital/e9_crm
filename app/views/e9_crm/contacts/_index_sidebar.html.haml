@@ -1,36 +1,6 @@
-.actions
-  = link_to_new_resource(Contact)
-  = link_to_collection(Company)
-
-- if (etag = contact_email_template_select_tag).present?
-  %fieldset
-    %legend= e9_t(:email_actions_legend)
-    = form_tag new_contact_email_path, :method => :get, :id => 'contact_email_form', 'data-empty' => e9_t(:no_contacts_notification), 'data-count' => @contact_ids.length do
-      = etag
-      = hidden_field_tag 'uids', @contact_ids.join(','), :id => 'contact_email_uids'
-      = submit_tag e9_t(:send_email_template), :name => nil
-
--# Search filter options
-%fieldset
-  %legend= e9_t(:search_options_legend)
-  = form_tag(resource_class, :method => :get, :id => 'contact_search_form') do
-    = label_tag 'contact_search_field', t(:search)
-    = text_field_tag 'search', params[:search], :id => 'contact_search_field'
-    = submit_tag t(:go), :name => nil
-
-  = form_tag(resource_class, :method => :get, :class => 'scope-selects') do
-    = label_tag 'contact_company_select', Company.model_name.human
-    %select{:name => 'company', :id => 'contact_company_select'}
-      = company_select_options
-
-  .field#contact_tag_list
-    %label{:for => 'contact_tag_autocomplete'} Tags
-    %input#contact_tag_autocomplete.list{:type => 'text', 'data-iname' => 'contact', 'data-field' => '[tagged]', :placeholder => 'Enter a tag...'}
-    %ul#contact_tag_select.select
-      - Array.wrap(params[:tagged]).each do |tag|
-        %li.ui-state-default
-          %span.content= tag
-          %a{:class => :remove, :title => "Remove", :alt => "Remove"} Remove
-
-  .actions
-    = submit_tag t(:clear_all_filters), :name => nil, :id => 'contact_search_clear'
+#sidebar-actions
+  = render 'sidebar_actions'
+#sidebar-email-form
+  = render 'sidebar_email_form'
+#sidebar-search-form
+  = render 'sidebar_search_form'

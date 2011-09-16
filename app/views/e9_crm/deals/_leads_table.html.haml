@@ -18,7 +18,7 @@
           %td.record-created-at
             = I18n.l(record.created_at)
           %td.record-offer-name
-            = record.offer_name
+            = record.offer.try(:name) || t(:no_offer_value)
           %td.record-campaign-code
             = record.campaign_code
           %td.record-lead-name
@@ -26,7 +26,7 @@
           %td.record-lead-email
             = record.lead_email
           %td.record-info
-            = record.info
+            = k record.info
           %td.actions
             - if record.contacts.present?
               = link_to 'View Contact', record.contacts.first

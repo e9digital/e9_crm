@@ -6,8 +6,8 @@ class Offer < Renderable
   include E9Rails::ActiveRecord::Initialization
   include E9Rails::ActiveRecord::InheritableOptions
 
-  has_many :deals, :inverse_of => :offer
-  has_many :leads, :class_name => 'Deal', :conditions => ["deals.status = ?", Deal::Status::Lead]
+  has_many :deals, :inverse_of => :offer, :dependent => :restrict
+  has_many :leads, :class_name => 'Deal', :conditions => ["deals.status = ?", Deal::Status::Lead], :dependent => :restrict
 
   validates :conversion_alert_email, :email => { :allow_blank => true }
 

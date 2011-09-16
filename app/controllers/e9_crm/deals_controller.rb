@@ -14,6 +14,8 @@ class E9Crm::DealsController < E9Crm::ResourcesController
 
   before_filter :prepop_deal_owner_contact, :only => [:new, :edit]
 
+  before_filter :redirect_for_default_from_time, :only => [:leads, :reports]
+
   ##
   # All Scopes
   #
@@ -21,10 +23,13 @@ class E9Crm::DealsController < E9Crm::ResourcesController
   has_scope :until_time, :as => :until, :unless => 'params[:from].present?'
 
   has_scope :from_time, :as => :from do |controller, scope, value|
+    #is_reports = controller.params[:action] == 'reports'
+    is_reports = false
+
     if controller.params[:until]
-      scope.for_time_range(value, controller.params[:until])
+      scope.for_time_range(value, controller.params[:until], :right_join => is_reports)
     else
-      scope.from_time(value)
+      scope.from_time(value, :right_join => is_reports)
     end
   end
 
@@ -85,6 +90,7 @@ class E9Crm::DealsController < E9Crm::ResourcesController
     add_breadcrumb!(@edit_title)
   end
 
+  # TODO the leads table references offer each row, and it is not joined here
   def collection
     get_collection_ivar || begin
       set_collection_ivar(
@@ -131,5 +137,15 @@ class E9Crm::DealsController < E9Crm::ResourcesController
 
   def default_ordered_dir 
     'ASC' 
+  end
+
+  def redirect_for_default_from_time
+    format = request.format.blank? || request.format == Mime::ALL ? Mime::HTML : request.format
+
+    if format.html? && params[:from].blank?
+      url = params.slice(:controller, :action)
+      url.merge!(:from => Date.today.strftime('%Y/%m'))
+      redirect_to url and return false
+    end
   end
 end

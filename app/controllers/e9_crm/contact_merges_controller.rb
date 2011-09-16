@@ -3,6 +3,7 @@ class E9Crm::ContactMergesController < E9Crm::BaseController
 
   def create
     @contact_a.attributes = params[:contact]
+    @contact_a.avatar = @contact_b.avatar if params[:contact_avatar] == 'b'
 
     if @contact_a.merge_and_destroy!(@contact_b)
       redirect_to @contact_a

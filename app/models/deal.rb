@@ -3,8 +3,9 @@
 #
 class Deal < ActiveRecord::Base
   include E9Rails::ActiveRecord::Initialization
-  include E9Rails::ActiveRecord::Scopes::Times
   include E9Rails::ActiveRecord::InheritableOptions
+
+  include E9::ActiveRecord::TimeScopes
 
   self.options_column = false
 
@@ -164,7 +165,10 @@ class Deal < ActiveRecord::Base
 
     # this is for leads
     def transform_options_column
-      self.info ||= options.to_hash.map {|k, v| "%s:\n%s\n\n" % [k.to_s.titleize, v] }.join
+      self.info ||= options.to_hash.map {|k, v| 
+        v = v.join(', ') if v.is_a?(Array)
+        "**%s:**\n%s\n\n" % [k.to_s.titleize, v] 
+      }.join
     end
 
     def ensure_denormalized_columns
