@@ -19,7 +19,7 @@
   = f.collection_select :campaign_id, Campaign.ordered.all, :id, :to_s, {:prompt => true}, :id => 'deal_campaign_select'
 .field.select
   = f.label :status
-  = f.select :status, Deal::Status::OPTIONS[1..-1]
+  = f.select :status, Deal::Status::HUMAN_OPTIONS.map {|d| [d, d.downcase] }
 .field.select
   = f.label :contacts
   %input#contact_autocomplete.list{:type => 'text', 'data-values' => resource.contact_ids.join(','), 'data-iname' => resource_instance_name, 'data-field' => '[contact_ids]'}
@@ -40,19 +40,3 @@
   .field.date-picker
     = f.label :closed_at
     = f.text_field :closed_at, :class => 'date-picker', :value => l(resource.closed_at.try(:to_date))
-
-  .field
-    Created At:
-    = l(resource.created_at)
-  .field
-    Closed At:
-    = resource.closed_at ? l(resource.closed_at) : 'n/a'
-  .field
-    Campaign Cost:
-    = resource.campaign.try(:cost) || 0
-  .field
-    Campaign Deal Count:
-    = resource.campaign ? resource.campaign.non_leads.count : 0
-  .field
-    Cost:
-    = deal_cost(resource)

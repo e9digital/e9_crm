@@ -4,7 +4,6 @@
 class Deal < ActiveRecord::Base
   include E9Rails::ActiveRecord::Initialization
   include E9Rails::ActiveRecord::InheritableOptions
-
   include E9::ActiveRecord::TimeScopes
 
   self.options_column = false
@@ -24,7 +23,7 @@ class Deal < ActiveRecord::Base
   validates :campaign,   :presence     => true
   validate do |record|
     if !Status::OPTIONS.include?(record.status)
-      record.errors.add(:status, :inclusion, :options => Status::OPTIONS)
+      record.errors.add(:status, :inclusion, :options => Status::HUMAN_OPTIONS.join(', '))
     elsif record.status_changed? && record.won? || record.lost? and record.status_was == Status::Lead
       record.errors.add(:status, :illegal_conversion)
     end
@@ -54,62 +53,11 @@ class Deal < ActiveRecord::Base
   before_save :handle_status_conversion, :if => lambda {|r| r.status_changed? }
   before_save :handle_dated_cost, :if => lambda {|r| r.status_changed? || r.campaign_id_changed? }
 
-  # money column definitions for pseudo attributes (added on the reports scope)
-  %w(total_value average_value total_cost average_cost).each do |money_column|
-    class_eval("def #{money_column}; (r = read_attribute(:#{money_column})) && Money.new(r) end")
-  end
-
   delegate :name, :to => :owner, :prefix => true, :allow_nil => true
 
   # mailing_list_ids may be set on Deals when they are being created as leads, this is
   # done via opt-in checkboxes on the form
   attr_accessor :mailing_list_ids
-
-  # 
-  # reports is technically a deal scope, but actually returns campaigns
-  # and a selection of relevant pseudo columns.
-  #
-  # NOTE reports probably should be a campaign scope?  It doesn't really seem
-  # to matter.  The resultset is neither Deals nor Campaigns, anyway, but
-  # a selection of calculated columns aggregated from data from both tables.
-  # 
-  scope :reports, lambda {
-    selects = <<-SQL.gsub(/\s+/, ' ')
-      campaigns.type                                 campaign_type,
-      campaigns.name                                 campaign_name,
-      campaigns.new_visits                           new_visits,
-      campaigns.repeat_visits                        repeat_visits,
-      deals.closed_at                                closed_at,
-      deals.created_at                               created_at,
-      campaign_groups.name                           campaign_group,
-      SUM(IF(deals.status != 'lead',1,0))            deal_count, 
-      COUNT(deals.id)                                lead_count,
-      SUM(IF(deals.status='won',1,0))                won_deal_count,
-      SUM(IF(deals.status='won',deals.value,0))      total_value, 
-      AVG(IF(deals.status='won',deals.value,NULL))   average_value, 
-      SUM(dated_costs.cost)                          total_cost,
-      SUM(dated_costs.cost) / 
-        SUM(IF(deals.status='won',1,0))              average_cost,
-      FLOOR(AVG(
-        DATEDIFF(
-          deals.closed_at,
-          deals.created_at)))                       average_elapsed
-    SQL
-
-    joins = <<-SQL.gsub(/\s+/, ' ')
-      RIGHT JOIN campaigns
-        ON deals.campaign_id = campaigns.id
-
-      LEFT JOIN dated_costs 
-        ON campaigns.id = dated_costs.costable_id 
-        AND dated_costs.costable_type = "Campaign" 
-
-      LEFT JOIN campaign_groups
-        ON campaign_groups.id = campaigns.campaign_group_id
-    SQL
-
-    select(selects).joins(joins).group('campaigns.id')
-  }
 
   scope :column_op, lambda {|op, column, value, reverse=false|
     conditions = arel_table[column].send(op, value)
@@ -262,10 +210,12 @@ class Deal < ActiveRecord::Base
   end
 
   module Status
-    OPTIONS  = %w(lead pending won lost)
-    Lead    = OPTIONS[0]
-    Pending = OPTIONS[1]
-    Won     = OPTIONS[2]
-    Lost    = OPTIONS[3]
+    OPTIONS     = %w(lead pending won lost)
+    Lead        = OPTIONS[0]
+    Pending     = OPTIONS[1]
+    Won         = OPTIONS[2]
+    Lost        = OPTIONS[3]
+
+    HUMAN_OPTIONS = [Pending, Won, Lost].map(&:titleize)
   end
 end

@@ -7,6 +7,8 @@
         = deal_category_select_options 
       %select{:name => 'owner'}
         = deal_owner_select_options 
+      %select{:name => 'closed'}
+        = deal_date_select_options(:type => :in_month)
 
   .toolbar-right
     = link_to I18n.t('activerecord.links.index', :models => 'Leads'), leads_path

@@ -22,10 +22,6 @@ class Campaign < ActiveRecord::Base
   # NOTE tracking cookie code changes with new visits
   has_many :tracking_cookies, :foreign_key => :code, :primary_key => :code, :class_name => 'TrackingCookie'
 
-  def self.default
-    NoCampaign.first || NoCampaign.create
-  end
-
   validates :name,          :presence     => true,
                             :uniqueness   => { :allow_blank => true, :case_sensitive => false }
 
@@ -39,9 +35,81 @@ class Campaign < ActiveRecord::Base
 
   scope :active,   lambda {|val=true| where(:active => val) }
   scope :inactive, lambda { active(false) }
-  scope :of_group, lambda {|val| where(:campaign_group_id => val.to_param) }
+  scope :of_group, lambda {|val| joins(:campaign_group).where(:campaign_group_id => val.to_param) }
   scope :typed,    lambda { where(arel_table[:type].not_eq('NoCampaign')) }
   scope :ordered,  lambda { order(arel_table[:name].asc) }
+  
+  scope :reports, lambda {|*args|
+    options = args.extract_options!
+
+    selects = <<-SQL.gsub(/\s+/, ' ')
+      campaigns.*,
+
+      SUM(IF(deals.status != 'lead',1,0))               deal_count, 
+
+      COUNT(deals.id)                                   lead_count,
+
+      SUM(IF(deals.status='won',1,0))               won_deal_count,
+      SUM(IF(deals.status='won',deals.value,0))        total_value, 
+      AVG(IF(deals.status='won',deals.value,NULL))   average_value, 
+      
+      SUM(costs.total)                                  total_cost,
+      SUM(costs.total) / 
+        SUM(IF(deals.status='won',1,0))               average_cost,
+
+      rv.count                                       repeat_visits,
+      nv.count                                          new_visits,
+
+      FLOOR(AVG(
+        DATEDIFF(
+          deals.closed_at,
+          deals.created_at)))                       average_elapsed
+    SQL
+
+    select(selects)
+      .joins(
+        'LEFT OUTER JOIN deals ' +
+        'ON deals.campaign_id = campaigns.id ' +
+        "#{ 'AND ' + Deal.for_time_range_conditions(*args, options).to_sql if args.present?}")
+      .joins(
+        'LEFT OUTER JOIN ( ' +
+         'SELECT SUM(cost) total, costable_id dc_cid ' +
+         'FROM dated_costs ' +
+         'WHERE costable_type="Campaign" ' +
+         "#{ 'AND ' + DatedCost.for_time_range_conditions(*args, options).to_sql if args.present?}" +
+         ' GROUP BY dc_cid) costs ' +
+         'ON costs.dc_cid = campaigns.id')
+      .joins(
+        'LEFT OUTER JOIN ( ' +
+        'SELECT COUNT(DISTINCT session) count, campaign_id nv_cid ' +
+        'FROM page_views ' +
+        'WHERE page_views.new_visit = 1 ' +
+        "#{ 'AND ' + PageView.for_time_range_conditions(*args, options).to_sql if args.present?}" +
+        ' GROUP BY nv_cid ) nv ' + 
+        'ON nv.nv_cid = campaigns.id')
+      .joins(
+        'LEFT OUTER JOIN ( ' +
+        'SELECT COUNT(DISTINCT session) count, campaign_id rv_cid ' +
+        'FROM page_views ' +
+        'WHERE page_views.new_visit = 0 ' +
+        "#{ 'AND ' + PageView.for_time_range_conditions(*args, options).to_sql if args.present?}" +
+        ' GROUP BY rv_cid ) rv ' +
+        'ON rv.rv_cid = campaigns.id')
+      .group('campaigns.id')
+  }
+
+  def self.default
+    NoCampaign.first || NoCampaign.create
+  end
+
+  # money column definitions for pseudo attributes (added on the reports scope)
+  %w(total_value average_value total_cost average_cost).each do |money_column|
+    class_eval("def #{money_column}; (r = read_attribute(:#{money_column})) && Money.new(r) end")
+  end
+
+  %w(new_visits repeat_visits).each do |count_column|
+    class_eval("def #{count_column}; (r = read_attribute(:#{count_column})) || 0 end")
+  end
 
   def new_visit_session_count
     page_views.new_visits.group(:session).count.keys.length
@@ -55,7 +123,7 @@ class Campaign < ActiveRecord::Base
     page_views.repeat_visits.group(:session).count.keys.length
   end
 
-  def repeat_visit_session_count
+  def repeat_visit_page_view_count
     page_views.repeat_visits.group(:session).count.values.sum
   end
 

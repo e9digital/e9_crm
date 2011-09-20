@@ -27,7 +27,7 @@
             = record.lead_email
           %td.record-info
             = k record.info
-          %td.actions
+          %td.links
             - if record.contacts.present?
               = link_to 'View Contact', record.contacts.first
             = link_to 'Create Deal', edit_deal_path(record)

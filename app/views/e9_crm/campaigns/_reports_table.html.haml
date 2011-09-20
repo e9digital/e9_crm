@@ -3,7 +3,7 @@
     %tr
       %th= orderable_column_link(:campaign_type)
       %th= orderable_column_link(:campaign_group)
-      %th= orderable_column_link(:campaign_name)
+      %th= orderable_column_link(:name)
       %th= orderable_column_link(:new_visits)
       %th= orderable_column_link(:repeat_visits)
       %th= orderable_column_link(:lead_count)
@@ -14,6 +14,7 @@
       %th= orderable_column_link(:total_cost)
       %th= orderable_column_link(:average_cost)
       %th= orderable_column_link(:average_elapsed)
+
   %tbody
     -# prepare a hash to store the accumulated row data for calculations
     - dat = Hash.new {|k,v| k[v] = [] }
@@ -25,11 +26,11 @@
       - collection.each do |record|
         %tr{:id => "ids_#{record.id}", :class => cycle('odd', 'even')}
           %td.record-campaign-type
-            = display_campaign_type(record.campaign_type)
+            = display_campaign_type(record.type)
           %td.record-campaign-group
-            = record.campaign_group || 'n/a'
-          %td.record-campaign-name
-            = record.campaign_name || 'n/a'
+            = display_campaign_group_by_id(record.campaign_group)
+          %td.record-name
+            = record.name || 'n/a'
           %td.record-new-visits.num
             - dat[:new_visits] << record.new_visits
             = record.new_visits
@@ -60,6 +61,7 @@
           %td.record-average-elapsed.num
             - dat[:average_elapsed] << record.average_elapsed
             = record.average_elapsed && "%s days" % record.average_elapsed || 'n/a'
+
     %tfooter
       %tr{:class => 'record-totals'}
         %td.record-totals-label{:colspan => 3}

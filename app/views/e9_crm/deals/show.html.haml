@@ -1,4 +1,7 @@
-= title e9_t(:show_title)
+= title resource.name
+
+.actions
+  = link_to_edit_resource(resource)
 
 .deal-header
   .deal-category
@@ -8,6 +11,22 @@
   .deal-status
     = resource.status
 
-.deal-body
-  .deal-info
-    = k(resource.info)
+.deal-info
+  = k(resource.info)
+
+%fieldset.deal-owner
+  %legend= t(:deal_owner_legend)
+  .deal-contact
+    - if resource.owner
+      .contact-link= link_to(resource.owner.name, resource.owner)
+      .contact-title= title_and_or_company(resource.owner)
+    - else
+      = t(:no_deal_owner)
+
+- if resource.contacts.any?
+  %fieldset.deal-contacts
+    %legend= t(:deal_contact_legend)
+    - resource.contacts.each do |contact|
+      .deal-contact
+        .contact-link= link_to(contact.name, contact)
+        .contact-title= title_and_or_company(contact)

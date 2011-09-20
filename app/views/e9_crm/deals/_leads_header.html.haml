@@ -6,7 +6,7 @@
       %select{:name => 'from'}
         = deal_date_select_options
       %select{:name => 'until'}
-        = deal_date_select_options(true)
+        = deal_date_select_options(:type => :until)
 
   .toolbar-right
     = link_to_collection(Deal)
