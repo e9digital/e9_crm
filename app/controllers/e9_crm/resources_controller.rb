@@ -32,6 +32,10 @@ class E9Crm::ResourcesController < E9Crm::BaseController
 
   protected
 
+  def should_paginate_index
+    self.class.should_paginate_index
+  end
+
   def filter_target
     resource
   end
