@@ -1,13 +1,13 @@
-= form_for resource, :url => public_offer_deals_path(@offer), :remote => request.xhr? do |f|
+= form_for resource, :url => public_offer_deals_path(@offer) do |f|
   .errors= resource_error_messages!
   .notice
 
   - if f.object.user.blank?
     .field
-      = f.label :lead_email
+      = f.label :lead_email, nil, :class => :req
       = f.text_field :lead_email
     .field
-      = f.label :lead_name
+      = f.label :lead_name, nil, :class => :req
       = f.text_field :lead_name
 
   = @offer.custom_form_html.html_safe
