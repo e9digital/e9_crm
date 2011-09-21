@@ -8,6 +8,6 @@ class NoCampaign < Campaign
   end
 
   def code
-    'No Code'
+    'NoCode'
   end
 end
