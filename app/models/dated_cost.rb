@@ -4,6 +4,7 @@
 #
 class DatedCost < ActiveRecord::Base
   include E9Rails::ActiveRecord::Initialization
+  include E9::ActiveRecord::TimeScopes
 
   money_columns :cost
   belongs_to :costable, :polymorphic => true

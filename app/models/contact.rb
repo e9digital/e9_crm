@@ -1,6 +1,6 @@
 class Contact < ActiveRecord::Base
   include E9Tags::Model
-  include E9Rails::ActiveRecord::AttributeSearchable
+  include E9::ActiveRecord::AttributeSearchable
   include E9Rails::ActiveRecord::Initialization
 
   # necessary so contact knows its merge path
@@ -215,6 +215,8 @@ class Contact < ActiveRecord::Base
   def merge_and_destroy!(other)
     merge_tags(other)
 
+    self.info = "#{self.info}\n\n#{other.info}"
+
     if success = save
       merge_destructive_and_destroy!(other)
     end
@@ -236,6 +238,8 @@ class Contact < ActiveRecord::Base
     self.address_attributes                  |= other.address_attributes
     self.phone_number_attributes             |= other.phone_number_attributes
     self.instant_messaging_handle_attributes |= other.instant_messaging_handle_attributes
+
+    other.associated_deals.clear
     other.destroy
   end
 
@@ -325,6 +329,17 @@ class Contact < ActiveRecord::Base
     # override has_destroy_flag? to force destroy on persisted associations as well
     def has_destroy_flag?(hash)
       reject_record_attribute?(hash) || super 
+    end
+
+    def assign_to_or_mark_for_destruction(record, attributes, allow_destroy)
+      record.attributes = attributes.except(*UNASSIGNABLE_KEYS)
+      if has_destroy_flag?(attributes) && allow_destroy
+        if record.prospect?
+          record.mark_for_destruction
+        else
+          self.users.delete(record)
+        end
+      end
     end
 
     #

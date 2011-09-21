@@ -3,8 +3,14 @@
 %fieldset
   %legend= e9_t(:salesperson_information_legend, :scope => 'e9_crm.campaigns')
   .field
-    = f.label :sales_person_id, nil, :class => (f.object.type == 'SalesCampaign' ? :req : nil)
-    = f.collection_select :sales_person_id, Contact.sales_persons.ordered.all, :id, :name, :prompt => true
+    = f.label :sales_person, :class => :req, :for => 'campaign_sales_person_id'
+    %input.contact-autocomplete{:type => 'text'}
+    - contact = f.object.sales_person
+    .contact-select{:style => contact.blank? && 'display:none' || ''}
+      %span.content= contact.try(:name)
+      %input{:type => :hidden, :name => "#{resource_instance_name}[sales_person_id]", :value => contact.try(:id)}
+      %a{:class => :remove, :title => "Remove", :alt => "Remove"} Remove
+
   .field
     = help_label f, :sales_fee
     = f.text_field :sales_fee, :value => f.object.sales_fee.to_s

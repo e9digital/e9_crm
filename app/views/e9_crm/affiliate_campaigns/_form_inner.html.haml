@@ -4,7 +4,13 @@
   %legend= e9_t(:affiliate_information_legend, :scope => 'e9_crm.campaigns')
   .field
     = f.label :affiliate, :class => :req, :for => 'campaign_affiliate_id'
-    = f.collection_select :affiliate_id, Contact.affiliates.ordered.all, :id, :name, {:prompt => true}, :id => 'campaign_affiliate_id'
+    %input.contact-autocomplete{:type => 'text'}
+    - contact = f.object.affiliate
+    .contact-select{:style => contact.blank? && 'display:none' || ''}
+      %span.content= contact.try(:name)
+      %input{:type => :hidden, :name => "#{resource_instance_name}[affiliate_id]", :value => contact.try(:id)}
+      %a{:class => :remove, :title => "Remove", :alt => "Remove"} Remove
+
   .field
     = help_label f, :affiliate_fee
     = f.text_field :affiliate_fee, :value => f.object.affiliate_fee.to_s

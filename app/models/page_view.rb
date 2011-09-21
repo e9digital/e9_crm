@@ -14,15 +14,16 @@
 #
 class PageView < ActiveRecord::Base
   include E9Rails::ActiveRecord::Scopes::Times
+  include E9::ActiveRecord::TimeScopes
 
   belongs_to :tracking_cookie
 
   belongs_to :campaign, :inverse_of => :page_views
   has_one :user, :through => :tracking_cookie
 
-  attr_accessor :should_cache 
+  #attr_accessor :should_cache 
 
-  after_create :increment_campaign_visit_cache, :if => '!!should_cache'
+  #after_create :increment_campaign_visit_cache, :if => '!!should_cache'
 
   scope :by_user, lambda {|*users| 
     users.flatten!
@@ -43,7 +44,7 @@ class PageView < ActiveRecord::Base
 
   protected
 
-  def increment_campaign_visit_cache
-    Campaign.increment_counter(new_visit ? :new_visits : :repeat_visits, campaign_id)
-  end
+  #def increment_campaign_visit_cache
+    #Campaign.increment_counter(new_visit ? :new_visits : :repeat_visits, campaign_id)
+  #end
 end

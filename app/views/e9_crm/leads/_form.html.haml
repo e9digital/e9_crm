@@ -5,10 +5,10 @@
   - if f.object.user.blank?
     .field
       = f.label :lead_email, nil, :class => :req
-      = f.text_field :lead_email
+      = f.text_field :lead_email, :class => 'email required'
     .field
       = f.label :lead_name, nil, :class => :req
-      = f.text_field :lead_name
+      = f.text_field :lead_name, :class => 'required'
 
   = @offer.custom_form_html.html_safe
 

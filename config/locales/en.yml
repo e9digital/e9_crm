@@ -5,6 +5,9 @@ en:
   merge_conflict: "<p>This email is already attached to another contact and cannot be used.</p><p>Do you want to edit that contact instead?</p>"
   duplicate_email_warning: "<p>You cannot enter the same email twice.</p>"
   no_offer_value: No Offer
+  deal_owner_legend: Responsible
+  no_deal_owner: No one is responsible
+  deal_contact_legend: Associated Contacts
 
   actions: Actions
   clear: Clear
@@ -45,6 +48,8 @@ en:
       confirm_destroy: Are you sure?  This cannot be undone.
       campaign_group: 
         confirm_destroy: Are you sure?  This cannot be undone.  Any campaigns which are associated with this group will become groupless.
+      with_model:
+        show: "View %{name}"
 
     errors:
       messages:

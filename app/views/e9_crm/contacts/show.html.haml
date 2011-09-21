@@ -55,7 +55,7 @@
               %td.contact-deal-status
                 = deal.status
               %td.contact-deal-value
-                = deal.value
+                = deal.value.format
 
   .contact.leads
     %h2
@@ -74,10 +74,10 @@
         - else
           - leads.each do |lead|
             %tr
-              %td.contact-lead-name
-                = link_to lead.offer_name, edit_deal_path(lead)
               %td.contact-lead-created-at
                 = l(lead.created_at)
+              %td.contact-lead-name
+                = link_to lead.offer_name, edit_deal_path(lead)
 
 .contact-sidebar
   = render 'sidebar'

@@ -66,8 +66,8 @@ module E9Crm
           else
             attrs = {}
 
-            if current_user && !@_tracking_cookie.user_id?
-              E9Crm.log("Cookie user (#{@_tracking_cookie.user_id}) not current_user (#{current_user.id}), changing...")
+            if current_user && @_tracking_cookie.user_id.nil?
+              E9Crm.log("Cookie has no user, setting as current_user (#{current_user.id})")
               attrs[:user] = current_user
             end
 

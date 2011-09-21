@@ -20,9 +20,6 @@
   .field
     = f.label :title
     = f.text_field :title
-  .field
-    = f.label :status
-    = f.select :status, Contact::Status::VALUES.map {|v| [v.titleize, v] }
 
   = upload_mount_field(resource.avatar, :reset_path => true)
 

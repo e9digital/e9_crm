@@ -11,9 +11,9 @@ module E9Crm::Rack
       if env["PATH_INFO"] =~ /^\/autocomplete\/contacts/
         params = Rack::Request.new(env).params
         
-        if query = params['query']
+        if query = params['query'] || params['term']
           relation = 
-            Contact.any_attrs_like('first_name', 'last_name', query).
+            Contact.any_attrs_like('first_name', 'last_name', query, :matcher => '%s%%').
               limit(params['limit'] || DEFAULT_LIMIT).
               joins("LEFT JOIN users on users.contact_id = contacts.id").
               where(%{users.options REGEXP "primary: [\\"']?true" OR users.options IS NULL}).

@@ -5,32 +5,31 @@ class E9Crm::DealsController < E9Crm::ResourcesController
   # for campaign select options
   helper :"e9_crm/campaigns"
 
-  filter_access_to :leads, :reports, :require => :read, :context => :admin
+  filter_access_to :leads, :require => :read, :context => :admin
 
   skip_after_filter :flash_to_headers, :except => :destroy
 
   prepend_before_filter :set_leads_index_title, :only => :leads
-  prepend_before_filter :set_reports_index_title, :only => :reports
 
   before_filter :prepop_deal_owner_contact, :only => [:new, :edit]
 
-  before_filter :redirect_for_default_from_time, :only => [:leads, :reports]
+  before_filter :redirect_for_default_from_time, :only => :leads
 
   ##
   # All Scopes
   #
 
   has_scope :until_time, :as => :until, :unless => 'params[:from].present?'
-
   has_scope :from_time, :as => :from do |controller, scope, value|
-    #is_reports = controller.params[:action] == 'reports'
-    is_reports = false
-
     if controller.params[:until]
-      scope.for_time_range(value, controller.params[:until], :right_join => is_reports)
+      scope.for_time_range(value, controller.params[:until])
     else
-      scope.from_time(value, :right_join => is_reports)
+      scope.from_time(value)
     end
+  end
+
+  has_scope :closed_in_month, :as => :closed, :only => :index do |controller, scope, value|
+    scope.for_time_range(value, :column => :closed_at, :in => :month)
   end
 
   ##
@@ -58,28 +57,10 @@ class E9Crm::DealsController < E9Crm::ResourcesController
   has_scope :owner, :only => :index
 
   ##
-  # Reports scopes
-  #
-
-  has_scope :reports, :only => :reports, :type => :boolean, :default => true
-
-  has_scope :group, :only => :reports do |c, scope, value|
-    scope & Campaign.of_group(value)
-  end
-
-  has_scope :type, :only => :reports do |_, scope, value|
-    scope & Campaign.of_type("#{value}_campaign".classify)
-  end
-
-  ##
   # Actions
   #
 
   def leads
-    index!
-  end
-
-  def reports
     index!
   end
 
@@ -94,18 +75,15 @@ class E9Crm::DealsController < E9Crm::ResourcesController
   def collection
     get_collection_ivar || begin
       set_collection_ivar(
-        if params[:action] == 'reports'
-          end_of_association_chain.all
+        if params[:action] == 'leads'
+          end_of_association_chain.includes(:contacts).paginate(pagination_parameters)
 
-        elsif params[:action] == 'deals'
+        else
           # NOTE this is a pretty ugly join just to be able to sort on owner
           end_of_association_chain
             .joins("left outer join contacts on contacts.id = deals.contact_id")
             .select("deals.*, contacts.first_name owner_name")
             .all
-
-        else
-          end_of_association_chain.includes(:contacts).paginate(pagination_parameters)
         end
       )
     end
@@ -123,12 +101,12 @@ class E9Crm::DealsController < E9Crm::ResourcesController
     @index_title = I18n.t(:index_title, :scope => 'e9.e9_crm.leads')
   end
 
-  def set_reports_index_title
-    @index_title = I18n.t(:index_title, :scope => 'e9.e9_crm.reports')
+  def should_paginate_index
+    params[:action] == 'leads'
   end
 
   def ordered_if 
-    %w(index leads reports).member? params[:action]
+    %w(index leads).member? params[:action]
   end
 
   def default_ordered_on 

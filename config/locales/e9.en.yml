@@ -19,6 +19,7 @@ en:
         no_contacts_notification: "Either you have selected no contacts, or all of those selected are opted out of bulk email.  Please correct this and try again."
         email_actions_legend: Email Actions
         search_options_legend: Search Filters
+        edit_title_with_name: "Edit %{contact}"
       contact_merges:
         new_title: Merge Contacts
         no_value: (No Value)
@@ -31,6 +32,7 @@ en:
         select_submit: Send Email Now
       leads:
         index_title: Leads 
+        no_records_text: No leads exist.
       reports:
         index_title: Marketing Report
         no_records_text: No data exists for those query parameters.

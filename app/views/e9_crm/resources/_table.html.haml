@@ -23,5 +23,5 @@
             - field_map[:links][record].each do |link|
               = link
 
-- if @controller.should_paginate_index
+- if controller.send(:should_paginate_index)
   = will_paginate collection

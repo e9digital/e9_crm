@@ -22,6 +22,7 @@ class E9Crm::ContactsController < E9Crm::ResourcesController
   
   skip_before_filter :authenticate_user!, :filter_access_filter, :only => :templates
   before_filter :build_resource, :only => :templates
+  before_filter :set_edit_title, :only => :edit
 
   def templates
     render RecordAttribute::TEMPLATES
@@ -69,6 +70,10 @@ class E9Crm::ContactsController < E9Crm::ResourcesController
         t << " in company \"#{company.name}\""
       end
     end
+  end
+
+  def set_edit_title
+    @edit_title ||= e9_t(:edit_title_with_name, :contact => resource.name)
   end
 
   # we don't need @index_title in the breadcrumb here (too long)

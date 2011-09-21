@@ -46,40 +46,34 @@ module E9Crm::DealsHelper
     end
   end
 
-  def deal_date_select_options(ending_month = false)
+  def deal_date_select_options(options = {})
     @_first_deal_date ||= Deal.order(:created_at).first.try(:created_at) || Date.today
 
     date, cdate = @_first_deal_date, Date.today
 
-    options = []
+    sel_options = []
 
-    if ending_month
-      prefix = 'Until'
+    if options[:type] == :until
+      prefix = 'Up to '
       label = prefix + ' Now'
+    elsif options[:type] == :in_month
+      prefix = 'Closed in '
+      label = 'Since Inception'
     else
-      prefix = 'From'
+      prefix = 'Since '
       label = prefix + ' Inception'
     end
 
     begin
-      options << [date.strftime("#{prefix} %B %Y"), date.strftime('%Y/%m')]
+      sel_options << [date.strftime("#{prefix}%B %Y"), date.strftime('%Y/%m')]
       date += 1.month
     end while date.year <= cdate.year && date.month <= cdate.month
 
-    options.unshift([label, nil])
+    sel_options.reverse!
 
-    options_for_select(options)
-  end
+    sel_options.unshift([label, nil])
 
-  def deal_cost(deal)
-    campaign = deal.campaign
-     
-    if campaign.blank?
-      0
-    else
-      c = campaign.non_leads.count
-      c > 0 ? campaign.cost.to_f / c : campaign.cost
-    end.to_money
+    options_for_select(sel_options)
   end
 
   def deal_contacts
@@ -91,5 +85,10 @@ module E9Crm::DealsHelper
 
   def deal_contacts_array
     deal_contacts.map {|c| [c.name, c.id] }
+  end
+
+  def title_and_or_company(contact)
+    [contact.title, contact.company_name].
+      map(&:presence).compact.join(' at ').html_safe
   end
 end

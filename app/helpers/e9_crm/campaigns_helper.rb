@@ -17,9 +17,20 @@ module E9Crm::CampaignsHelper
     val && "?#{E9Crm.query_param}=#{val}" || 'n/a'
   end
 
-  def display_campaign_type(val = '')
-    retv = val[/(.*)Campaign/, 1]
-    retv == 'No' ? 'No Campaign' : retv
+  def display_campaign_type(val)
+    @_campaign_types ||= {}
+    @_campaign_types[val] ||= begin
+      retv = val[/(.*)Campaign/, 1]
+      retv == 'No' ? 'No Campaign' : retv
+    end
+  end
+
+  def display_campaign_group_by_id(val)
+    @_campaign_groups ||= CampaignGroup.all
+    @_campaign_group_by_id ||= {}
+    @_campaign_group_by_id[val] ||= begin
+      @_campaign_groups.find {|c| c.id == val }.try(:name) || 'No Group'
+    end
   end
 
   def campaign_type_select_options(with_all_option = true)

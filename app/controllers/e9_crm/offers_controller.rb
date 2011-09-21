@@ -38,11 +38,11 @@ class E9Crm::OffersController < E9Crm::ResourcesController
   end
 
   def default_ordered_on
-    :name
+    'name'
   end
 
   def default_ordered_dir
-    :ASC
+    'ASC'
   end
 
   def ensure_mailing_list_ids
