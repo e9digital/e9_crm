@@ -8,6 +8,8 @@ class E9Crm::LeadsController < ApplicationController
   include E9Rails::Helpers::Translation
   include E9Rails::Helpers::ResourceErrorMessages
 
+  include E9::Controllers::CheckboxCaptcha
+
   inherit_resources
   belongs_to :offer, :param => :public_offer_id
   defaults :resource_class => Deal, :instance_name => 'deal'

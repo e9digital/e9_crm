@@ -19,6 +19,8 @@
           = label_tag "#{resource_instance_name}_mailing_list_ids_#{ml.id}", ml.description
           = check_box_tag "#{resource_instance_name}[mailing_list_ids][]", ml.id, true, :id => "#{resource_instance_name}_mailing_list_ids_#{ml.id}"
 
+  = checkbox_captcha
+
   .actions
     - if @offer.submit_button_text.present?
       = f.submit @offer.submit_button_text
