@@ -1,8 +1,22 @@
 = title (@index_title || e9_t(:index_title))
 
-#index-body
-  #records_table
-    = render 'table', :resources => collection
-
-#index-sidebar
-  = render 'index_sidebar'
+.toolbar
+  .toolbar-left
+    #sidebar-email-form
+      = render 'sidebar_email_form'
+  
+  .toolbar-middle
+    #sidebar-search-form
+      = render 'sidebar_search_form'
+      
+  .toolbar-right
+    #sidebar-actions
+      %fieldset
+        %legend= "Manage"#e9_t(:search_options_legend)
+        .manage-contacts
+          = link_to_new_resource(Contact)
+        .manage-company
+          = link_to_collection(Company)
+        
+#records_table
+  = render 'table', :resources => collection

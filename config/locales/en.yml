@@ -1,4 +1,6 @@
 en:
+  contact_search_placeholder: Type keyword, then hit enter...
+  tag_search_placeholder: Enter a tag...
   email_taken_title: Oops!
   duplicate_email_title: Oops!
   edit_conflict: "<p>This email is already attached to another contact and cannot be used.</p><p>Do you want to merge these contacts now?</p><p>Be careful!  If you have made extensive edits you may want to save first and come back to merge.</p>"
