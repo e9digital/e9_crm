@@ -1,20 +1,19 @@
 %fieldset
   %legend= e9_t(:search_options_legend)
-  .actions
-    = submit_tag t(:clear_all_filters), :name => nil, :id => 'contact_search_clear'
+  = submit_tag t(:clear_all_filters), :name => nil, :id => 'contact_search_clear'
 
-  = form_tag(resource_class, :method => :get, :id => 'contact_search_form') do
+  = form_tag(resource_class, :method => :get, :class => 'field', :id => 'contact_search_form') do
     = label_tag 'contact_search_field', t(:search)
-    = text_field_tag 'search', params[:search], :id => 'contact_search_field'
+    = text_field_tag 'search', params[:search], :id => 'contact_search_field', :placeholder => t(:contact_search_placeholder)
 
-  = form_tag(resource_class, :method => :get, :class => 'scope-selects') do
+  = form_tag(resource_class, :method => :get, :class => 'scope-selects field', :id => 'company_search_form') do
     = label_tag 'contact_company_select', Company.model_name.human
     %select{:name => 'company', :id => 'contact_company_select'}
       = company_select_options
 
   .field#contact_tag_list
     %label{:for => 'contact_tag_autocomplete'} Tags
-    %input#contact_tag_autocomplete.list{:type => 'text', 'data-iname' => 'contact', 'data-field' => '[tagged]', :placeholder => 'Enter a tag...'}
+    %input#contact_tag_autocomplete.list{:type => 'text', 'data-iname' => 'contact', 'data-field' => '[tagged]', :placeholder => t(:tag_search_placeholder)}
     %ul#contact_tag_select.select
       - Array.wrap(params[:tagged]).each do |tag|
         %li.ui-state-default

@@ -1,13 +1,14 @@
 - val = f.object.send(column)
 - a_checked = val == contact_a(column) || val.blank?
 - b_checked = !a_checked
-.field
-  = f.label column
-  .contact-a-value
-    %label{:for => "contact_a_#{column}"}
-      = contact_a(column).presence || e9_t(:no_value)
-    = f.radio_button column, contact_a(column), :checked => a_checked, :id => "contact_a_#{column}"
-  .contact-b-value
-    %label{:for => "contact_b_#{column}"}
-      = contact_b(column).presence || e9_t(:no_value)
-    = f.radio_button column, contact_b(column), :checked => b_checked, :id => "contact_b_#{column}"
+%fieldset
+  %legend= f.label column
+  .fields
+    .field.radio
+      %label{:for => "contact_a_#{column}"}
+        = contact_a(column).presence || e9_t(:no_value)
+      = f.radio_button column, contact_a(column), :checked => a_checked, :id => "contact_a_#{column}"
+    .field.radio
+      %label{:for => "contact_b_#{column}"}
+        = contact_b(column).presence || e9_t(:no_value)
+      = f.radio_button column, contact_b(column), :checked => b_checked, :id => "contact_b_#{column}"

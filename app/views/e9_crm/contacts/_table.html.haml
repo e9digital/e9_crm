@@ -1,6 +1,14 @@
 - field_map = local_assigns[:field_map] || records_table_field_map
 
 %table.records
+  %thead
+    %tr
+      - field_map[:fields].keys.each do |key|
+        - if key.is_a?(Symbol)
+          %th= resource_class.human_attribute_name(key)
+        - else
+          %th= orderable_column_link(key)
+      %th= e9_t(:actions)
   %tbody
     - if collection.empty?
       %tr
