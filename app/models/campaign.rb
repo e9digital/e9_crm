@@ -38,7 +38,7 @@ class Campaign < ActiveRecord::Base
   scope :of_group, lambda {|val| joins(:campaign_group).where(:campaign_group_id => val.to_param) }
   scope :typed,    lambda { where(arel_table[:type].not_eq('NoCampaign')) }
   scope :ordered,  lambda { order(arel_table[:name].asc) }
-  
+
   scope :reports, lambda {|*args|
     options = args.extract_options!
 
@@ -50,6 +50,7 @@ class Campaign < ActiveRecord::Base
       COUNT(deals.id)                                   lead_count,
 
       SUM(IF(deals.status='won',1,0))               won_deal_count,
+      SUM(IF(deals.status IN('won','lost'),1,0)) closed_deal_count,
       SUM(IF(deals.status='won',deals.value,0))        total_value, 
       AVG(IF(deals.status='won',deals.value,NULL))   average_value, 
       
@@ -60,10 +61,13 @@ class Campaign < ActiveRecord::Base
       rv.count                                       repeat_visits,
       nv.count                                          new_visits,
 
-      FLOOR(AVG(
-        DATEDIFF(
-          deals.closed_at,
-          deals.created_at)))                       average_elapsed
+      SUM(DATEDIFF(
+        deals.closed_at,
+        deals.created_at))                           total_elapsed,
+
+      AVG(DATEDIFF(
+        deals.closed_at,
+        deals.created_at))                         average_elapsed
     SQL
 
     select(selects)

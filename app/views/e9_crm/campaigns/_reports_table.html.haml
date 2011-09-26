@@ -60,7 +60,10 @@
             = m record.average_cost
           %td.record-average-elapsed.num
             - dat[:average_elapsed] << record.average_elapsed
-            = record.average_elapsed && "%s days" % record.average_elapsed || 'n/a'
+            = record.closed_deal_count > 0 ? record.average_elapsed && ("%i days" % record.average_elapsed) || 0 : 'n/a'
+
+        - dat[:closed_deal_count] << record.closed_deal_count
+        - dat[:total_elapsed]     << record.total_elapsed
 
     %tfooter
       %tr{:class => 'record-totals'}
@@ -75,14 +78,18 @@
         %td.record-deal-count.num
           = dat[:deal_count].sum.to_i
         %td.record-won-deal-count.num
-          = dat[:won_deal_count].sum.to_i
+          = won_deal_count = dat[:won_deal_count].sum.to_i
         %td.record-total-value.num
-          = m dat[:total_value].compact.sum
+          - total_value = dat[:total_value].compact.sum
+          = m(total_value)
         %td.record-average-value.num
-          = m dat[:average_value].compact.average
+          = m(total_value.to_f / won_deal_count)
         %td.record-total-cost.num
-          = m dat[:total_cost].compact.sum
+          - total_cost = dat[:total_cost].compact.sum
+          = m(total_cost)
         %td.record-average-cost.num
-          = m dat[:average_cost].compact.average
+          = m(total_cost.to_f / won_deal_count)
         %td.record-average-elapsed.num
-          = "%s days" % dat[:average_elapsed].compact.average
+          - total_elapsed     = dat[:total_elapsed].compact.sum.to_f
+          - closed_deal_count = dat[:closed_deal_count].sum.to_i
+          = "%i days" % (total_elapsed / closed_deal_count)
