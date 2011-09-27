@@ -10,7 +10,11 @@ en:
   deal_owner_legend: Responsible
   no_deal_owner: No one is responsible
   deal_contact_legend: Associated Contacts
-
+  
+  #legend text for toolbar in admin
+  form_legend_manage: Manage
+  form_legend_filter_campaigns: Filters
+  
   actions: Actions
   clear: Clear
   clear_all_filters: Clear All Filters
