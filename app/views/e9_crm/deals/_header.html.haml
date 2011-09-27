@@ -1,15 +1,22 @@
 .toolbar
   .toolbar-left
+  .toolbar-middle
     = form_tag(resource_class, :method => :get, :class => 'scope-selects') do
-      %select{:name => 'status'}
-        = deal_status_select_options
-      %select{:name => 'category'}
-        = deal_category_select_options 
-      %select{:name => 'owner'}
-        = deal_owner_select_options 
-      %select{:name => 'closed'}
-        = deal_date_select_options(:type => :in_month)
+      %fieldset
+        %legend= t(:form_legend_filter_campaigns)
+        %select{:name => 'status'}
+          = deal_status_select_options
+        %select{:name => 'category'}
+          = deal_category_select_options 
+        %select{:name => 'owner'}
+          = deal_owner_select_options 
+        %select{:name => 'closed'}
+          = deal_date_select_options(:type => :in_month)
 
   .toolbar-right
-    = link_to I18n.t('activerecord.links.index', :models => 'Leads'), leads_path
-    = link_to_new_resource(Deal)
+    %fieldset
+      %legend= t(:form_legend_manage)
+      .manage-leads
+      = link_to I18n.t('activerecord.links.index', :models => 'Leads'), leads_path
+      .manage-new-deals
+      = link_to_new_resource(Deal)
