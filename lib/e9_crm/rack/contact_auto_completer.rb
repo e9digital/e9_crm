@@ -33,7 +33,7 @@ module E9Crm::Rack
           contacts = []
         end
 
-        [200, {"Content-Type" => "application/json", "Cache-Control" => "max-age=3600, must-revalidate"}, [contacts.to_json]]
+        [200, {"Content-Type" => "application/json", "Cache-Control" => "no-cache"}, [contacts.to_json]]
       else
         [404, {"Content-Type" => "text/html", "X-Cascade" => "pass"}, ["Not Found"]]
       end
