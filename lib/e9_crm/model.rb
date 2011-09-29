@@ -35,11 +35,12 @@ module E9Crm
     end
 
     def create_contact_if_missing!
-      if contact.blank?
-        # when creating a contact we should assume we're primary
-        self.options.primary = true
-        create_contact(create_contact_parameters)
-      end
+      return true unless contact.blank?
+
+      # when creating a contact we should assume we're primary
+      self.options.primary = true
+      build_contact(create_contact_parameters)
+      save
     end
 
     protected

@@ -3,7 +3,8 @@ module E9Crm
     extend ActiveSupport::Concern
 
     included do
-      before_filter  :track_page_view
+      #before_filter  :track_page_view
+      after_filter :track_page_view
 
       prepend_before_filter do
         E9Crm.log("E9Crm tracking controller request")
@@ -35,6 +36,8 @@ module E9Crm
           :campaign     => tracking_campaign,
           :new_visit    => session[:new_visit].present?
         })
+
+        E9Crm.log("Page View: #{@_page_view.inspect}")
       end
     end
   end

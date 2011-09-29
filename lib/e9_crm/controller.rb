@@ -13,8 +13,10 @@ module E9Crm
         E9Crm.log("E9Crm controller request")
       end
 
+      #
+      # monkey patch liquid_env to insert campaign
+      #
       alias :liquid_env_without_crm :liquid_env
-
       def liquid_env
         liquid_env_without_crm.tap do |env|
           env[:campaign] = tracking_campaign

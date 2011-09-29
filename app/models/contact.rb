@@ -18,6 +18,9 @@ class Contact < ActiveRecord::Base
   has_many :owned_deals, :class_name => 'Deal', :dependent => :restrict
   has_and_belongs_to_many :associated_deals, :class_name => 'Deal'
 
+  has_many :campaigns_as_salesperson, :class_name => "SalesCampaign",     :inverse_of => :sales_person, :foreign_key => 'sales_person_id'
+  has_many :campaigns_as_affiliate,   :class_name => "AffiliateCampaign", :inverse_of => :affiliate,    :foreign_key => 'affiliate_id'
+
   has_many :users, :inverse_of => :contact do
 
     ##
@@ -92,7 +95,7 @@ class Contact < ActiveRecord::Base
   delegate :email, :to => :primary_user, :allow_nil => true
 
   def page_views
-    PageView.by_user(users)
+    PageView.by_user(user_ids)
   end
 
   has_record_attributes :users, 
@@ -232,7 +235,10 @@ class Contact < ActiveRecord::Base
 
   def merge_destructive_and_destroy!(other)
     other.users.clear_primary!
+    self.owned_deals                         |= other.owned_deals
     self.associated_deals                    |= other.associated_deals
+    self.campaigns_as_salesperson            |= other.campaigns_as_salesperson
+    self.campaigns_as_affiliate              |= other.campaigns_as_affiliate
     self.users                               |= other.users
     self.website_attributes                  |= other.website_attributes
     self.address_attributes                  |= other.address_attributes
@@ -240,6 +246,7 @@ class Contact < ActiveRecord::Base
     self.instant_messaging_handle_attributes |= other.instant_messaging_handle_attributes
 
     other.associated_deals.clear
+    other.reload
     other.destroy
   end
 

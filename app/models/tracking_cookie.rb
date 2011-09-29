@@ -45,6 +45,22 @@ class TrackingCookie < ActiveRecord::Base
   has_many :page_views
   after_save :generate_hid, :on => :create
 
+  scope :for_users, lambda {|*users| 
+    users.flatten!
+    users.map!(&:to_param)
+    users.compact!
+
+    if users.length == 1
+      where arel_table[:user_id].eq(users.first)
+    else
+      where arel_table[:user_id].in(users)
+    end
+  }
+
+  scope :for_user, lambda {|user|
+    where arel_table[:user_id].in(users.flatten.map(&:to_param))
+  }
+
   protected
 
   def generate_hid

@@ -1,5 +1,0 @@
-= form_tag email_templates_path, :class => "email-template-sel", :method => :get do
-  = hidden_field_tag "contact_id", params[:contact_id]
-  = hidden_field_tag "user_id", params[:user_id]
-  = select_tag "id", options_for_select(collection.map {|e| [e.name, e.id] })
-  = submit_tag e9_t(:select_submit), :name => nil

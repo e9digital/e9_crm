@@ -5,14 +5,15 @@ module E9Crm
     included do
       attr_accessor :contact
 
-      def locals_with_contact
-        default_locals.merge({
-          :contact => @contact || recipient.try(:contact)
+      def default_options_with_contact
+        default_options_without_contact.merge({
+          :contact => @contact || 
+            default_options_without_contact[:recipient].try(:contact)
         })
       end
 
-      alias :default_locals :this_locals
-      alias :this_locals :locals_with_contact
+      alias :default_options_without_contact :default_options
+      alias :default_options :default_options_with_contact
     end
   end
 end

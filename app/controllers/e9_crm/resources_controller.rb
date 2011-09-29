@@ -2,6 +2,7 @@ class E9Crm::ResourcesController < E9Crm::BaseController
   inherit_resources
 
   include E9Rails::Helpers::ResourceErrorMessages
+  include E9::Controllers::InheritableViews
 
   # NOTE depending on e9_base pagination (which should eventually use this module)
   #include E9Rails::Helpers::Pagination

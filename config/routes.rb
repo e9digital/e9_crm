@@ -18,8 +18,7 @@ Rails.application.routes.draw do
 
     resources :companies, :except => :show
     resources :contacts do
-      # page_views currently not routed, but near working
-      #resources :page_views, :path => 'activity', :only => :index
+      resources :page_views, :path => 'activity', :only => :index
 
       collection { get :templates }
       member do
@@ -44,10 +43,11 @@ Rails.application.routes.draw do
 
     resources :campaigns, :only  => [:index, :destroy, :new] do
       # page_views currently not routed, but near working
-      #resources :page_views, :path => 'activity', :only => :index
+      resources :page_views, :path => 'activity', :only => :index
     end
     scope :path => :campaigns do
       #get '/activity', :to => redirect("/#{crm_path}/campaigns/all/activity")
+
       resources :campaign_groups, :path => 'groups', :except => [:show]
 
       resources :sales_campaigns,       :path => 'sales',       :except => [:show, :index]
