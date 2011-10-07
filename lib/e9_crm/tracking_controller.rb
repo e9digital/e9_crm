@@ -3,12 +3,7 @@ module E9Crm
     extend ActiveSupport::Concern
 
     included do
-      #before_filter  :track_page_view
       after_filter :track_page_view
-
-      prepend_before_filter do
-        E9Crm.log("E9Crm tracking controller request")
-      end
     end
 
     protected 

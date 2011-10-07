@@ -62,16 +62,9 @@ module E9Crm::ContactsHelper
     tags.map {|tag| link_to_contact_search(:tagged, [tag], tag) }.join(', ').html_safe
   end
 
-  def contact_newsletter_select_tag
-    options = UserEmail.pending.order('name').map {|e| [e.name, e.id] }
-    #select_tag 'eid', options_for_select( options.presence || [['n/a', nil]] )
-    select_tag 'eid', options_for_select(options) if options.present?
-  end
-
   def contact_email_template_select_tag
-    options = EmailTemplate.order('name').map {|e| [e.name, e.id] }
-    #select_tag 'etid', options_for_select( options.presence || [['n/a', nil]] )
-    select_tag 'etid', options_for_select(options) if options.present?
+    options = UserEmail.bulk_sendable.order('name').map {|e| [e.name, e.id] }
+    select_tag 'email_id', options_for_select(options) if options.present?
   end
 
   def contact_user_subscribed_to_newsletter?(user)

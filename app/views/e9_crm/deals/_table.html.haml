@@ -40,3 +40,6 @@
         %td.record-totals.num
           = dat[:value].sum.to_money.format
         %td
+
+- if controller.send(:should_paginate_index)
+  = will_paginate collection

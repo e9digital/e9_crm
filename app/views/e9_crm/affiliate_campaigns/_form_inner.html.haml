@@ -4,8 +4,9 @@
   %legend= e9_t(:affiliate_information_legend, :scope => 'e9_crm.campaigns')
   .field
     = f.label :affiliate, :class => :req, :for => 'campaign_affiliate_id'
-    %input.contact-autocomplete{:type => 'text'}
+
     - contact = f.object.affiliate
+    %input.contact-autocomplete{:type => 'text', :style => contact.blank? && '' || 'display:none'}
     .contact-select{:style => contact.blank? && 'display:none' || ''}
       %span.content= contact.try(:name)
       %input{:type => :hidden, :name => "#{resource_instance_name}[affiliate_id]", :value => contact.try(:id)}

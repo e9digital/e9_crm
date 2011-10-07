@@ -32,7 +32,7 @@ class E9Crm::CampaignsController < E9Crm::ResourcesController
 
   has_scope :of_group, :as => :group, :only => :reports
 
-  has_scope :type, :only => :reports do |_, scope, value|
+  has_scope :type, :only => [:reports, :index] do |_, scope, value|
     scope.of_type("#{value}_campaign".classify)
   end
 

@@ -21,6 +21,10 @@ class Contact < ActiveRecord::Base
   has_many :campaigns_as_salesperson, :class_name => "SalesCampaign",     :inverse_of => :sales_person, :foreign_key => 'sales_person_id'
   has_many :campaigns_as_affiliate,   :class_name => "AffiliateCampaign", :inverse_of => :affiliate,    :foreign_key => 'affiliate_id'
 
+  def page_views
+    PageView.by_users(user_ids)
+  end
+
   has_many :users, :inverse_of => :contact do
 
     ##
@@ -93,10 +97,6 @@ class Contact < ActiveRecord::Base
   end
 
   delegate :email, :to => :primary_user, :allow_nil => true
-
-  def page_views
-    PageView.by_user(user_ids)
-  end
 
   has_record_attributes :users, 
                         :phone_number_attributes, 
@@ -206,6 +206,12 @@ class Contact < ActiveRecord::Base
     end
   end
   delegate :name, :to => :company, :prefix => true, :allow_nil => true
+
+  def name_with_email
+    retv = name.dup
+    retv << " (#{email})" if email.present?
+    retv
+  end
 
   ##
   # Helper to concatenate a Contact's full name
