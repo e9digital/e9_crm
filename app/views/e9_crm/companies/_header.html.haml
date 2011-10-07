@@ -1,4 +1,10 @@
 .toolbar
+  .toolbar-left
+  .toolbar-middle
   .toolbar-right
-    = link_to_new_resource(Company)
-    = link_to_collection(Contact)
+    %fieldset
+      %legend= t(:form_legend_manage)
+      .manage-company
+        = link_to_new_resource(Company)
+      .manage-contacts
+        = link_to_collection(Contact)

@@ -11,6 +11,8 @@ en:
         index_title_with_search: "%{models} matching \"%{search}\""
         index_title_with_tags: "%{models} tagged \"%{tagged}\""
         index_title_with_search_and_tags: "%{models} tagged \"%{tagged}\", matching \"%{search}\""
+        form_legend_email: Email Actions
+        form_legend_search: Search Filters
         form_legend_contact: Contact Information
         form_legend_standard: Personal Information
         send_email_template: Send Email

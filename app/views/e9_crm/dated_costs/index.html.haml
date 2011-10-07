@@ -1,14 +1,20 @@
 = title @index_title || e9_t(:index_title)
 
-%fieldset
-  .dated-costs
-    .dated-cost-labels
-      .field
+.toolbar
+  .toolbar-right
+    = link_to_new_resource(resource_class, :class => 'new-resource')
+
+%table.records
+  %thead.dated-costs
+    %tr.dated-cost-labels
+      %th.field
         = resource_class.human_attribute_name(:date)
-      .field.cost
+      %th.field.cost
         = resource_class.human_attribute_name(:cost)
-
-    = render collection
-
-    .actions
-      = link_to_new_resource(resource_class, :class => 'new-resource')
+      %th= e9_t(:actions)
+  %tbody
+    - if collection.empty?
+      %tr
+        %td{:colspan => 7}= e9_t(:no_records_text)
+    - else
+      = render collection

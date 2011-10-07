@@ -1,16 +1,21 @@
 .toolbar
   .toolbar-left
+  .toolbar-middle
     = form_tag(resource_class, :method => :get, :class => 'scope-selects') do
-      %select{:name => 'type'}
-        = campaign_type_select_options
-      %select{:name => 'group'}
-        = campaign_group_select_options
-      %select{:name => 'active'}
-        = campaign_active_select_options
+      %fieldset
+        %legend= t(:form_legend_filter_campaigns)
+        %select{:name => 'type'}
+          = campaign_type_select_options
+        %select{:name => 'group'}
+          = campaign_group_select_options
+        %select{:name => 'active'}
+          = campaign_active_select_options
 
   .toolbar-right
     = form_tag new_campaign_path, :method => :get, :id => 'new_campaign_form' do
-      = label_tag 'new_campaign_type_select', t('activerecord.links.new', :model => Campaign.model_name.human)
-      %select{:name => 'type', :id => 'new_campaign_type_select'}
-        = campaign_type_select_options(false)
+      %fieldset
+        %legend= t(:form_legend_manage)
+        = label_tag 'new_campaign_type_select', t('activerecord.links.new', :model => Campaign.model_name.human)
+        %select{:name => 'type', :id => 'new_campaign_type_select'}
+          = campaign_type_select_options(false)
         = submit_tag t(:go), :name => nil
