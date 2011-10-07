@@ -8,6 +8,7 @@
 
   .contact-links.actions
     = link_to_edit_resource(resource)
+    = link_to "View Activity", page_views_url(:contact => resource.id)
     = google_search_link(resource.name)
     = google_news_link(resource.name)
 

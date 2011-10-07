@@ -7,6 +7,18 @@ en:
       new_title: "New %{model}"
       actions: Actions
 
+      campaigns:
+        no_campaign: No Campaign
+        no_group: No Group
+        campaign_information_legend: Campaign Information
+        salesperson_information_legend: Salesperson Information
+        affiliate_information_legend: Affiliate Information
+      contact_emails:
+        prepare_title: Edit Your Template
+        send_email: Send Email
+      contact_merges:
+        new_title: Merge Contacts
+        no_value: (No Value)
       contacts:
         index_title_with_search: "%{models} matching \"%{search}\""
         index_title_with_tags: "%{models} tagged \"%{tagged}\""
@@ -22,12 +34,6 @@ en:
         email_actions_legend: Email Actions
         search_options_legend: Search Filters
         edit_title_with_name: "Edit %{contact}"
-      contact_merges:
-        new_title: Merge Contacts
-        no_value: (No Value)
-      contact_emails:
-        prepare_title: Edit Your Template
-        send_email: Send Email
       deals:
         new_title: Create Deal
       email_templates:
@@ -35,15 +41,13 @@ en:
       leads:
         index_title: Leads 
         no_records_text: No leads exist.
+      page_views:
+        no_records_text: No activity exists.
+      visits:
+        no_records_text: No activity exists.
       reports:
         index_title: Marketing Report
         no_records_text: No data exists for those query parameters.
-      campaigns:
-        no_campaign: No Campaign
-        no_group: No Group
-        campaign_information_legend: Campaign Information
-        salesperson_information_legend: Salesperson Information
-        affiliate_information_legend: Affiliate Information
       visits:
         breadcrumb_title: Campaign Activity
         index_title: "Campaign: %{parent}"

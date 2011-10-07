@@ -8,7 +8,7 @@
       %select{:name => 'month'}
         = page_view_date_select_options(:type => :in_month)
 
-      %input.contact-autocomplete{:type => :text, :style => @contact.blank? && '' || 'display:none'}
+      %input.contact-autocomplete{:type => :text, :style => @contact.blank? && '' || 'display:none', :placeholder => 'Enter Contact...'}
       .contact-select{:style => @contact.blank? && 'display:none' || ''}
         %span.content= @contact.try(:name_with_email)
         %input{:type => :hidden, :name => "contact", :value => @contact.try(:id)}

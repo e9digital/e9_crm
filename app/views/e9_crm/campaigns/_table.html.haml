@@ -20,7 +20,7 @@
           %td.record-campaign-group
             = record.campaign_group_name || e9_t(:no_group, :scope => 'e9_crm.campaigns')
           %td.record-name
-            = record.name
+            = link_to record.name, campaign_visits_path(record), :title => 'View Campaign Activity'
           %td.record-code
             = display_campaign_code(record.code)
           %td.record-affiliate-fee.num
