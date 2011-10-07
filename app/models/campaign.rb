@@ -58,9 +58,8 @@ class Campaign < ActiveRecord::Base
       SUM(IF(deals.status='won',deals.value,0))        total_value, 
       AVG(IF(deals.status='won',deals.value,NULL))   average_value, 
       
-      SUM(costs.total)                                  total_cost,
-      SUM(costs.total) / 
-        SUM(IF(deals.status='won',1,0))               average_cost,
+      costs.total                                       total_cost,
+      costs.total / SUM(IF(deals.status='won',1,0))   average_cost,
 
       IFNULL(rv.count, 0)                            repeat_visits,
       IFNULL(nv.count, 0)                               new_visits,
