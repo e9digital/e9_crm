@@ -1,0 +1,15 @@
+.toolbar
+  .toolbar-left
+    = form_tag(resource_class, :method => :get, :class => 'scope-selects') do
+      %select{:name => 'campaign'}
+        = page_view_campaign_select_options
+      %select{:name => 'new_visits'}
+        = page_view_new_visit_select_options
+      %select{:name => 'month'}
+        = page_view_date_select_options(:type => :in_month)
+
+      %input.contact-autocomplete{:type => :text, :style => @contact.blank? && '' || 'display:none'}
+      .contact-select{:style => @contact.blank? && 'display:none' || ''}
+        %span.content= @contact.try(:name_with_email)
+        %input{:type => :hidden, :name => "contact", :value => @contact.try(:id)}
+        %a{:class => :remove, :title => "Remove", :alt => "Remove"} Remove

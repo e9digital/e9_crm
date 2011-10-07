@@ -18,15 +18,24 @@
   %legend= t(:deal_owner_legend)
   .deal-contact
     - if resource.owner
-      .contact-link= link_to(resource.owner.name, resource.owner)
-      .contact-title= title_and_or_company(resource.owner)
+      = link_to resource.owner do
+        .contact-photo 
+          %img{:src => resource.owner.avatar_url, :alt => "Photo for #{resource.owner.name}"} 
+        .contact-name= resource.owner.name
+        .contact-title= title_and_or_company(resource.owner)
     - else
-      = t(:no_deal_owner)
+      .contact-photo 
+        %img{:src => User.new.avatar_url, :alt => "Default Contact Photo"} 
+      .contact-name
+        = t(:no_deal_owner)
 
 - if resource.contacts.any?
   %fieldset.deal-contacts
     %legend= t(:deal_contact_legend)
     - resource.contacts.each do |contact|
       .deal-contact
-        .contact-link= link_to(contact.name, contact)
-        .contact-title= title_and_or_company(contact)
+        = link_to contact do
+          .contact-photo 
+            %img{:src => contact.avatar_url, :alt => "Photo for #{contact.name}"} 
+          .contact-name= contact.name
+          .contact-title= title_and_or_company(contact)

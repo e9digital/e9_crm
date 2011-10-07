@@ -5,6 +5,7 @@
 #
 class Campaign < ActiveRecord::Base
   include E9Rails::ActiveRecord::STI
+  include E9::ActiveRecord::AttributeSearchable
 
   belongs_to :campaign_group
 
@@ -14,7 +15,10 @@ class Campaign < ActiveRecord::Base
   has_many :pending_deals, :class_name => 'Deal', :conditions => ['deals.status = ?', Deal::Status::Pending]
   has_many :leads, :class_name => 'Deal', :conditions => ['deals.status = ?', Deal::Status::Lead]
   has_many :non_leads, :class_name => 'Deal', :conditions => ['deals.status != ?', Deal::Status::Lead]
+
   has_many :page_views, :inverse_of => :campaign, :dependent => :nullify
+  has_many :new_page_views, :class_name => 'PageView', :conditions => ['page_views.new_visit = ?', true]
+  has_many :repeat_page_views, :class_name => 'PageView', :conditions => ['page_views.new_visit = ?', false]
 
   # only advertising campaigns use this association
   has_many :dated_costs, :as => :costable
@@ -58,8 +62,8 @@ class Campaign < ActiveRecord::Base
       SUM(costs.total) / 
         SUM(IF(deals.status='won',1,0))               average_cost,
 
-      rv.count                                       repeat_visits,
-      nv.count                                          new_visits,
+      IFNULL(rv.count, 0)                            repeat_visits,
+      IFNULL(nv.count, 0)                               new_visits,
 
       SUM(DATEDIFF(
         deals.closed_at,
@@ -70,36 +74,36 @@ class Campaign < ActiveRecord::Base
         deals.created_at))                         average_elapsed
     SQL
 
-    select(selects)
-      .joins(
+    select(selects).
+      joins(
         'LEFT OUTER JOIN deals ' +
         'ON deals.campaign_id = campaigns.id ' +
-        "#{ 'AND ' + Deal.for_time_range_conditions(*args, options).to_sql if args.present?}")
-      .joins(
+        "#{ 'AND ' + Deal.for_time_range_conditions(*args, options).to_sql if args.present?}").
+      joins(
         'LEFT OUTER JOIN ( ' +
          'SELECT SUM(cost) total, costable_id dc_cid ' +
          'FROM dated_costs ' +
          'WHERE costable_type="Campaign" ' +
          "#{ 'AND ' + DatedCost.for_time_range_conditions(*args, options).to_sql if args.present?}" +
          ' GROUP BY dc_cid) costs ' +
-         'ON costs.dc_cid = campaigns.id')
-      .joins(
+         'ON costs.dc_cid = campaigns.id').
+      joins(
         'LEFT OUTER JOIN ( ' +
         'SELECT COUNT(DISTINCT session) count, campaign_id nv_cid ' +
         'FROM page_views ' +
         'WHERE page_views.new_visit = 1 ' +
         "#{ 'AND ' + PageView.for_time_range_conditions(*args, options).to_sql if args.present?}" +
         ' GROUP BY nv_cid ) nv ' + 
-        'ON nv.nv_cid = campaigns.id')
-      .joins(
+        'ON nv.nv_cid = campaigns.id').
+      joins(
         'LEFT OUTER JOIN ( ' +
         'SELECT COUNT(DISTINCT session) count, campaign_id rv_cid ' +
         'FROM page_views ' +
         'WHERE page_views.new_visit = 0 ' +
         "#{ 'AND ' + PageView.for_time_range_conditions(*args, options).to_sql if args.present?}" +
         ' GROUP BY rv_cid ) rv ' +
-        'ON rv.rv_cid = campaigns.id')
-      .group('campaigns.id')
+        'ON rv.rv_cid = campaigns.id').
+      group('campaigns.id')
   }
 
   def self.default
@@ -111,24 +115,20 @@ class Campaign < ActiveRecord::Base
     class_eval("def #{money_column}; (r = read_attribute(:#{money_column})) && Money.new(r) end")
   end
 
-  %w(new_visits repeat_visits).each do |count_column|
-    class_eval("def #{count_column}; (r = read_attribute(:#{count_column})) || 0 end")
-  end
-
-  def new_visit_session_count
-    page_views.new_visits.group(:session).count.keys.length
+  def new_visit_count
+    new_visits.group(:session).count.keys.length
   end
 
   def new_visit_page_view_count
-    page_views.new_visits.group(:session).count.values.sum
+    new_visits.group(:session).count.values.sum
   end
 
-  def repeat_visit_session_count
-    page_views.repeat_visits.group(:session).count.keys.length
+  def repeat_visit_count
+    repeat_visits.group(:session).count.keys.length
   end
 
   def repeat_visit_page_view_count
-    page_views.repeat_visits.group(:session).count.values.sum
+    repeat_visits.group(:session).count.values.sum
   end
 
   ##
@@ -140,7 +140,7 @@ class Campaign < ActiveRecord::Base
   end
 
   def to_s
-    name.tap {|n| n << " (#{code})" if code.present? }
+    name.dup.tap {|n| n << " (#{code})" if code.present? }
   end
 
   def to_liquid

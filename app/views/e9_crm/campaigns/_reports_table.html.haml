@@ -83,13 +83,13 @@
           - total_value = dat[:total_value].compact.sum
           = m(total_value)
         %td.record-average-value.num
-          = m(total_value.to_f / won_deal_count)
+          = won_deal_count.zero? ? 'n/a' : m(total_value.to_f / won_deal_count)
         %td.record-total-cost.num
           - total_cost = dat[:total_cost].compact.sum
           = m(total_cost)
         %td.record-average-cost.num
-          = m(total_cost.to_f / won_deal_count)
+          = won_deal_count.zero? ? 'n/a' : m(total_cost.to_f / won_deal_count)
         %td.record-average-elapsed.num
           - total_elapsed     = dat[:total_elapsed].compact.sum.to_f
           - closed_deal_count = dat[:closed_deal_count].sum.to_i
-          = "%i days" % (total_elapsed / closed_deal_count)
+          = closed_deal_count.zero? ? 'n/a' : "%i days" % (total_elapsed / closed_deal_count)

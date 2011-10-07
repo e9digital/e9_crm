@@ -19,14 +19,6 @@ Gem::Specification.new do |s|
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.require_paths = ["lib"]
 
-  s.add_dependency("rails", "~> 3.0.0")
-  s.add_dependency("inherited_resources", "~> 1.1.2")
-  s.add_dependency("has_scope")
   s.add_dependency("money")
-  s.add_dependency("e9_rails")
-  s.add_dependency("e9_tags")
-  s.add_dependency("e9_attributes")
-  s.add_dependency("will_paginate")
   s.add_dependency("kramdown", "~> 0.13")
-  s.add_dependency("state_machine", "~> 1.0")
 end

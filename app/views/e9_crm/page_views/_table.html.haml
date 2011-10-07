@@ -3,9 +3,9 @@
     %tr
       %th= orderable_column_link(:created_at)
       %th= orderable_column_link('campaign.name', :campaign)
+      %th= orderable_column_link(:new_visit)
       %th= orderable_column_link(:request_path)
-      %th= orderable_column_link(:referer)
-      %th= orderable_column_link(:remote_ip)
+      %th= orderable_column_link('contact_name', :contact)
   %tbody
     - if collection.empty?
       %tr
@@ -17,12 +17,12 @@
             = I18n.l(record.created_at)
           %td.record-campaign-name
             = record.campaign_name || e9_t(:no_campaign)
+          %td.record-request-new-visit
+            = record.new_visit ? 'New Visit' : 'Repeat Visit'
           %td.record-request-path
             = record.request_path
-          %td.record-referer
-            = record.referer
-          %td.record-remote-ip
-            = record.remote_ip
+          %td.record-contact-name
+            = record.contact_name
 
 - if controller.send(:should_paginate_index)
   = will_paginate collection

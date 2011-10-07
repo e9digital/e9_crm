@@ -9,12 +9,10 @@ module E9Crm
     included do
       helper_method :tracking_cookie, :tracking_campaign
 
-      prepend_before_filter do
-        E9Crm.log("E9Crm controller request")
-      end
-
+      #
+      # monkey patch liquid_env to insert campaign
+      #
       alias :liquid_env_without_crm :liquid_env
-
       def liquid_env
         liquid_env_without_crm.tap do |env|
           env[:campaign] = tracking_campaign
@@ -37,6 +35,14 @@ module E9Crm
       end
     end
 
+    def _user_from_params
+      if user_id = params.delete(E9Crm.query_user_id)
+        @_user_from_params = User.find_by_id(user_id)
+      end
+
+      @_user_from_params
+    end
+
     #
     # Loads or installs the tracking cookie
     #
@@ -44,7 +50,7 @@ module E9Crm
       @_tracking_cookie ||= begin
         E9Crm.log "Begin load or install cookie: cookie_name[#{E9Crm.cookie_name}] query_param[#{E9Crm.query_param}]"
 
-        code = params.delete(E9Crm.query_param)
+        code    = params.delete(E9Crm.query_param)
 
         if hid = cookies[E9Crm.cookie_name]
           E9Crm.log("Installed cookie found: hid(#{hid})")
@@ -66,9 +72,14 @@ module E9Crm
           else
             attrs = {}
 
-            if current_user && @_tracking_cookie.user_id.nil?
-              E9Crm.log("Cookie has no user, setting as current_user (#{current_user.id})")
-              attrs[:user] = current_user
+            if @_tracking_cookie.user_id.nil?
+              if current_user
+                E9Crm.log("Cookie has no user, setting as current_user (#{current_user.id})")
+                attrs[:user] = current_user
+              elsif _user_from_params
+                E9Crm.log("Cookie has no user, setting as user from params (#{_user_from_params.id})")
+                attrs[:user] = _user_from_params
+              end
             end
 
             if code.present? && code != @_tracking_cookie.code && Campaign.find_by_code(code)
@@ -79,15 +90,19 @@ module E9Crm
               session[:new_visit] = true
             end
 
-            E9Crm.log(attrs.blank? ? "Cookie unchanged, no update" : "Cookie changed, new attrs: #{attrs.inspect}")
-            @_tracking_cookie.update_attributes(attrs) unless attrs.blank?
+            if attrs.blank?
+              E9Crm.log "Cookie unchanged, no update"
+            else
+              E9Crm.log "Cookie changed, new attrs: #{attrs.inspect}"
+              @_tracking_cookie.update_attributes(attrs)
+            end
           end
         end
 
         @_tracking_cookie ||= begin
           session[:new_visit] = true
 
-          TrackingCookie.create(:code => code, :user => current_user).tap do |cookie|
+          TrackingCookie.create(:code => code, :user => current_user || _user_from_params).tap do |cookie|
             E9Crm.log "Installing new cookie (#{E9Crm.cookie_name} : #{cookie.hid})"
             cookies.permanent[E9Crm.cookie_name] = cookie.hid
           end

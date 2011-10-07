@@ -1,0 +1,27 @@
+%table.records
+  %thead
+    %tr
+      %th= orderable_column_link(:contact_name, :contact)
+      %th= orderable_column_link(:new_visits)
+      %th= orderable_column_link(:repeat_visits)
+      %th= t(:actions)
+  %tbody
+    - if collection.empty?
+      %tr
+        %td{:colspan => 5}= e9_t(:no_records_text)
+    - else
+      - collection.each do |record|
+        %tr{:id => "ids_#{record.id}", :class => cycle('odd', 'even')}
+          %td.record-contact-name
+            = record.contact_name
+          %td.record-new-visits.num
+            = record.new_visits.to_i
+          %td.record-repeat-visits.num
+            = record.repeat_visits.to_i
+          %td.links
+            - if record.contact_id
+              = link_to "View Contact", contact_url(record.contact_id)
+              = link_to "View Contact's Activity", page_views_url(:contact => record.contact_id, :campaign => parent.id)
+
+- if controller.send(:should_paginate_index)
+  = will_paginate collection

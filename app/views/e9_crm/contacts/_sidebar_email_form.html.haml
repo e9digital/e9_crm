@@ -1,7 +1,9 @@
-- if (etag = contact_email_template_select_tag).present?
-  %fieldset
-    %legend= e9_t(:email_actions_legend)
-    = form_tag new_contact_email_path, :method => :get, :id => 'contact_email_form', 'data-empty' => e9_t(:no_contacts_notification), 'data-count' => @contact_ids.length do
+%fieldset
+  %legend= e9_t(:email_actions_legend)
+  - if (etag = contact_email_template_select_tag).present?
+    = form_for EmailDelivery.new(:contact_ids => @contact_ids), :url => new_admin_email_delivery_path, :html => { :method => :get, :id => 'contact_email_form', 'data-empty' => e9_t(:no_contacts_notification), 'data-count' => @contact_ids.length } do |f|
       = etag
-      = hidden_field_tag 'uids', @contact_ids.join(','), :id => 'contact_email_uids'
+      = f.hidden_field :contact_ids, :id => 'contact_email_uids'
       = submit_tag e9_t(:send_email_template), :name => nil
+  - else
+    = I18n.t(:no_email_templates).html_safe

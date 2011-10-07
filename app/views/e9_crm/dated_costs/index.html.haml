@@ -1,7 +1,6 @@
 = title @index_title || e9_t(:index_title)
+
 .toolbar
-  .toolbar-left
-  .toolbar-middle
   .toolbar-right
     = link_to_new_resource(resource_class, :class => 'new-resource')
 
@@ -19,4 +18,3 @@
         %td{:colspan => 7}= e9_t(:no_records_text)
     - else
       = render collection
-

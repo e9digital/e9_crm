@@ -44,3 +44,6 @@ en:
         campaign_information_legend: Campaign Information
         salesperson_information_legend: Salesperson Information
         affiliate_information_legend: Affiliate Information
+      visits:
+        breadcrumb_title: Campaign Activity
+        index_title: "Campaign: %{parent}"
