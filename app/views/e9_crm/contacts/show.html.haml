@@ -1,84 +1,90 @@
 .contact-body
   = title resource.name
+  .toolbar.showcontact
+    .toolbar-left
+      .contact-photo
+        %img{:src => resource.avatar_url, :alt => "Avatar for #{resource.name}"}
+      = render 'who', :record => resource, :hide_name => true
 
-  .contact-photo
-    %img{:src => resource.avatar_url, :alt => "Avatar for #{resource.name}"}
+    .toolbar-middle
+      %fieldset
+        %legend="Filters"#e9_t(:search_options_legend)
+        - if (tags = resource.tags(:show_all => true)).present?
+          .contact-tags
+            %label #{Tag.model_name.human.pluralize}:
+            = contact_tag_list(tags.sort)
 
-  = render 'who', :record => resource, :hide_name => true
+    .toolbar-right
+      %fieldset
+        %legend="Manage"#e9_t(:search_options_legend)
+        .contact-links.actions
+          = link_to_edit_resource(resource)
+          = link_to "View Activity", page_views_url(:contact => resource.id)
+          = google_search_link(resource.name)
+          = google_news_link(resource.name)
 
-  .contact-links.actions
-    = link_to_edit_resource(resource)
-    = link_to "View Activity", page_views_url(:contact => resource.id)
-    = google_search_link(resource.name)
-    = google_news_link(resource.name)
+  .admin-content-main
+    - if company = resource.company
+      .contact-company
+        %fieldset
+          %legend.contact-subheader= company.name
+          - if company.info.present?
+            = k(company.info)
 
-  - if (tags = resource.tags(:show_all => true)).present?
-    .contact-tags
-      %label #{Tag.model_name.human.pluralize}:
-      = contact_tag_list(tags.sort)
+    .contact-info
+      %fieldset
+        %legend #{Contact.human_attribute_name(:info)}:
+        = resource.info.present? && k(resource.info) || t(:none)
 
-  .contact-info
-    %label #{Contact.human_attribute_name(:info)}:
-    = resource.info.present? && k(resource.info) || t(:none)
-
-  - if company = resource.company
-    .contact-company
+    .contact-deals
       %h2
-        %span.contact-subheader= company.name
+        %span.contact-subheader Deals
         %span.contact-actions
-          = google_search_link(company.name)
-          = google_news_link(company.name)
-      - if company.info.present?
-        = k(company.info)
+          = link_to_new_resource(Deal, :deal => { :contact_ids => [resource.id] })
 
-  .contact-deals
-    %h2
-      %span.contact-subheader Deals
-      %span.contact-actions
-        = link_to_new_resource(Deal, :deal => { :contact_ids => [resource.id] })
-
-    %table
-      %thead
-        %tr
-          %th= Deal.human_attribute_name(:status)
-          %th= Deal.human_attribute_name(:name)
-          %th= Deal.human_attribute_name(:value)
-
-      %tbody
-        - if (deals = resource.associated_deals.leads(false)).blank?
+      %table
+        %thead
           %tr
-            %td{:colspan => 3}= resource_humanize(:no_deals)
-        - else
-          - deals.each do |deal|
+            %th= Deal.human_attribute_name(:status)
+            %th= Deal.human_attribute_name(:name)
+            %th= Deal.human_attribute_name(:value)
+
+        %tbody
+          - if (deals = resource.associated_deals.leads(false)).blank?
             %tr
-              %td.contact-deal-name
-                = link_to deal.name, deal
-              %td.contact-deal-status
-                = deal.status
-              %td.contact-deal-value
-                = deal.value.format
+              %td{:colspan => 3}= resource_humanize(:no_deals)
+          - else
+            - deals.each do |deal|
+              %tr
+                %td.contact-deal-name
+                  = link_to deal.name, deal
+                %td.contact-deal-status
+                  = deal.status
+                %td.contact-deal-value
+                  = deal.value.format
 
-  .contact.leads
-    %h2
-      %span.contact-subheader Leads 
+    .contact.leads
+      %h2
+        %span.contact-subheader Leads 
 
-    %table
-      %thead
-        %tr
-          %th= Deal.human_attribute_name(:created_at)
-          %th= Deal.human_attribute_name(:offer_name)
-        
-      %tbody
-        - if (leads = resource.associated_deals.leads).blank?
+      %table
+        %thead
           %tr
-            %td{:colspan => 2}= resource_humanize(:no_leads)
-        - else
-          - leads.each do |lead|
-            %tr
-              %td.contact-lead-created-at
-                = l(lead.created_at)
-              %td.contact-lead-name
-                = link_to lead.offer_name, edit_deal_path(lead)
+            %th= Deal.human_attribute_name(:created_at)
+            %th= Deal.human_attribute_name(:offer_name)
 
-.contact-sidebar
-  = render 'sidebar'
+        %tbody
+          - if (leads = resource.associated_deals.leads).blank?
+            %tr
+              %td{:colspan => 2}= resource_humanize(:no_leads)
+          - else
+            - leads.each do |lead|
+              %tr
+                %td.contact-lead-created-at
+                  = l(lead.created_at)
+                %td.contact-lead-name
+                  = link_to lead.offer_name, edit_deal_path(lead)
+
+  .admin-sidebar-right
+    .contact-sidebar
+      = render 'sidebar'

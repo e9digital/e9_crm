@@ -1,24 +1,27 @@
 .record-attribute.nested-association
-  = f.hidden_field :role
-
-  - if f.object.persisted?
-    = f.hidden_field :id
-    = f.hidden_field :_destroy, :value => 0
-    .field.contact-email
-      <input type="hidden" value="#{f.object.email}"/>
-      = f.object.email
-  - else
-    .field.contact-email
-      = f.text_field :email
-
   = f.fields_for f.object.options do |ff|
+    
+    = f.hidden_field :role
+    
+    .field.controls
+      .field.radio
+        = ff.hidden_field :primary, :value => false
+        = ff.label :primary_true, ff.object.class.human_attribute_name(:primary)
+        = ff.radio_button :primary, true
+
+      = link_to_destroy_record_attribute
+    
+    - if f.object.persisted?
+      = f.hidden_field :id
+      = f.hidden_field :_destroy, :value => 0
+      .field.contact-email
+        <input type="hidden" value="#{f.object.email}"/>
+        = f.object.email
+    - else
+      .field.contact-email
+        = f.text_field :email
+
+  
     - if (types = User.email_types).present?
       .field
         = ff.select :type, types
-    .field.radio
-      = ff.hidden_field :primary, :value => false
-      = ff.label :primary_true, ff.object.class.human_attribute_name(:primary)
-      = ff.radio_button :primary, true
-
-  -#- if f.object.prospect?
-  = link_to_destroy_record_attribute
