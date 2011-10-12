@@ -16,6 +16,7 @@ class E9Crm::ContactsController < E9Crm::ResourcesController
   has_scope :search, :by_title, :by_company, :only => :index
   has_scope :tagged, :only => :index, :type => :array
   has_scope :by_company, :as => :company, :only => :index
+  has_scope :bounced_primary_emails, :as => :bounced, :type => :boolean
 
   # record attributes templates js
   #caches_action :templates

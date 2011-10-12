@@ -9,6 +9,10 @@
         = ff.label :primary_true, ff.object.class.human_attribute_name(:primary)
         = ff.radio_button :primary, true
 
+      - if f.object.has_bounced?
+        .field.radio.bad-email-flag
+          = User.human_attribute_name(:has_bounced_flag)
+
       = link_to_destroy_record_attribute
     
     - if f.object.persisted?
@@ -20,7 +24,6 @@
     - else
       .field.contact-email
         = f.text_field :email
-
   
     - if (types = User.email_types).present?
       .field

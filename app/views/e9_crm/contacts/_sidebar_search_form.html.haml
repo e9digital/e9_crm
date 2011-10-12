@@ -11,6 +11,12 @@
     %select{:name => 'company', :id => 'contact_company_select'}
       = company_select_options
 
+  = form_tag(resource_class, :method => :get, :class => 'scope-selects field') do
+    = label_tag 'bounced_select', User.human_attribute_name(:has_bounced)
+    %select{:name => 'bounced', :id => 'bounced_select'}
+      %option{:value => nil} No
+      %option{:value => '1'} Yes
+
   .field#contact_tag_list
     %label{:for => 'contact_tag_autocomplete'} Tags
     %input#contact_tag_autocomplete.list{:type => 'text', 'data-iname' => 'contact', 'data-field' => '[tagged]', :placeholder => t(:tag_search_placeholder)}

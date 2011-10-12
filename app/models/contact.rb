@@ -152,6 +152,7 @@ class Contact < ActiveRecord::Base
   scope :contacts, lambda { where(:status => Status::Contact) }
   scope :ordered, lambda { order(arel_table[:first_name].asc) }
 
+  scope :bounced_primary_emails, lambda { joins(:users).merge(User.primary.has_bounced) }
   scope :ok_to_email, lambda { where(:ok_to_email => true) }
   scope :by_title, lambda {|val| where(:title => val) }
   scope :by_company, lambda {|val| where(:company_id => val) }
