@@ -31,7 +31,7 @@ module E9Crm
     #
     def tracking_campaign
       @_tracking_campaign ||= begin
-        tracking_cookie.code.present? && Campaign.find_by_code(tracking_cookie.code) || Campaign.default
+        tracking_cookie.code.present? && ::Campaign.find_by_code(tracking_cookie.code) || ::Campaign.default
       end
     end
 
@@ -54,7 +54,7 @@ module E9Crm
 
         if hid = cookies[E9Crm.cookie_name]
           E9Crm.log("Installed cookie found: hid(#{hid})")
-          @_tracking_cookie = TrackingCookie.find_by_hid(hid)
+          @_tracking_cookie = ::TrackingCookie.find_by_hid(hid)
 
           unless @_tracking_cookie
             # This should only happen in developemnt, as it means the cookie has been
@@ -82,7 +82,7 @@ module E9Crm
               end
             end
 
-            if code.present? && code != @_tracking_cookie.code && Campaign.find_by_code(code)
+            if code.present? && code != @_tracking_cookie.code && ::Campaign.find_by_code(code)
               E9Crm.log "Code present and cookie code(#{@_tracking_cookie.code}) does not match (#{code}), changing..."
               attrs[:code] = code
 
@@ -102,7 +102,7 @@ module E9Crm
         @_tracking_cookie ||= begin
           session[:new_visit] = true
 
-          TrackingCookie.create(:code => code, :user => current_user || _user_from_params).tap do |cookie|
+          ::TrackingCookie.create(:code => code, :user => current_user || _user_from_params).tap do |cookie|
             E9Crm.log "Installing new cookie (#{E9Crm.cookie_name} : #{cookie.hid})"
             cookies.permanent[E9Crm.cookie_name] = cookie.hid
           end
