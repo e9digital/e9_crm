@@ -55,7 +55,7 @@ module E9Crm
       user_model.send(:include, E9Crm::Model)
     end
 
-    ApplicationController.send(:include, E9Crm::Controller)
+    ActionController::Base.send(:include, E9Crm::Controller)
 
     ::Admin::SystemEmailsController.send(:include, E9Crm::SystemEmailsController)
 
