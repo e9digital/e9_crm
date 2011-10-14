@@ -1,19 +1,30 @@
 = title (@index_title || e9_t(:index_title, :scope => 'e9_crm.reports'))
 
-.toolbar
-  .toolbar-left
+- content_for :toolbar_middle do
+  = toolbar_filters do
     = form_tag(resource_class, :method => :get, :class => 'scope-selects') do
-      %select{:name => 'type'}
-        = campaign_type_select_options
-      %select{:name => 'group'}
-        = campaign_group_select_options
-      %select{:name => 'from'}
-        = deal_date_select_options
-      %select{:name => 'until'}
-        = deal_date_select_options(:type => :until)
+      .field
+        = label_tag 'campaign-type', t(:filter_by, :attribute => resource_class.human_attribute_name(:type))
+        %select{:name => 'type', :id => 'campaign-type'}
+          = campaign_type_select_options
+      .field
+        = label_tag 'campaign-group', t(:filter_by, :attribute => resource_class.human_attribute_name(:group))
+        %select{:name => 'group', :id => 'campaign-group'}
+          = campaign_group_select_options
+      .field
+        = label_tag 'campaign-from', t(:filter_by, :attribute => resource_class.human_attribute_name(:from))
+        %select{:name => 'from', :id => 'campaign-from'}
+          = deal_date_select_options
+      .field
+        = label_tag 'campaign-until', t(:filter_by, :attribute => resource_class.human_attribute_name(:until))
+        %select{:name => 'until', :id => 'campaign-until'}
+          = deal_date_select_options(:type => :until)
 
-  .toolbar-right
+- content_for :toolbar_right do
+  = toolbar_actions do
     = link_to_collection(Campaign)
+
+= render 'shared/admin/toolbar'
 
 %div#records_table
   = render 'reports_table'

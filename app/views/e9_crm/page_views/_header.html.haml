@@ -1,15 +1,22 @@
-.toolbar
-  .toolbar-left
+- content_for :toolbar_middle do
+  = toolbar_filters do
     = form_tag(resource_class, :method => :get, :class => 'scope-selects') do
-      %select{:name => 'campaign'}
-        = page_view_campaign_select_options
-      %select{:name => 'new_visits'}
-        = page_view_new_visit_select_options
-      %select{:name => 'month'}
-        = page_view_date_select_options(:type => :in_month)
-
-      %input.contact-autocomplete{:type => :text, :style => @contact.blank? && '' || 'display:none', :placeholder => 'Enter Contact...'}
-      .contact-select{:style => @contact.blank? && 'display:none' || ''}
-        %span.content= @contact.try(:name_with_email)
-        %input{:type => :hidden, :name => "contact", :value => @contact.try(:id)}
-        %a{:class => :remove, :title => "Remove", :alt => "Remove"} Remove
+      .field
+        = label_tag 'pageview-campaign', t(:filter_by, :attribute => resource_class.human_attribute_name(:campaign))
+        %select{:name => 'campaign', :id => 'pageview-campaign'}
+          = page_view_campaign_select_options
+      .field
+        = label_tag 'pageview-events', t(:filter_by, :attribute => resource_class.human_attribute_name(:event))
+        %select{:name => 'new_visits', :id => 'pageview-events'}
+          = page_view_new_visit_select_options
+      .field
+        = label_tag 'pageview-month', t(:filter_by, :attribute => resource_class.human_attribute_name(:month))
+        %select{:name => 'month', :id => 'pageview-month'}
+          = page_view_date_select_options(:type => :in_month)
+      .field
+        = label_tag 'pageview-contact', t(:filter_by, :attribute => resource_class.human_attribute_name(:contact))
+        %input.contact-autocomplete{:type => :text, :style => @contact.blank? && '' || 'display:none', :placeholder => 'Enter Contact...', :id => 'pageview-contact'}
+        .contact-select{:style => @contact.blank? && 'display:none' || ''}
+          %span.content= @contact.try(:name_with_email)
+          %input{:type => :hidden, :name => "contact", :value => @contact.try(:id)}
+          %a{:class => :remove, :title => "Remove", :alt => "Remove"} Remove

@@ -172,6 +172,9 @@ en:
         created_at: Date
         owner: Responsible
         won_deal_count: Won count 
+        offer: Offer
+        from: From Date
+        until: Before Date
       offer:
         mailing_list_ids: Subscriptions
         template: Teaser Text
@@ -189,3 +192,5 @@ en:
         conversion_alert_email: Send Alert Email To
         success_page_text: Success Page Text
         custom_form_html: Custom Form Html
+      page_view:
+        month: Month Occurred

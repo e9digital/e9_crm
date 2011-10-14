@@ -1,22 +1,24 @@
-.toolbar
-  .toolbar-left
-  .toolbar-middle
+- content_for :toolbar_middle do
+  = toolbar_filters do
     = form_tag(resource_class, :method => :get, :class => 'scope-selects') do
-      %fieldset
-        %legend= t(:form_legend_filter_campaigns)
-        %select{:name => 'status'}
+      .field
+        = label_tag 'deal-status', t(:filter_by, :attribute => resource_class.human_attribute_name(:status))
+        %select{:name => 'status', :id => 'deal-status'}
           = deal_status_select_options
-        %select{:name => 'category'}
+      .field
+        = label_tag 'deal-category', t(:filter_by, :attribute => resource_class.human_attribute_name(:category))
+        %select{:name => 'category', :id => 'deal-category'} 
           = deal_category_select_options 
-        %select{:name => 'owner'}
+      .field
+        = label_tag 'deal-owner', t(:filter_by, :attribute => resource_class.human_attribute_name(:owner))
+        %select{:name => 'owner', :id => 'deal-owner'}
           = deal_owner_select_options 
-        %select{:name => 'closed'}
+      .field
+        = label_tag 'deal-closed', t(:filter_by, :attribute => resource_class.human_attribute_name(:closed))
+        %select{:name => 'closed', :id => 'deal-closed'}
           = deal_date_select_options(:type => :in_month)
 
-  .toolbar-right
-    %fieldset
-      %legend= t(:form_legend_manage)
-      .manage-leads
-      = link_to I18n.t('activerecord.links.index', :models => 'Leads'), leads_path
-      .manage-new-deals
-      = link_to_new_resource(Deal)
+- content_for :toolbar_right do
+  = toolbar_actions do
+    = link_to I18n.t('activerecord.links.index', :models => 'Leads'), leads_path
+    = link_to_new_resource(Deal)

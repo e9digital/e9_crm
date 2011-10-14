@@ -1,18 +1,21 @@
-.toolbar
-  .toolbar-left
-  .toolbar-middle
+- content_for :toolbar_middle do
+  = toolbar_filters do
     = form_tag(resource_class, :method => :get, :class => 'scope-selects') do
-      %fieldset
-        %legend= t(:form_legend_filter_campaigns)
-        %select{:name => 'offer'}
+      .field
+        = label_tag 'lead-offer', t(:filter_by, :attribute => resource_class.human_attribute_name(:offer))
+        %select{:name => 'offer', :id => 'lead-offer'}
           = deal_offer_select_options 
-        %select{:name => 'from'}
+      .field
+        = label_tag 'lead-from', t(:filter_by, :attribute => resource_class.human_attribute_name(:from))
+        %select{:name => 'from', :id => 'lead-from'}
           = deal_date_select_options
-        %select{:name => 'until'}
+      .field
+        = label_tag 'lead-until', t(:filter_by, :attribute => resource_class.human_attribute_name(:until))
+        %select{:name => 'until', :id => 'lead-until'}
           = deal_date_select_options(:type => :until)
 
-  .toolbar-right
-    %fieldset
-      %legend= t(:form_legend_manage)
-      .manage-deals
-        = link_to_collection(Deal)
+- content_for :toolbar_right do
+  = toolbar_actions do
+    = link_to_collection(Deal)
+
+= render 'shared/admin/toolbar'

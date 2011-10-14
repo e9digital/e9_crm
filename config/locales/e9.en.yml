@@ -27,7 +27,7 @@ en:
         form_legend_search: Search Filters
         form_legend_contact: Contact Information
         form_legend_standard: Personal Information
-        send_email_template: Send Email
+        send_email_template: Send
         send_email_newsletter: Send Newsletter
         contact_newsletter_confirmation: "The system will send the newsletter to all of the selected contacts (%{count}) if they are subscribed to receieve email.  Are you sure you want to proceed?"
         no_contacts_notification: "Either you have selected no contacts, or all of those selected are opted out of bulk email.  Please correct this and try again."

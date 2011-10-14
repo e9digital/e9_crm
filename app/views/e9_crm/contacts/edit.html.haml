@@ -1,6 +1,8 @@
 = title @edit_title || e9_t(:edit_title)
 
-.actions
-  = link_to 'View Contact', resource
+- content_for :toolbar_right do
+  = toolbar_actions do
+    = link_to 'View Contact', resource
 
+= render 'shared/admin/toolbar'
 = render 'form'

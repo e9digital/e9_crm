@@ -1,22 +1,17 @@
 = title (@index_title || e9_t(:index_title))
 
-.toolbar
-  .toolbar-left
-    #sidebar-email-form
-      = render 'sidebar_email_form'
-  
-  .toolbar-middle
-    #sidebar-search-form
-      = render 'sidebar_search_form'
-      
-  .toolbar-right
-    #sidebar-actions
-      %fieldset
-        %legend= "Manage"
-        .manage-contacts
-          = link_to_new_resource(Contact)
-        .manage-company
-          = link_to_collection(Company)
+- content_for :toolbar_middle do
+  = toolbar_filters do
+    = render 'sidebar_search_form'
+
+- content_for :toolbar_right do
+  = toolbar_actions do
+    = link_to_new_resource(Contact)
+    = link_to_collection(Company)
+  = toolbar_forms do
+    = render 'sidebar_email_form'
+
+= render 'shared/admin/toolbar'
         
 #records_table
   = render 'table', :resources => collection

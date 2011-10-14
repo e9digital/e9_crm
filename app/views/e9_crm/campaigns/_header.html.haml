@@ -1,21 +1,23 @@
-.toolbar
-  .toolbar-left
-  .toolbar-middle
+- content_for :toolbar_middle do
+  = toolbar_filters do
     = form_tag(resource_class, :method => :get, :class => 'scope-selects') do
-      %fieldset
-        %legend= t(:form_legend_filter_campaigns)
-        %select{:name => 'type'}
+      .field
+        = label_tag 'campaign-type', t(:filter_by, :attribute => resource_class.human_attribute_name(:type))
+        %select{:name => 'type', :id => 'campaign-type'}
           = campaign_type_select_options
-        %select{:name => 'group'}
+      .field
+        = label_tag 'campaign-group', t(:filter_by, :attribute => resource_class.human_attribute_name(:group))
+        %select{:name => 'group', :id => 'campaign-group'}
           = campaign_group_select_options
-        %select{:name => 'active'}
+      .field
+        = label_tag 'campaign-active', t(:filter_by, :attribute => resource_class.human_attribute_name(:active))
+        %select{:name => 'active', :id => 'campaign-active'}
           = campaign_active_select_options
 
-  .toolbar-right
+- content_for :toolbar_right do
+  = toolbar_forms do
     = form_tag new_campaign_path, :method => :get, :id => 'new_campaign_form' do
-      %fieldset
-        %legend= t(:form_legend_manage)
-        = label_tag 'new_campaign_type_select', t('activerecord.links.new', :model => Campaign.model_name.human)
-        %select{:name => 'type', :id => 'new_campaign_type_select'}
-          = campaign_type_select_options(false)
-        = submit_tag t(:go), :name => nil
+      = label_tag 'new_campaign_type_select', t('activerecord.links.new', :model => Campaign.model_name.human)
+      %select{:name => 'type', :id => 'new_campaign_type_select'}
+        = campaign_type_select_options(false)
+      = submit_tag t(:go), :name => nil

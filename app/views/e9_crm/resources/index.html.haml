@@ -1,6 +1,7 @@
 = title (@index_title || e9_t(:index_title))
 
 = render 'header'
+= render 'shared/admin/toolbar'
 
 - if sortable_controller?
   = form_tag polymorphic_path([:update_order, resource_class]) do
